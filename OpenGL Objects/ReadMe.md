@@ -1,0 +1,1 @@
+Simple wrapper classes to automate dealing with GPU memory allocation and prevent leaking memory

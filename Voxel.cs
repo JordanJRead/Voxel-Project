@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,32 +14,53 @@ namespace Voxel_Project
 {
     internal class Voxel
     {
+        public enum Type
+        {
+            grass,
+            stone,
+            none
+        }
+
+        private static string[] typeNames = new string[(int)Type.none + 1] // Makes sure that the size of typeNames equals the number of Types
+        {
+            "grass",
+            "stone",
+            "none"
+        };
+
+        public Vector3 position;
+        public Type type;
+
         public Voxel(Vector3 position, Type type)
         {
             this.position = position;
             this.type = type;
         }
 
-        public enum Type
+        public Voxel(Vector3 position, string typeName)
         {
-            none,
-            grass,
-            stone
+            this.position = position;
+            this.type = VoxelTypeFromString(typeName);
         }
 
-        Vector3 position;
-        Type type;
-
-        public static Type VoxelTypeFromString(string name)
+        public string GetTypeName()
         {
-            switch (name)
+            return typeNames[(int)type];
+        }
+
+        private static Type VoxelTypeFromString(string name)
+        {
+            int index = Array.IndexOf(typeNames, name);
+            if (index != -1)
             {
-                case "grass":
-                    return Type.grass;
-                case "stone":
-                    return Type.grass;
+                return (Type)index;
             }
             return Type.none;
+        }
+
+        public override string ToString()
+        {
+            return $"Voxel( x = {position.X}, y = {position.Y}, z = {position.Z}, type = {GetTypeName()} = {(int)type})";
         }
     }
 }

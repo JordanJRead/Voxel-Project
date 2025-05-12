@@ -14,57 +14,61 @@ namespace OpenTK_Test
     internal class App : GameWindow
     {
         int shader;
+        Scene scene = new Scene("scene.txt");
+
         unsafe public App(int width, int height, string title)
             : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title })
         {
-            Scene scene = new Scene("scene.txt");
+            scene.Print();
+            scene.Save();
+            scene.Print();
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1);
 
             // SHADER
-            string vertSrc = File.ReadAllText("color.vert");
-            string fragSrc = File.ReadAllText("color.frag");
+            //string vertSrc = File.ReadAllText("color.vert");
+            //string fragSrc = File.ReadAllText("color.frag");
 
-            int vertShader = GL.CreateShader(ShaderType.VertexShader);
-            int fragShader = GL.CreateShader(ShaderType.FragmentShader);
+            //int vertShader = GL.CreateShader(ShaderType.VertexShader);
+            //int fragShader = GL.CreateShader(ShaderType.FragmentShader);
 
-            GL.ShaderSource(vertShader, vertSrc);
-            GL.ShaderSource(fragShader, fragSrc);
+            //GL.ShaderSource(vertShader, vertSrc);
+            //GL.ShaderSource(fragShader, fragSrc);
 
-            GL.CompileShader(vertShader);
-            GL.CompileShader(fragShader);
+            //GL.CompileShader(vertShader);
+            //GL.CompileShader(fragShader);
 
-            GL.GetShader(vertShader, ShaderParameter.CompileStatus, out int successVert);
-            if (successVert == 0)
-            {
-                string infoLog = GL.GetShaderInfoLog(vertShader);
-                Console.WriteLine(infoLog);
-            }
+            //GL.GetShader(vertShader, ShaderParameter.CompileStatus, out int successVert);
+            //if (successVert == 0)
+            //{
+            //    string infoLog = GL.GetShaderInfoLog(vertShader);
+            //    Console.WriteLine(infoLog);
+            //}
 
-            GL.GetShader(fragShader, ShaderParameter.CompileStatus, out int successFrag);
-            if (successFrag == 0)
-            {
-                string infoLog = GL.GetShaderInfoLog(vertShader);
-                Console.WriteLine(infoLog);
-            }
+            //GL.GetShader(fragShader, ShaderParameter.CompileStatus, out int successFrag);
+            //if (successFrag == 0)
+            //{
+            //    string infoLog = GL.GetShaderInfoLog(vertShader);
+            //    Console.WriteLine(infoLog);
+            //}
 
-            shader = GL.CreateProgram();
+            //shader = GL.CreateProgram();
 
-            GL.AttachShader(shader, vertShader);
-            GL.AttachShader(shader, fragShader);
+            //GL.AttachShader(shader, vertShader);
+            //GL.AttachShader(shader, fragShader);
 
-            GL.LinkProgram(shader);
+            //GL.LinkProgram(shader);
 
-            GL.GetProgram(shader, GetProgramParameterName.LinkStatus, out int successShader);
-            if (successShader == 0)
-            {
-                string infoLog = GL.GetProgramInfoLog(shader);
-                Console.WriteLine(infoLog);
-            }
+            //GL.GetProgram(shader, GetProgramParameterName.LinkStatus, out int successShader);
+            //if (successShader == 0)
+            //{
+            //    string infoLog = GL.GetProgramInfoLog(shader);
+            //    Console.WriteLine(infoLog);
+            //}
 
-            GL.DetachShader(shader, vertShader);
-            GL.DetachShader(shader, fragShader);
-            GL.DeleteShader(vertShader);
-            GL.DeleteShader(fragShader);
+            //GL.DetachShader(shader, vertShader);
+            //GL.DetachShader(shader, fragShader);
+            //GL.DeleteShader(vertShader);
+            //GL.DeleteShader(fragShader);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)

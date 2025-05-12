@@ -17,6 +17,7 @@ namespace OpenTK_Test
         unsafe public App(int width, int height, string title)
             : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title })
         {
+            Scene scene = new Scene("scene.txt");
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1);
 
             // SHADER

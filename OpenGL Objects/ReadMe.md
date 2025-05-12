@@ -1,1 +1,1 @@
-Simple wrapper classes to automate dealing with GPU memory allocation and prevent leaking memory
+Simple wrapper classes to automate creation and deletion of OpenGL objects and prevent GPU memory leaks

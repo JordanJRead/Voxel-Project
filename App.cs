@@ -11,65 +11,33 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Voxel_Project;
 using OpenTK.Mathematics;
 
-namespace OpenTK_Test
+namespace Voxel_Project
 {
     internal class App : GameWindow
     {
         int shader;
-        Scene scene = new Scene("scene.txt");
-        Camera camera = new Camera(new Vector3(0, 0, 0));
+        Scene scene;
+        Camera camera;
+        VertexBuffer vertexBuffer;
+        VertexArray vertexArray;
 
         unsafe public App(int width, int height, string title)
-            : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title })
+            : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title, APIVersion = new System.Version(4, 3) })
         {
+            scene = new Scene("scene.txt");
+            camera = new Camera(width, height, new Vector3(0, 0, 0));
             CursorState = CursorState.Grabbed;
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1);
 
-            // SHADER
-            //string vertSrc = File.ReadAllText("color.vert");
-            //string fragSrc = File.ReadAllText("color.frag");
+            float[] vertices = new float[]
+            {
+                -0.5f, -0.5f, 0, 1, 0, 0,
+                 0.5f, -0.5f, 0, 0, 1, 0,
+                 0.0f,  0.5f, 0, 0, 0, 1
+            };
 
-            //int vertShader = GL.CreateShader(ShaderType.VertexShader);
-            //int fragShader = GL.CreateShader(ShaderType.FragmentShader);
-
-            //GL.ShaderSource(vertShader, vertSrc);
-            //GL.ShaderSource(fragShader, fragSrc);
-
-            //GL.CompileShader(vertShader);
-            //GL.CompileShader(fragShader);
-
-            //GL.GetShader(vertShader, ShaderParameter.CompileStatus, out int successVert);
-            //if (successVert == 0)
-            //{
-            //    string infoLog = GL.GetShaderInfoLog(vertShader);
-            //    Console.WriteLine(infoLog);
-            //}
-
-            //GL.GetShader(fragShader, ShaderParameter.CompileStatus, out int successFrag);
-            //if (successFrag == 0)
-            //{
-            //    string infoLog = GL.GetShaderInfoLog(vertShader);
-            //    Console.WriteLine(infoLog);
-            //}
-
-            //shader = GL.CreateProgram();
-
-            //GL.AttachShader(shader, vertShader);
-            //GL.AttachShader(shader, fragShader);
-
-            //GL.LinkProgram(shader);
-
-            //GL.GetProgram(shader, GetProgramParameterName.LinkStatus, out int successShader);
-            //if (successShader == 0)
-            //{
-            //    string infoLog = GL.GetProgramInfoLog(shader);
-            //    Console.WriteLine(infoLog);
-            //}
-
-            //GL.DetachShader(shader, vertShader);
-            //GL.DetachShader(shader, fragShader);
-            //GL.DeleteShader(vertShader);
-            //GL.DeleteShader(fragShader);
+            vertexBuffer = new VertexBuffer(vertices);
+            vertexArray = new VertexArray([3, 3], vertexBuffer);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -78,14 +46,18 @@ namespace OpenTK_Test
             {
                 Close();
             }
-            camera.Update(MouseState);
+            camera.Update(MouseState, KeyboardState);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit);// | ClearBufferMask.DepthBufferBit);
 
-            //GL.UseProgram(shader);
+            scene.Render(camera);
+
+            //vertexArray.Use();
+            //ShaderBase helloShader = new ShaderBase("Shaders/hello.vert", "Shaders/hello.frag");
+            //helloShader.Use();
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 
             SwapBuffers();

@@ -30,7 +30,7 @@ namespace Voxel_Project
             this.screenHeight = screenHeight;
         }
 
-        public void Update(MouseState mouse)
+        public void Update(MouseState mouse, KeyboardState keyboard)
         {
             if (isFirstMove)
             {
@@ -41,7 +41,7 @@ namespace Voxel_Project
             Vector2 mouseMovement = mouse.Position - prevMousePos;
             prevMousePos = mouse.Position;
 
-            yaw -= mouseMovement.X * sensitivity;
+            yaw += mouseMovement.X * sensitivity;
             pitch -= mouseMovement.Y * sensitivity;
 
             if (yaw < 0)
@@ -75,7 +75,12 @@ namespace Voxel_Project
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(80), screenWidth / screenHeight, 0.1f, 100);
+            return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(80), (float)screenWidth / screenHeight, 0.1f, 100);
+        }
+
+        public void MoveBy(Vector3 moveBy)
+        {
+            position += moveBy;
         }
     }
 }

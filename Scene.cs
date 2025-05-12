@@ -6,11 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Voxel_Project;
 
-namespace OpenTK_Test
+namespace Voxel_Project
 {
     internal class Scene
     {
         List<Voxel> voxels = new List<Voxel>();
+        CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
         string initialPath;
 
         /// <summary>
@@ -18,8 +19,10 @@ namespace OpenTK_Test
         /// </summary>
         public Scene(string filePath)
         {
-            this.initialPath = filePath;
-            string[] fileLines = File.ReadLines(filePath).ToArray();
+            string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+            this.initialPath = projectPath + '/' + filePath;
+            
+            string[] fileLines = File.ReadLines(this.initialPath).ToArray();
 
             foreach (string line in fileLines)
             {
@@ -32,6 +35,8 @@ namespace OpenTK_Test
                 pos.Y = float.Parse(voxelInfo[1]);
                 pos.Z = float.Parse(voxelInfo[2]);
                 voxels.Add(new Voxel(pos, voxelInfo[3]));
+
+                cubeShader.UpdateVoxelData(voxels);
             }
         }
 
@@ -78,6 +83,11 @@ namespace OpenTK_Test
             {
                 sw.Write(fileSrc);
             }
+        }
+
+        public void Render(Camera camera)
+        {
+            cubeShader.Render(camera);
         }
     }
 }

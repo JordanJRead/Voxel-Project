@@ -1,6 +1,6 @@
 ﻿using OpenTK.Windowing.Desktop;
 
-namespace OpenTK_Test
+namespace Voxel_Project
 {
     internal class Program
     {

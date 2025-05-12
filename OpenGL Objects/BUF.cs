@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL4;
 
-namespace OpenTK_Test.OpenGL_Objects
+namespace Voxel_Project.OpenGL_Objects
 {
-    internal class Buffer
+    internal class BUF
     {
         private uint id;
 
@@ -16,13 +16,18 @@ namespace OpenTK_Test.OpenGL_Objects
             GL.BindBuffer(target, id);
         }
 
-        unsafe public Buffer()
+        unsafe public BUF()
         {
             fixed (uint* ptr = &id)
                 GL.GenBuffers(1, ptr);
         }
 
-        unsafe ~Buffer()
+        public static implicit operator uint(BUF b)
+        {
+            return b.id;
+        }
+
+        unsafe ~BUF()
         {
             fixed (uint* ptr = &id)
                 GL.DeleteBuffers(1, ptr);

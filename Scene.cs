@@ -11,11 +11,14 @@ namespace OpenTK_Test
     internal class Scene
     {
         List<Voxel> voxels = new List<Voxel>();
-        string filePath;
+        string initialPath;
 
+        /// <summary>
+        /// Loads scene data from a file path into program memory
+        /// </summary>
         public Scene(string filePath)
         {
-            this.filePath = filePath;
+            this.initialPath = filePath;
             string[] fileLines = File.ReadLines(filePath).ToArray();
 
             foreach (string line in fileLines)
@@ -40,7 +43,19 @@ namespace OpenTK_Test
             }
         }
 
+        /// <summary>
+        /// Writes scene data to the same file path that the scene was loaded from, overwriting that file
+        /// </summary>
         public void Save()
+        {
+            Save(initialPath);
+        }
+
+        /// <summary>
+        /// Writes scene data to a file. If the file exists, it gets overwriten. If the file does not exist, it get created
+        /// </summary>
+        /// <param name="filePath"></param>
+        public void Save(string filePath)
         {
             voxels[0].position = new Vector3(11, 12, 13);
             voxels[0].type = Voxel.Type.none;

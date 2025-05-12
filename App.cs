@@ -8,6 +8,8 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Voxel_Project;
+using OpenTK.Mathematics;
 
 namespace OpenTK_Test
 {
@@ -15,13 +17,12 @@ namespace OpenTK_Test
     {
         int shader;
         Scene scene = new Scene("scene.txt");
+        Camera camera = new Camera(new Vector3(0, 0, 0));
 
         unsafe public App(int width, int height, string title)
             : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title })
         {
-            scene.Print();
-            scene.Save();
-            scene.Print();
+            CursorState = CursorState.Grabbed;
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1);
 
             // SHADER
@@ -77,6 +78,7 @@ namespace OpenTK_Test
             {
                 Close();
             }
+            camera.Update(MouseState);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)

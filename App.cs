@@ -48,6 +48,9 @@ namespace Voxel_Project
             ExtensionsCheck();
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
             scene = new Scene("scene.txt");
             camera = new Camera(width, height, new Vector3(0, 0, 0));
             CursorState = CursorState.Grabbed;

@@ -11,7 +11,13 @@ namespace Voxel_Project
     internal class Scene
     {
         List<Voxel> voxels = new List<Voxel>();
-        CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
+        Voxel? editorVoxel = null;
+
+        VertexArray vertexArray;
+        VertexBuffer vertexBuffer;
+
+        InstancedVoxelShader instancedVoxelShader = new InstancedVoxelShader("Shaders/instancedvoxel.vert", "Shaders/instancedvoxel.frag");
+        TransparentVoxelShader transparentVoxelShader = new TransparentVoxelShader("Shaders/transparentvoxel.vert", "Shaders/transparentvoxel.frag");
         TextureManager textureManager = new TextureManager();
         string initialPath;
 
@@ -20,6 +26,7 @@ namespace Voxel_Project
         /// </summary>
         public Scene(string filePath)
         {
+            editorVoxel = new Voxel(new Vector3(0, 3, 0), Voxel.Type.grass);
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
             
@@ -38,7 +45,86 @@ namespace Voxel_Project
                 voxels.Add(new Voxel(pos, voxelInfo[3]));
             }
 
-            cubeShader.UpdateVoxelData(voxels, textureManager);
+            instancedVoxelShader.UpdateVoxelData(voxels, textureManager);
+            // Cube vertices
+            // x1, y1, z1, x2, y2, z2, etc.
+            // Cube is centerd on (0, 0, 0) and has dimensions of 1 (-0.5 to 0.5)
+            /*
+              Y
+              |
+              |
+              |
+              |
+              ----------X
+             /
+            /
+           Z
+            */
+            float right = 0.5f;
+            float left = -0.5f;
+            float up = 0.5f;
+            float down = -0.5f;
+            float near = 0.5f;
+            float far = -0.5f;
+
+            float[] vertices =
+            {
+                // Front face
+                left,  up,   near, 0, 0, near,
+                left,  down, near, 0, 0, near,
+                right, down, near, 0, 0, near,
+
+                right, down, near, 0, 0, near,
+                right, up,   near, 0, 0, near,
+                left,  up,   near, 0, 0, near,
+
+                // Back face
+                right, down, far, 0, 0, far,
+                left,  down, far, 0, 0, far,
+                left,  up,   far, 0, 0, far,
+
+                left,  up,   far, 0, 0, far,
+                right, up,   far, 0, 0, far,
+                right, down, far, 0, 0, far,
+
+                // Right face
+                right, up,   far, right, 0, 0,
+                right, up,   near, right, 0, 0,
+                right, down, near, right, 0, 0,
+
+                right, down, near, right, 0, 0,
+                right, down, far, right, 0, 0,
+                right, up,   far, right, 0, 0,
+                
+                // Left face
+                left, down, near, left, 0, 0,
+                left, up,   near, left, 0, 0,
+                left, up,   far, left, 0, 0,
+
+                left, up,   far, left, 0, 0,
+                left, down, far, left, 0, 0,
+                left, down, near, left, 0, 0,
+
+                // Top face
+                left,  up, far, 0, up, 0,
+                left,  up, near, 0, up, 0,
+                right, up, near, 0, up, 0,
+
+                right, up, near, 0, up, 0,
+                right, up, far, 0, up, 0,
+                left,  up, far, 0, up, 0,
+
+                // Bottom face
+                right, down, near, 0, down, 0,
+                left,  down, near, 0, down, 0,
+                left,  down, far, 0, down, 0,
+
+                left,  down, far, 0, down, 0,
+                right, down, far, 0, down, 0,
+                right, down, near, 0, down, 0,
+            };
+            vertexBuffer = new VertexBuffer(vertices);
+            vertexArray = new VertexArray([3, 3], vertexBuffer);
         }
 
         public void Print()
@@ -88,7 +174,11 @@ namespace Voxel_Project
 
         public void Render(Camera camera)
         {
-            cubeShader.Render(camera);
+            instancedVoxelShader.Render(camera, vertexArray);
+            if (editorVoxel != null)
+            {
+                transparentVoxelShader.Render(camera, vertexArray, editorVoxel, textureManager);
+            }
         }
     }
 }

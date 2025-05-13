@@ -7,7 +7,7 @@ in flat int instanceID;
 out vec4 FragColor;
 in vec3 fragNormal;
 
-uniform samplerCube testCube;
+uniform bool isTransparent;
 
 layout(std430, binding = 1) readonly buffer textureSSBO {
 	samplerCube cubeMaps[];
@@ -17,5 +17,6 @@ void main() {
 	vec3 lightDir = normalize(vec3(0.4, -1, 0.4)); // Angled down
 	vec3 objectColor = texture(cubeMaps[instanceID], cubeMapCoord).xyz;
 	float diffuseFactor = (dot(-lightDir, fragNormal) + 1) * 0.5;
+
 	FragColor = vec4(objectColor * diffuseFactor, 1);
 }

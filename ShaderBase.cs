@@ -35,6 +35,21 @@ namespace Voxel_Project
             GL.UniformMatrix4(GL.GetUniformLocation(id, name), false, ref value);
         }
 
+        protected void SetBool(string name, bool value)
+        {
+            GL.Uniform1(GL.GetUniformLocation(id, name), value ? 1 : 0); // Sets as an int
+        }
+
+        protected void SetVec3(string name, Vector3 value)
+        {
+            GL.Uniform3(GL.GetUniformLocation(id, name), value);
+        }
+
+        protected void SetULongTextureHandle(string name, ulong value)
+        {
+            GL.Arb.UniformHandle(GL.GetUniformLocation(id, name), value);
+        }
+
         public ShaderBase(string vertPath, string fragPath)
         {
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;

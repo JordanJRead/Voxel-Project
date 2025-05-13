@@ -46,5 +46,10 @@ namespace Voxel_Project
         {
             return cubeMap.tex;
         }
+
+        public void Use()
+        {
+            GL.BindTexture(TextureTarget.TextureCubeMap, tex);
+        }
     }
 }

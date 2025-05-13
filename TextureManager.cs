@@ -23,8 +23,12 @@ namespace Voxel_Project
             }
         }
 
-        public long GetTextureHandle(Voxel.Type voxelType)
+        /// <summary>
+        /// Used when using a shader that utilizes bindless textures
+        /// </summary>
+        public long GetBindlessTextureHandle(Voxel.Type voxelType)
         {
+            long test = textureHandles[(int)voxelType];
             return textureHandles[(int)voxelType];
         }
     }

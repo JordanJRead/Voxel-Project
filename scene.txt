@@ -1,1 +1,7 @@
-1,1,0,grass
+1,0,0,grass
+2,0,0,grass
+3,0,0,grass
+0,0,0,stone
+-1,0,0,stone
+-2,0,0,stone
+0,5,0,none

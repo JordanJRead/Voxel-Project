@@ -36,9 +36,9 @@ namespace Voxel_Project
                 pos.Y = float.Parse(voxelInfo[1]);
                 pos.Z = float.Parse(voxelInfo[2]);
                 voxels.Add(new Voxel(pos, voxelInfo[3]));
-
-                cubeShader.UpdateVoxelData(voxels, textureManager);
             }
+
+            cubeShader.UpdateVoxelData(voxels, textureManager);
         }
 
         public void Print()

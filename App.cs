@@ -21,9 +21,33 @@ namespace Voxel_Project
         VertexBuffer vertexBuffer;
         VertexArray vertexArray;
 
+        unsafe static void ExtensionsCheck()
+        {
+            int extensionsCount;
+            int* ptr = &extensionsCount;
+            GL.GetInteger(GetPName.NumExtensions, ptr);
+            bool found = false;
+            for (int i = 0; i < extensionsCount; ++i)
+            {
+                string extensionName = GL.GetString(StringNameIndexed.Extensions, i);
+                if (extensionName == "GL_ARB_bindless_texture")
+                {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                Console.WriteLine("ERROR: Missing OpenGL extension GL_ARB_bindless_texture");
+            }
+        }
+
         unsafe public App(int width, int height, string title)
             : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title, APIVersion = new System.Version(4, 3) })
         {
+            ExtensionsCheck();
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
             scene = new Scene("scene.txt");
             camera = new Camera(width, height, new Vector3(0, 0, 0));
             CursorState = CursorState.Grabbed;
@@ -51,7 +75,7 @@ namespace Voxel_Project
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);// | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             scene.Render(camera);
 

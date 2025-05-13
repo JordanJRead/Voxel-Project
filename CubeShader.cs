@@ -53,61 +53,61 @@ namespace Voxel_Project
             float[] vertices =
             {
                 // Front face
-                left,  up,   near,
-                left,  down, near,
-                right, down, near,
+                left,  up,   near, 0, 0, near,
+                left,  down, near, 0, 0, near,
+                right, down, near, 0, 0, near,
 
-                right, down, near,
-                right, up,   near,
-                left,  up,   near,
+                right, down, near, 0, 0, near,
+                right, up,   near, 0, 0, near,
+                left,  up,   near, 0, 0, near,
 
                 // Back face
-                right, down, far,
-                left,  down, far,
-                left,  up,   far,
+                right, down, far, 0, 0, far,
+                left,  down, far, 0, 0, far,
+                left,  up,   far, 0, 0, far,
 
-                left,  up,   far,
-                right, up,   far,
-                right, down, far,
+                left,  up,   far, 0, 0, far,
+                right, up,   far, 0, 0, far,
+                right, down, far, 0, 0, far,
 
                 // Right face
-                right, up,   far,
-                right, up,   near,
-                right, down, near,
+                right, up,   far, right, 0, 0,
+                right, up,   near, right, 0, 0,
+                right, down, near, right, 0, 0,
 
-                right, down, near,
-                right, down, far,
-                right, up,   far,
+                right, down, near, right, 0, 0,
+                right, down, far, right, 0, 0,
+                right, up,   far, right, 0, 0,
                 
                 // Left face
-                left, down, near,
-                left, up,   near,
-                left, up,   far,
+                left, down, near, left, 0, 0,
+                left, up,   near, left, 0, 0,
+                left, up,   far, left, 0, 0,
 
-                left, up,   far,
-                left, down, far,
-                left, down, near,
+                left, up,   far, left, 0, 0,
+                left, down, far, left, 0, 0,
+                left, down, near, left, 0, 0,
 
                 // Top face
-                left,  up, far,
-                left,  up, near,
-                right, up, near,
+                left,  up, far, 0, up, 0,
+                left,  up, near, 0, up, 0,
+                right, up, near, 0, up, 0,
 
-                right, up, near,
-                right, up, far,
-                left,  up, far,
+                right, up, near, 0, up, 0,
+                right, up, far, 0, up, 0,
+                left,  up, far, 0, up, 0,
 
                 // Bottom face
-                right, down, near,
-                left,  down, near,
-                left,  down, far,
+                right, down, near, 0, down, 0,
+                left,  down, near, 0, down, 0,
+                left,  down, far, 0, down, 0,
 
-                left,  down, far,
-                right, down, far,
-                right, down, near,
+                left,  down, far, 0, down, 0,
+                right, down, far, 0, down, 0,
+                right, down, near, 0, down, 0,
             };
             vertexBuffer = new VertexBuffer(vertices);
-            vertexArray = new VertexArray([3], vertexBuffer);
+            vertexArray = new VertexArray([3, 3], vertexBuffer);
         }
 
         /// <summary>
@@ -135,13 +135,13 @@ namespace Voxel_Project
 
             texturesBuffer.Use(BufferTarget.ShaderStorageBuffer);
 
-            List<long> GPUTextureHandlesData = new List<long>(numOfCubes);
+            List<ulong> GPUTextureHandlesData = new List<ulong>(numOfCubes);
             for (int i = 0; i < numOfCubes; i++)
             {
-                GPUTextureHandlesData.Add(textureManager.GetTextureHandle(voxels[i].type));
+                GPUTextureHandlesData.Add((ulong)textureManager.GetTextureHandle(voxels[i].type));
             }
 
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUTextureHandlesData.Count * sizeof(float), GPUTextureHandlesData.ToArray(), BufferUsageHint.DynamicCopy);
+            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUTextureHandlesData.Count * sizeof(ulong), GPUTextureHandlesData.ToArray(), BufferUsageHint.DynamicCopy);
         }
 
         public void Render(Camera camera)

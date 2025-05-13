@@ -10,6 +10,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Voxel_Project;
 using OpenTK.Mathematics;
+using System.ComponentModel;
 
 namespace Voxel_Project
 {
@@ -74,6 +75,7 @@ namespace Voxel_Project
                 Close();
             }
             camera.Update(MouseState, KeyboardState, (float)e.Time);
+            scene.Update(KeyboardState, MouseState, camera);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -92,6 +94,11 @@ namespace Voxel_Project
         protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            scene.Save();
         }
     }
 }

@@ -13,5 +13,5 @@ void main() {
 	vec3 objectColor = texture(textureHandle, cubeMapCoord).xyz;
 	float diffuseFactor = (dot(-lightDir, fragNormal) + 1) * 0.5;
 
-	FragColor = vec4(objectColor * diffuseFactor, 0.5);
+	FragColor = vec4(objectColor * diffuseFactor + vec3(0.3, 0.3, 0.3), 0.5);
 }

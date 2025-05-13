@@ -1,4 +1,5 @@
 ﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Voxel_Project
     internal class Scene
     {
         List<Voxel> voxels = new List<Voxel>();
-        Voxel? editorVoxel = null;
+        Voxel? cursorVoxel = null; // The transparent voxel that can be moved around in editor mode
 
         VertexArray vertexArray;
         VertexBuffer vertexBuffer;
@@ -26,7 +27,7 @@ namespace Voxel_Project
         /// </summary>
         public Scene(string filePath)
         {
-            editorVoxel = new Voxel(new Vector3(0, 3, 0), Voxel.Type.grass);
+            cursorVoxel = new Voxel(new Vector3(0, 3, 0), Voxel.Type.grass);
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
             
@@ -175,10 +176,155 @@ namespace Voxel_Project
         public void Render(Camera camera)
         {
             instancedVoxelShader.Render(camera, vertexArray);
-            if (editorVoxel != null)
+            if (cursorVoxel != null)
             {
-                transparentVoxelShader.Render(camera, vertexArray, editorVoxel, textureManager);
+                transparentVoxelShader.Render(camera, vertexArray, cursorVoxel, textureManager);
             }
+        }
+
+        /// <summary>
+        /// Mostly deals with moving the editor's 'selection' cube
+        /// </summary>
+        public void Update(KeyboardState keyboard, MouseState mouse, Camera camera)
+        {
+            if (cursorVoxel == null)
+                return;
+
+            if (keyboard.IsKeyDown(Keys.LeftControl))
+            {
+                Vector3 cameraForward = camera.GetForward();
+                Vector3 cursorForwardAxis = new Vector3(1, 0, 0);
+
+                int[] axisValues = { -1, 1 };
+
+                Vector3 currentAxis;
+
+                // Find the best axis to move the cube along
+                // The dot product returns a greater value the more aligned the vectors are
+                currentAxis = Vector3.UnitX;
+                if (Vector3.Dot(cameraForward, currentAxis) > Vector3.Dot(cameraForward, cursorForwardAxis))
+                {
+                    cursorForwardAxis = currentAxis;
+                }
+                currentAxis = -Vector3.UnitX;
+                if (Vector3.Dot(cameraForward, currentAxis) > Vector3.Dot(cameraForward, cursorForwardAxis))
+                {
+                    cursorForwardAxis = currentAxis;
+                }
+                currentAxis = Vector3.UnitZ;
+                if (Vector3.Dot(cameraForward, currentAxis) > Vector3.Dot(cameraForward, cursorForwardAxis))
+                {
+                    cursorForwardAxis = currentAxis;
+                }
+                currentAxis = -Vector3.UnitZ;
+                if (Vector3.Dot(cameraForward, currentAxis) > Vector3.Dot(cameraForward, cursorForwardAxis))
+                {
+                    cursorForwardAxis = currentAxis;
+                }
+
+                Vector3 rightAxis = Vector3.Cross(cursorForwardAxis, Vector3.UnitY);
+
+                // Move cursor
+                if (keyboard.IsKeyPressed(Keys.W))
+                {
+                    cursorVoxel.position += cursorForwardAxis;
+                }
+                if (keyboard.IsKeyPressed(Keys.S))
+                {
+                    cursorVoxel.position -= cursorForwardAxis;
+                }
+                if (keyboard.IsKeyPressed(Keys.A))
+                {
+                    cursorVoxel.position -= rightAxis;
+                }
+                if (keyboard.IsKeyPressed(Keys.D))
+                {
+                    cursorVoxel.position += rightAxis;
+                }
+                if (keyboard.IsKeyPressed(Keys.Space))
+                {
+                    cursorVoxel.position += Vector3.UnitY;
+                }
+                if (keyboard.IsKeyPressed(Keys.LeftShift))
+                {
+                    cursorVoxel.position -= Vector3.UnitY;
+                }
+
+                // Cycle through cursor voxel types
+                // Voxel.Type.none is the maximum enum value
+                if (keyboard.IsKeyPressed(Keys.Q)) // Reverse
+                {
+                    int newType = (int)cursorVoxel.type - 1;
+                    if (newType < 0)
+                    {
+                        newType = (int)Voxel.Type.none;
+                    }
+                    cursorVoxel.type = (Voxel.Type)(newType);
+                }
+                if (keyboard.IsKeyPressed(Keys.E)) // Forward
+                {
+                    int newType = (int)cursorVoxel.type + 1;
+                    if (newType > (int)Voxel.Type.none)
+                    {
+                        newType = 0;
+                    }
+                    cursorVoxel.type = (Voxel.Type)(newType);
+                }
+
+                // Modifying voxels
+                Voxel? selectedVoxel = GetSelectedVoxel();
+                bool hasSceneChanged = false;
+                if (selectedVoxel != null)
+                {
+                    // Replacing voxel
+                    if (mouse.IsButtonPressed(MouseButton.Left))
+                    {
+                        selectedVoxel.type = cursorVoxel.type;
+                        hasSceneChanged = true;
+                    }
+                    // Deleting voxel
+                    if (mouse.IsButtonPressed(MouseButton.Right))
+                    {
+                        voxels.Remove(selectedVoxel);
+                        hasSceneChanged = true;
+                    }
+                }
+                else
+                {
+                    // Placing voxel
+                    if (mouse.IsButtonPressed(MouseButton.Left))
+                    {
+                        voxels.Add(new Voxel(cursorVoxel.position, cursorVoxel.type));
+                        hasSceneChanged = true;
+                    }
+                }
+
+                // Update GPU
+                if (hasSceneChanged)
+                {
+                    instancedVoxelShader.UpdateVoxelData(voxels, textureManager);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks which voxel the editor's cursor is overlapping, if any
+        /// </summary>
+        /// <returns></returns>
+        private Voxel? GetSelectedVoxel()
+        {
+            if (cursorVoxel == null)
+                return null;
+
+            foreach (Voxel voxel in voxels)
+            {
+                // If positions are equal
+                if ((voxel.position - cursorVoxel.position).Length < 0.01)
+                {
+                    return voxel;
+                }
+            }
+            return null;
         }
     }
 }

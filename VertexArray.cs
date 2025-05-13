@@ -8,13 +8,18 @@ using Voxel_Project.OpenGL_Objects;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Holds on to vertex attribute information and a vertex buffer
+    /// </summary>
     internal class VertexArray
     {
         OpenGL_Objects.VAO vao = new OpenGL_Objects.VAO();
 
-        /// <param name="floatAttributeCounts">floatAttributeCounts[i] contains the number of floats in the ith attribute.
-        /// For example, a vertex with vec3 pos, vec3 normal, and vec2 uvs would have the array [3, 3, 2]
+        /// <param name="floatAttributeCounts">
+        ///     floatAttributeCounts[i] contains the number of floats in the ith attribute.
+        ///     For example, a vertex with vec3 pos, vec3 normal, and vec2 uvs would have the array [3, 3, 2]
         /// </param>
+        /// <param name="vertexBuffer">The vertex buffer bound to this vertex array</param>
         public VertexArray(int[] floatAttributeCounts, VertexBuffer vertexBuffer)
         {
             vertexBuffer.Use();

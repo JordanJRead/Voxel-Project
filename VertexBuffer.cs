@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Sends vertex data over to the GPU and stores the name of the created buffer
+    /// </summary>
     internal class VertexBuffer
     {
         OpenGL_Objects.BUF buf = new OpenGL_Objects.BUF();

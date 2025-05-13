@@ -46,7 +46,7 @@ namespace Voxel_Project
             {
                 Close();
             }
-            camera.Update(MouseState, KeyboardState);
+            camera.Update(MouseState, KeyboardState, (float)e.Time);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)

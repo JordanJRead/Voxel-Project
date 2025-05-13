@@ -8,6 +8,9 @@ using OpenTK.Mathematics;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Class for basic creation and interface with a GPU shader.
+    /// </summary>
     internal class ShaderBase
     {
         int id;

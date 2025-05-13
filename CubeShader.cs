@@ -9,6 +9,9 @@ using System.Linq.Expressions;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Class for rendering voxels
+    /// </summary>
     internal class CubeShader : ShaderBase
     {
         VertexArray vertexArray;
@@ -107,6 +110,10 @@ namespace Voxel_Project
             vertexArray = new VertexArray([3], vertexBuffer);
         }
 
+        /// <summary>
+        /// Sends voxel data to the GPU
+        /// </summary>
+        /// <param name="voxels"></param>
         public void UpdateVoxelData(List<Voxel> voxels)
         {
             numOfCubes = voxels.Count;

@@ -21,7 +21,7 @@ namespace Voxel_Project
             none
         }
 
-        private static string[] typeNames = new string[(int)Type.none + 1] // Makes sure that the size of typeNames equals the number of Types
+        public static readonly string[] typeNames = new string[(int)Type.none + 1] // Makes sure that the size of typeNames equals the number of Types
         {
             "grass",
             "stone",

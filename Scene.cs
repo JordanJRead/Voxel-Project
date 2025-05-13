@@ -12,6 +12,7 @@ namespace Voxel_Project
     {
         List<Voxel> voxels = new List<Voxel>();
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
+        TextureManager textureManager = new TextureManager();
         string initialPath;
 
         /// <summary>
@@ -36,7 +37,7 @@ namespace Voxel_Project
                 pos.Z = float.Parse(voxelInfo[2]);
                 voxels.Add(new Voxel(pos, voxelInfo[3]));
 
-                cubeShader.UpdateVoxelData(voxels);
+                cubeShader.UpdateVoxelData(voxels, textureManager);
             }
         }
 

@@ -15,7 +15,6 @@ void main() {
 	cubeMapCoord = vPos;
 	instanceID = gl_InstanceID;
 
-	//vec3 cubePosition = vec3(cubePositions[gl_InstanceID * 3 + 0], cubePositions[gl_InstanceID * 3 + 1], cubePositions[gl_InstanceID * 3 + 2]);
-	vec3 cubePosition = vec3(5, 0, 0);
+	vec3 cubePosition = vec3(cubePositions[gl_InstanceID * 3 + 0], cubePositions[gl_InstanceID * 3 + 1], cubePositions[gl_InstanceID * 3 + 2]);
 	gl_Position = projection * view * vec4(vPos + cubePosition, 1);
 }

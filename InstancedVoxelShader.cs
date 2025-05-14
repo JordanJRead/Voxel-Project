@@ -14,8 +14,8 @@ namespace Voxel_Project
     /// </summary>
     internal class InstancedVoxelShader : ShaderBase
     {
-        OpenGL_Objects.BUF positionsBuffer = new OpenGL_Objects.BUF();
-        OpenGL_Objects.BUF texturesBuffer = new OpenGL_Objects.BUF();
+        BUF positionsBuffer = new BUF();
+        BUF texturesBuffer = new BUF();
         int numOfCubes = 0;
 
         public InstancedVoxelShader(string vertPath, string fragPath) : base(vertPath, fragPath)
@@ -32,7 +32,7 @@ namespace Voxel_Project
         /// Sends voxel data to the GPU
         /// </summary>
         /// <param name="voxels"></param>
-        public void UpdateVoxelData(List<Voxel> voxels, TextureManager textureManager)
+        public void UpdateGPUVoxelData(List<Voxel> voxels, TextureManager textureManager)
         {
             numOfCubes = voxels.Count;
             positionsBuffer.Use(BufferTarget.ShaderStorageBuffer);

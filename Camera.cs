@@ -16,6 +16,7 @@ namespace Voxel_Project
         float yaw = 0;
         float sensitivity = 0.1f;
         bool isFirstMove = true; // Stops the camera from jerking quickly when loaded
+        float speed = 5;
 
         int screenWidth;
         int screenHeight;
@@ -23,11 +24,12 @@ namespace Voxel_Project
         Vector3 position = new Vector3();
         Vector2 prevMousePos = new Vector2();
 
-        public Camera(int screenWidth, int screenHeight, Vector3 position)
+        public Camera(int screenWidth, int screenHeight, Vector3 position, float speed = 5)
         {
             this.position = position;
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;
+            this.speed = speed;
         }
 
         public void Update(MouseState mouse, KeyboardState keyboard, float deltaTime)
@@ -79,7 +81,7 @@ namespace Voxel_Project
                 if (keyboard.IsKeyDown(Keys.D))
                     moveVector += right;
 
-                MoveBy(moveVector * deltaTime);
+                MoveBy(moveVector * deltaTime * speed);
             }
         }
 
@@ -119,6 +121,12 @@ namespace Voxel_Project
             right.Z = (float)Math.Cos(MathHelper.DegreesToRadians(yaw));
             right = Vector3.Normalize(right);
             return right;
+        }
+
+        public void Resize(int width, int height)
+        {
+            this.screenWidth = width;
+            this.screenHeight = height;
         }
     }
 }

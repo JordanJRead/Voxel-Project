@@ -94,6 +94,7 @@ namespace Voxel_Project
         protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
+            camera.Resize(e.Width, e.Height);
         }
 
         protected override void OnClosing(CancelEventArgs e)

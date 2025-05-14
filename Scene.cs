@@ -28,9 +28,10 @@ namespace Voxel_Project
         public Scene(string filePath)
         {
             cursorVoxel = new Voxel(new Vector3(0, 3, 0), Voxel.Type.grass);
+
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
-            
+
             string[] fileLines = File.ReadLines(this.initialPath).ToArray();
 
             foreach (string line in fileLines)
@@ -46,7 +47,8 @@ namespace Voxel_Project
                 voxels.Add(new Voxel(pos, voxelInfo[3]));
             }
 
-            instancedVoxelShader.UpdateVoxelData(voxels, textureManager);
+            instancedVoxelShader.UpdateGPUVoxelData(voxels, textureManager);
+
             // Cube vertices
             // x1, y1, z1, x2, y2, z2, etc.
             // Cube is centerd on (0, 0, 0) and has dimensions of 1 (-0.5 to 0.5)
@@ -150,6 +152,7 @@ namespace Voxel_Project
         /// <param name="filePath"></param>
         public void Save(string filePath)
         {
+            return;
             voxels[0].position = new Vector3(11, 12, 13);
             voxels[0].type = Voxel.Type.none;
 
@@ -302,7 +305,7 @@ namespace Voxel_Project
                 // Update GPU
                 if (hasSceneChanged)
                 {
-                    instancedVoxelShader.UpdateVoxelData(voxels, textureManager);
+                    instancedVoxelShader.UpdateGPUVoxelData(voxels, textureManager);
                 }
             }
         }

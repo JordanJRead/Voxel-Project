@@ -152,10 +152,8 @@ namespace Voxel_Project
         /// <param name="filePath"></param>
         public void Save(string filePath)
         {
-            return;
             voxels[0].position = new Vector3(11, 12, 13);
             voxels[0].type = Voxel.Type.none;
-
             File.Delete(filePath);
             string fileSrc = "";
             foreach (Voxel voxel in voxels)

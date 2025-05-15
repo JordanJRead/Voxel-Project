@@ -44,7 +44,7 @@ namespace Voxel_Project
         }
 
         unsafe public App(int width, int height, string title)
-            : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title, APIVersion = new System.Version(4, 3) })
+            : base(new GameWindowSettings() { UpdateFrequency = 0 }, new NativeWindowSettings() { Size = (width, height), Title = title, APIVersion = new System.Version(4, 3) })
         {
             ExtensionsCheck();
             GL.Enable(EnableCap.DepthTest);
@@ -83,11 +83,6 @@ namespace Voxel_Project
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             scene.Render(camera);
-
-            //vertexArray.Use();
-            //ShaderBase helloShader = new ShaderBase("Shaders/hello.vert", "Shaders/hello.frag");
-            //helloShader.Use();
-            //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
 
             SwapBuffers();
         }

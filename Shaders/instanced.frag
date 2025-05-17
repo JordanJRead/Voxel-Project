@@ -9,7 +9,7 @@ in vec3 fragNormal;
 
 uniform bool isTransparent;
 
-layout(std430, binding = 1) readonly buffer textureSSBO {
+layout(std430, binding = 2) readonly buffer textureSSBO {
 	samplerCube cubeMaps[];
 };
 

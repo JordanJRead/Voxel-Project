@@ -28,8 +28,13 @@ namespace Voxel_Project
             "none"
         };
 
-        public Vector3 position;
-        public Type type;
+        protected Vector3 position; // has to be an integer
+        public Type type; // type has no invarient, so it can be public
+
+        public Vector3 GetPosition()
+        {
+            return position;
+        }
 
         public Voxel(Vector3 position, Type type)
         {

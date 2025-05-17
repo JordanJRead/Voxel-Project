@@ -20,7 +20,7 @@ namespace Voxel_Project
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
-            SetVec3("position", editorVoxel.position);
+            SetVec3("position", editorVoxel.GetPosition());
             SetULongTextureHandle("textureHandle", (ulong)textureManager.GetBindlessTextureHandle(editorVoxel.type));
 
             vertexArray.Use();

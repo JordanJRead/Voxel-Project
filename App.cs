@@ -16,11 +16,8 @@ namespace Voxel_Project
 {
     internal class App : GameWindow
     {
-        int shader;
         Scene scene;
         Camera camera;
-        VertexBuffer vertexBuffer;
-        VertexArray vertexArray;
 
         unsafe static void ExtensionsCheck()
         {
@@ -56,16 +53,6 @@ namespace Voxel_Project
             camera = new Camera(width, height, new Vector3(0, 0, 0));
             CursorState = CursorState.Grabbed;
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1);
-
-            float[] vertices = new float[]
-            {
-                -0.5f, -0.5f, 0, 1, 0, 0,
-                 0.5f, -0.5f, 0, 0, 1, 0,
-                 0.0f,  0.5f, 0, 0, 0, 1
-            };
-
-            vertexBuffer = new VertexBuffer(vertices);
-            vertexArray = new VertexArray([3, 3], vertexBuffer);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)

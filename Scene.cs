@@ -19,7 +19,7 @@ namespace Voxel_Project
         VertexArray cubeVertexArray;
         VertexBuffer cubeVertexBuffer;
 
-        InstancedShader instancedShader = new InstancedShader("Shaders/instanced.vert", "Shaders/instanced.frag");
+        CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
         Cursor cursor;
 
         ShaderBufferSet voxelsBuffers = new ShaderBufferSet();
@@ -181,11 +181,11 @@ namespace Voxel_Project
 
         public void Render(Camera camera)
         {
-            instancedShader.Render(camera, cubeVertexArray, voxelsBuffers);
-            instancedShader.Render(camera, cubeVertexArray, fenceBuffers);
+            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers);
+            cubeShader.Render(camera, cubeVertexArray, fenceBuffers);
             if (cursor.IsActive())
             {
-                instancedShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), true);
+                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), true);
             }
         }
 

@@ -12,13 +12,13 @@ namespace Voxel_Project
     /// <summary>
     /// Class for rendering several of a specific type of object
     /// </summary>
-    internal class InstancedShader : ShaderBase
+    internal class CubeShader : ShaderBase
     {
         uint positionsBufferIndex = 0;
         uint scalesBufferIndex = 1;
         uint texturesBufferIndex = 2;
 
-        public InstancedShader(string vertPath, string fragPath) : base(vertPath, fragPath)
+        public CubeShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {
         }
 

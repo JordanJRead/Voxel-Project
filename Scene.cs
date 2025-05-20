@@ -33,6 +33,8 @@ namespace Voxel_Project
         /// </summary>
         public Scene(string filePath)
         {
+            fenceManager.AddFence(new Vector3(0, 1, 0));
+            fenceManager.AddFence(new Vector3(0, 1, 1));
             cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, true, textureManager); // The transparent voxel that can be moved around in editor mode
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
@@ -197,25 +199,23 @@ namespace Voxel_Project
             if (cursor == null)
                 return;
 
-            if (cursor.Update(camera, keyboard, mouse, this, textureManager))
+            if (cursor.Update(camera, keyboard, mouse, this, textureManager, fenceManager))
             {
                 UpdateGPUVoxelData();
+                UpdateGPUFenceData();
             }
         }
 
         /// <summary>
-        /// Checks which voxel the editor's cursor is overlapping, if any
+        /// Checks which voxel is at a specific position, if any
         /// </summary>
-        /// <returns>The overlapped voxel</returns>
-        public Voxel? GetSelectedVoxel()
+        /// <returns>The voxel at the given position, or null if there is no voxel there</returns>
+        public Voxel? GetVoxelAtPosition(Vector3 position)
         {
-            if (cursor == null)
-                return null;
-
             foreach (Voxel voxel in voxels)
             {
                 // If positions are equal
-                if ((voxel.GetPosition() - cursor.GetPosition()).Length < 0.01)
+                if ((voxel.GetPosition() - position).Length < 0.01)
                 {
                     return voxel;
                 }
@@ -224,18 +224,15 @@ namespace Voxel_Project
         }
 
         /// <summary>
-        /// Checks which fence the editor's cursor is overlapping, if any
+        /// Checks which fence is at a specific position, if any
         /// </summary>
-        /// <returns>The overlapped fence</returns>
-        public Fence? GetSelectedFence()
+        /// <returns>The fence at the given position, or null if there is no fence there</returns>
+        public Fence? GetFenceAtPosition(Vector3 position)
         {
-            if (cursor == null)
-                return null;
-
             for (int i = 0; i < fenceManager.GetCount(); ++i)
             {
                 Fence fence = fenceManager[i];
-                if ((fence.GetPosition() - cursor.GetPosition()).Length < 0.01)
+                if ((fence.GetPosition() - position).Length < 0.01)
                 {
                     return fence;
                 }
@@ -273,7 +270,6 @@ namespace Voxel_Project
         public void UpdateGPUFenceData()
         {
             int totalCubeCount = 0;
-            fenceBuffers.SetObjectCount(fenceManager.GetCount());
 
             List<float> GPUFencePositions = new List<float>(fenceBuffers.GetObjectCount() * 3); // Reserve space for performance increase
             List<float> GPUFenceScales = new List<float>(fenceBuffers.GetObjectCount() * 3); // Reserve space for performance increase
@@ -291,6 +287,7 @@ namespace Voxel_Project
             }
 
             fenceBuffers.SetObjectCount(totalCubeCount);
+
             fenceBuffers.SetPositions(GPUFencePositions);
             fenceBuffers.SetScales(GPUFenceScales);
             fenceBuffers.SetTextureHandles(GPUFenceTextureHandles);

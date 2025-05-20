@@ -44,8 +44,14 @@ namespace Voxel_Project
         /// <param name="camera"></param>
         /// <param name="keyboard"></param>
         /// <returns>Whether the scene voxel data should be updated on the GPU</returns>
-        public bool Update(Camera camera, KeyboardState keyboard, MouseState mouse, Scene scene, TextureManager textureManager)
+        public bool Update(Camera camera, KeyboardState keyboard, MouseState mouse, Scene scene, TextureManager textureManager, FenceManager fenceManager)
         {
+            // Switch voxel/fence mode
+            if (keyboard.IsKeyPressed(Keys.R))
+            {
+                isVoxel = !isVoxel;
+                UpdateGPUBuffers(textureManager);
+            }
             bool hasSceneChanged = false;
             bool hasCursorChanged = false;
             if (keyboard.IsKeyDown(Keys.LeftControl))
@@ -54,7 +60,7 @@ namespace Voxel_Project
 
                 // Cycle through cursor voxel types
                 // Voxel.Type.none is the maximum enum value
-                if (keyboard.IsKeyPressed(Keys.Q)) // Reverse
+                if (keyboard.IsKeyPressed(Keys.Q) && isVoxel) // Reverse
                 {
                     int newType = (int)voxel.GetVoxelType() - 1;
                     if (newType < 0)
@@ -64,7 +70,7 @@ namespace Voxel_Project
                     voxel.SetType((Voxel.Type)(newType));
                     hasCursorChanged = true;
                 }
-                if (keyboard.IsKeyPressed(Keys.E)) // Forward
+                if (keyboard.IsKeyPressed(Keys.E) && isVoxel) // Forward
                 {
                     int newType = (int)voxel.GetVoxelType() + 1;
                     if (newType > (int)Voxel.Type.none)
@@ -78,35 +84,68 @@ namespace Voxel_Project
                 // Modifying voxels
                 if (isVoxel)
                 {
-                    Voxel? selectedVoxel = scene.GetSelectedVoxel();
-                    if (selectedVoxel != null)
+                    if (mouse.IsButtonPressed(MouseButton.Left))
                     {
+                        Voxel? selectedVoxel = scene.GetVoxelAtPosition(this.voxel.GetPosition());
+
                         // Replacing voxel
-                        if (mouse.IsButtonPressed(MouseButton.Left))
+                        if (selectedVoxel != null)
                         {
                             selectedVoxel.SetType(voxel.GetVoxelType());
                             hasSceneChanged = true;
                         }
-                        // Deleting voxel
-                        if (mouse.IsButtonPressed(MouseButton.Right))
-                        {
-                            scene.GetVoxels().Remove(selectedVoxel);
-                            hasSceneChanged = true;
-                        }
-                    }
-                    else
-                    {
-                        // Placing voxel
-                        if (mouse.IsButtonPressed(MouseButton.Left))
+
+                        // Place voxel
+                        else
                         {
                             scene.AddVoxel(new Voxel(voxel.GetPosition(), voxel.GetVoxelType()));
                             hasSceneChanged = true;
                         }
                     }
+                    // Deleting voxel
+                    if (mouse.IsButtonPressed(MouseButton.Right))
+                    {
+                        Voxel? selectedVoxel = scene.GetVoxelAtPosition(this.voxel.GetPosition());
+
+                        if (selectedVoxel != null)
+                        {
+                            scene.GetVoxels().Remove(selectedVoxel);
+                            hasSceneChanged = true;
+                        }
+                        hasSceneChanged = true;
+                    }
                 }
                 else if (!isVoxel)
                 {
-                    Fence? selectedFence = scene.GetSelectedFence();
+                    if (mouse.IsButtonPressed(MouseButton.Left))
+                    {
+                        Fence? selectedFence = scene.GetFenceAtPosition(this.fence.GetPosition());
+
+                        // Replacing fence
+                        if (selectedFence != null)
+                        {
+                            //selectedVoxel.SetType(voxel.GetVoxelType());
+                            //hasSceneChanged = true;
+                        }
+
+                        // Place fence
+                        else
+                        {
+                            fenceManager.AddFence(this.fence.GetPosition());
+                            hasSceneChanged = true;
+                        }
+                    }
+                    // Deleting fence
+                    if (mouse.IsButtonPressed(MouseButton.Right))
+                    {
+                        Fence? selectedFence = scene.GetFenceAtPosition(this.fence.GetPosition());
+
+                        if (selectedFence != null)
+                        {
+                            fenceManager.RemoveFence(selectedFence);
+                            hasSceneChanged = true;
+                        }
+                    }
                 }
             }
             if (hasCursorChanged)

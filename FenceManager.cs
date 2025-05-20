@@ -24,7 +24,7 @@ namespace Voxel_Project
             get => fences[i];
         }
 
-        public void Add(Fence newFence)
+        public void AddFence(Fence newFence)
         {
             foreach (Fence fence in fences)
             {
@@ -33,7 +33,12 @@ namespace Voxel_Project
             fences.Add(newFence);
         }
 
-        public void Remove(Fence newFence)
+        public void AddFence(Vector3 position)
+        {
+            AddFence(new Fence(position));
+        }
+
+        public void RemoveFence(Fence newFence)
         {
             Vector3 position = newFence.GetPosition();
             fences.Remove(newFence);

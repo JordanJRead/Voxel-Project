@@ -18,11 +18,12 @@ namespace Voxel_Project
         Fence fence;
         ShaderBufferSet bufferSet = new ShaderBufferSet();
 
-        public Cursor(Vector3 position, Voxel.Type type, bool isActive)
+        public Cursor(Vector3 position, Voxel.Type type, bool isActive, TextureManager textureManager)
         {
             this.isActive = isActive;
             voxel = new Voxel(position, type);
             fence = new Fence(position);
+            UpdateGPUBuffers(textureManager);
         }
 
         public Vector3 GetPosition()
@@ -43,12 +44,13 @@ namespace Voxel_Project
         /// <param name="camera"></param>
         /// <param name="keyboard"></param>
         /// <returns>Whether the scene voxel data should be updated on the GPU</returns>
-        public bool Update(Camera camera, KeyboardState keyboard, MouseState mouse, Scene scene)
+        public bool Update(Camera camera, KeyboardState keyboard, MouseState mouse, Scene scene, TextureManager textureManager)
         {
             bool hasSceneChanged = false;
+            bool hasCursorChanged = false;
             if (keyboard.IsKeyDown(Keys.LeftControl))
             {
-                UpdatePosition(camera, keyboard);
+                hasCursorChanged = UpdatePosition(camera, keyboard);
 
                 // Cycle through cursor voxel types
                 // Voxel.Type.none is the maximum enum value
@@ -60,6 +62,7 @@ namespace Voxel_Project
                         newType = (int)Voxel.Type.none;
                     }
                     voxel.SetType((Voxel.Type)(newType));
+                    hasCursorChanged = true;
                 }
                 if (keyboard.IsKeyPressed(Keys.E)) // Forward
                 {
@@ -69,6 +72,7 @@ namespace Voxel_Project
                         newType = 0;
                     }
                     voxel.SetType((Voxel.Type)(newType));
+                    hasCursorChanged = true;
                 }
 
                 // Modifying voxels
@@ -105,11 +109,20 @@ namespace Voxel_Project
                     Fence? selectedFence = scene.GetSelectedFence();
                 }
             }
+            if (hasCursorChanged)
+            {
+                UpdateGPUBuffers(textureManager);
+            }
             return hasSceneChanged;
         }
 
-        private void UpdatePosition(Camera camera, KeyboardState keyboard)
+        /// <summary>
+        /// Moves the cursor with keyboard input
+        /// </summary>
+        /// <returns>Whether the cursor moved or not</returns>
+        private bool UpdatePosition(Camera camera, KeyboardState keyboard)
         {
+            bool hasMoved = false;
             Vector3 cameraForward = camera.GetForward();
             Vector3 cursorForwardAxis = new Vector3(1, 0, 0);
 
@@ -147,32 +160,39 @@ namespace Voxel_Project
             {
                 voxel.MoveBy(cursorForwardAxis);
                 fence.MoveBy(cursorForwardAxis);
+                hasMoved = true;
             }
             if (keyboard.IsKeyPressed(Keys.S))
             {
                 voxel.MoveBy(-cursorForwardAxis);
                 fence.MoveBy(-cursorForwardAxis);
+                hasMoved = true;
             }
             if (keyboard.IsKeyPressed(Keys.A))
             {
                 voxel.MoveBy(-rightAxis);
                 fence.MoveBy(-rightAxis);
+                hasMoved = true;
             }
             if (keyboard.IsKeyPressed(Keys.D))
             {
                 voxel.MoveBy(rightAxis);
                 fence.MoveBy(rightAxis);
+                hasMoved = true;
             }
             if (keyboard.IsKeyPressed(Keys.Space))
             {
                 voxel.MoveBy(Vector3.UnitY);
                 fence.MoveBy(Vector3.UnitY);
+                hasMoved = true;
             }
             if (keyboard.IsKeyPressed(Keys.LeftShift))
             {
                 voxel.MoveBy(-Vector3.UnitY);
                 fence.MoveBy(-Vector3.UnitY);
+                hasMoved = true;
             }
+            return hasMoved;
         }
 
         private void SwitchType()

@@ -14,7 +14,6 @@ namespace Voxel_Project
     {
         List<Voxel> voxels = new List<Voxel>();
         FenceManager fenceManager = new FenceManager();
-        Cursor cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, true); // The transparent voxel that can be moved around in editor mode
 
         // Cube vertices
         VertexArray cubeVertexArray;
@@ -22,6 +21,7 @@ namespace Voxel_Project
 
         InstancedShader instancedShader = new InstancedShader("Shaders/instanced.vert", "Shaders/instanced.frag");
         TransparentVoxelShader transparentVoxelShader = new TransparentVoxelShader("Shaders/transparentvoxel.vert", "Shaders/transparentvoxel.frag");
+        Cursor cursor;
 
         ShaderBufferSet voxelsBuffers = new ShaderBufferSet();
         ShaderBufferSet fenceBuffers = new ShaderBufferSet();
@@ -34,6 +34,7 @@ namespace Voxel_Project
         /// </summary>
         public Scene(string filePath)
         {
+            cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, true, textureManager); // The transparent voxel that can be moved around in editor mode
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
 
@@ -185,7 +186,7 @@ namespace Voxel_Project
             instancedShader.Render(camera, cubeVertexArray, fenceBuffers);
             if (cursor.IsActive())
             {
-                instancedShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers());
+                instancedShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), true);
             }
         }
 
@@ -197,7 +198,7 @@ namespace Voxel_Project
             if (cursor == null)
                 return;
 
-            if (cursor.Update(camera, keyboard, mouse, this))
+            if (cursor.Update(camera, keyboard, mouse, this, textureManager))
             {
                 UpdateGPUVoxelData();
             }

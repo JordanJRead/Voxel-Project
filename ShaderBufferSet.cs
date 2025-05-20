@@ -36,7 +36,7 @@ namespace Voxel_Project
 
         public void SetScales(List<float> newScales)
         {
-            positions.Use(BufferTarget.ShaderStorageBuffer);
+            scales.Use(BufferTarget.ShaderStorageBuffer);
             GL.BufferData(BufferTarget.ShaderStorageBuffer, newScales.Count * sizeof(float), newScales.ToArray(), BufferUsageHint.DynamicCopy);
         }
 

@@ -22,7 +22,13 @@ namespace Voxel_Project
         {
         }
 
-        public void Render(Camera camera, VertexArray vertexArray, ShaderBufferSet buffers)
+        /// <summary>
+        /// Renders the scene
+        /// </summary>
+        /// <param name="vertexArray">The vertices of the object to draw</param>
+        /// <param name="buffers">The location, texture, and count information about the object(s)</param>
+        /// <param name="drawCursor">Whether to draw transparent and ignoring depth</param>
+        public void Render(Camera camera, VertexArray vertexArray, ShaderBufferSet buffers, bool drawCursor = false)
         {
             // Bind SSBOs
             buffers.positions.Use(BufferTarget.ShaderStorageBuffer);
@@ -38,21 +44,22 @@ namespace Voxel_Project
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
 
+            if (drawCursor)
+            {
+                GL.Disable(EnableCap.DepthTest);
+                SetBool("isCursor", true);
+            }
+            else
+            {
+                GL.Enable(EnableCap.DepthTest);
+                SetBool("isCursor", false);
+            }
+
             vertexArray.Use();
 
             const int triangleCount = 12;
             const int verticesPerTriangle = 3;
             GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, triangleCount * verticesPerTriangle, buffers.GetObjectCount());
-
-            // Unind SSBOs
-            //buffers.positions.Use(BufferTarget.ShaderStorageBuffer);
-            //GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, texturesBufferIndex + 1, buffers.positions);
-
-            //buffers.scales.Use(BufferTarget.ShaderStorageBuffer);
-            //GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, texturesBufferIndex + 2, buffers.scales);
-
-            //buffers.textures.Use(BufferTarget.ShaderStorageBuffer);
-            //GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, texturesBufferIndex + 3, buffers.textures);
         }
     }
 }

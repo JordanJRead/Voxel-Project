@@ -20,7 +20,6 @@ namespace Voxel_Project
         VertexBuffer cubeVertexBuffer;
 
         InstancedShader instancedShader = new InstancedShader("Shaders/instanced.vert", "Shaders/instanced.frag");
-        TransparentVoxelShader transparentVoxelShader = new TransparentVoxelShader("Shaders/transparentvoxel.vert", "Shaders/transparentvoxel.frag");
         Cursor cursor;
 
         ShaderBufferSet voxelsBuffers = new ShaderBufferSet();

@@ -42,6 +42,11 @@ namespace Voxel_Project
             return position;
         }
 
+        public void MoveBy(Vector3 moveBy)
+        {
+            position += moveBy;
+        }
+
         static bool FloatEquals(float a, float b)
         {
             return (MathF.Abs(a - b) < 0.0001);
@@ -135,6 +140,94 @@ namespace Voxel_Project
                 this.connections[(int)ConnectionType.negZ] = false;
                 return;
             }
+        }
+
+        /// <summary>
+        /// Gets the data the shader needs to draw this fence.
+        /// </summary>
+        /// <param name="textureManager"></param>
+        /// <returns>The lists of GPU data AND the number of cubes drawn from this fence (1 to 5 inclusive)</returns>
+        public (ShaderListSet, int) GetGPUData(TextureManager textureManager)
+        {
+            int cubeCount = 1;
+
+            ShaderListSet listSet = new ShaderListSet();
+
+            /// First bit deals with the fence post
+            // POSITIONS
+            // Position data is stored as x1, y1, z1, x2, y2, z2...
+            // because vec3 is not memory compact with SSBOs
+            // and there may be differences in the memory layout between CPU and GPU
+            listSet.positions.Add(position.X);
+            listSet.positions.Add(position.Y);
+            listSet.positions.Add(position.Z);
+
+            // SCALES
+            // Scale data is stored as x1, y1, z1, x2, y2, z2...
+            listSet.scales.Add(0.2f);
+            listSet.scales.Add(1);
+            listSet.scales.Add(0.2f);
+
+            listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+
+            /// This deals with the fence connectors
+            if (GetConnection(Fence.ConnectionType.posX))
+            {
+                ++cubeCount;
+                listSet.positions.Add(position.X + 0.25f);
+                listSet.positions.Add(position.Y);
+                listSet.positions.Add(position.Z);
+
+                listSet.scales.Add(0.5f);
+                listSet.scales.Add(0.1f);
+                listSet.scales.Add(0.1f);
+
+                listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+            }
+
+            if (GetConnection(Fence.ConnectionType.negX))
+            {
+                ++cubeCount;
+                listSet.positions.Add(position.X - 0.25f);
+                listSet.positions.Add(position.Y);
+                listSet.positions.Add(position.Z);
+
+                listSet.scales.Add(0.5f);
+                listSet.scales.Add(0.1f);
+                listSet.scales.Add(0.1f);
+
+                listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+            }
+
+            if (GetConnection(Fence.ConnectionType.posZ))
+            {
+                ++cubeCount;
+                listSet.positions.Add(position.X);
+                listSet.positions.Add(position.Y);
+                listSet.positions.Add(position.Z + 0.25f);
+
+                listSet.scales.Add(0.1f);
+                listSet.scales.Add(0.1f);
+                listSet.scales.Add(0.5f);
+
+                listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+            }
+
+            if (GetConnection(Fence.ConnectionType.negZ))
+            {
+                ++cubeCount;
+                listSet.positions.Add(position.X);
+                listSet.positions.Add(position.Y);
+                listSet.positions.Add(position.Z - 0.25f);
+
+                listSet.scales.Add(0.1f);
+                listSet.scales.Add(0.1f);
+                listSet.scales.Add(0.5f);
+
+                listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+            }
+
+            return (listSet, cubeCount);
         }
     }
 }

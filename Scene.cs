@@ -13,8 +13,8 @@ namespace Voxel_Project
     internal class Scene
     {
         List<Voxel> voxels = new List<Voxel>();
-        FenceList fences = new FenceList();
-        CursorVoxel? cursorVoxel = null; // The transparent voxel that can be moved around in editor mode
+        FenceManager fenceManager = new FenceManager();
+        Cursor cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, true); // The transparent voxel that can be moved around in editor mode
 
         // Cube vertices
         VertexArray cubeVertexArray;
@@ -23,9 +23,8 @@ namespace Voxel_Project
         InstancedShader instancedShader = new InstancedShader("Shaders/instanced.vert", "Shaders/instanced.frag");
         TransparentVoxelShader transparentVoxelShader = new TransparentVoxelShader("Shaders/transparentvoxel.vert", "Shaders/transparentvoxel.frag");
 
-        InstancedBufferSet voxelsBuffers = new InstancedBufferSet();
-        InstancedBufferSet fencePostsBuffers = new InstancedBufferSet();
-        InstancedBufferSet fenceConnectorsBuffers = new InstancedBufferSet();
+        ShaderBufferSet voxelsBuffers = new ShaderBufferSet();
+        ShaderBufferSet fenceBuffers = new ShaderBufferSet();
 
         TextureManager textureManager = new TextureManager();
         string initialPath;
@@ -35,8 +34,6 @@ namespace Voxel_Project
         /// </summary>
         public Scene(string filePath)
         {
-            cursorVoxel = new CursorVoxel(new Vector3(0, 3, 0), Voxel.Type.grass);
-
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
 
@@ -185,11 +182,10 @@ namespace Voxel_Project
         public void Render(Camera camera)
         {
             instancedShader.Render(camera, cubeVertexArray, voxelsBuffers);
-            instancedShader.Render(camera, cubeVertexArray, fencePostsBuffers);
-            instancedShader.Render(camera, cubeVertexArray, fenceConnectorsBuffers);
-            if (cursorVoxel != null)
+            instancedShader.Render(camera, cubeVertexArray, fenceBuffers);
+            if (cursor.IsActive())
             {
-                transparentVoxelShader.Render(camera, cubeVertexArray, cursorVoxel, textureManager);
+                instancedShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers());
             }
         }
 
@@ -198,10 +194,10 @@ namespace Voxel_Project
         /// </summary>
         public void Update(KeyboardState keyboard, MouseState mouse, Camera camera)
         {
-            if (cursorVoxel == null)
+            if (cursor == null)
                 return;
 
-            if (cursorVoxel.Update(camera, keyboard, mouse, this))
+            if (cursor.Update(camera, keyboard, mouse, this))
             {
                 UpdateGPUVoxelData();
             }
@@ -210,18 +206,38 @@ namespace Voxel_Project
         /// <summary>
         /// Checks which voxel the editor's cursor is overlapping, if any
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The overlapped voxel</returns>
         public Voxel? GetSelectedVoxel()
         {
-            if (cursorVoxel == null)
+            if (cursor == null)
                 return null;
 
             foreach (Voxel voxel in voxels)
             {
                 // If positions are equal
-                if ((voxel.GetPosition() - cursorVoxel.GetPosition()).Length < 0.01)
+                if ((voxel.GetPosition() - cursor.GetPosition()).Length < 0.01)
                 {
                     return voxel;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Checks which fence the editor's cursor is overlapping, if any
+        /// </summary>
+        /// <returns>The overlapped fence</returns>
+        public Fence? GetSelectedFence()
+        {
+            if (cursor == null)
+                return null;
+
+            for (int i = 0; i < fenceManager.GetCount(); ++i)
+            {
+                Fence fence = fenceManager[i];
+                if ((fence.GetPosition() - cursor.GetPosition()).Length < 0.01)
+                {
+                    return fence;
                 }
             }
             return null;
@@ -238,40 +254,17 @@ namespace Voxel_Project
             List<float> GPUScaleData = new List<float>(voxelsBuffers.GetObjectCount() * 3);
             List<ulong> GPUTextureHandlesData = new List<ulong>(voxelsBuffers.GetObjectCount());
 
-            // POSITIONS
-            // Position data is stored as x1, y1, z1, x2, y2, z2...
-            // because vec3 is not memory compact with SSBOs
-            // and there may be differences in the memory layout between CPU and GPU
             for (int i = 0; i < voxels.Count; i++)
             {
-                GPUPositionData.Add(voxels[i].GetPosition().X);
-                GPUPositionData.Add(voxels[i].GetPosition().Y);
-                GPUPositionData.Add(voxels[i].GetPosition().Z);
+                ShaderListSet listSet = voxels[i].GetGPUData(textureManager);
+                GPUPositionData.AddRange(listSet.positions);
+                GPUScaleData.AddRange(listSet.scales);
+                GPUTextureHandlesData.AddRange(listSet.textureHandles);
             }
 
-            // SCALES
-            // Scale data is stored as x1, y1, z1, x2, y2, z2...
-            for (int i = 0; i < voxels.Count; i++)
-            {
-                GPUScaleData.Add(1);
-                GPUScaleData.Add(1);
-                GPUScaleData.Add(1);
-            }
-
-            // TEXTURES
-            for (int i = 0; i < voxelsBuffers.GetObjectCount(); i++)
-            {
-                GPUTextureHandlesData.Add((ulong)textureManager.GetBindlessTextureHandle(voxels[i].type));
-            }
-
-            voxelsBuffers.positions.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUPositionData.Count * sizeof(float), GPUPositionData.ToArray(), BufferUsageHint.DynamicCopy);
-
-            voxelsBuffers.scales.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUScaleData.Count * sizeof(float), GPUScaleData.ToArray(), BufferUsageHint.DynamicCopy);
-
-            voxelsBuffers.textures.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUTextureHandlesData.Count * sizeof(ulong), GPUTextureHandlesData.ToArray(), BufferUsageHint.DynamicCopy);
+            voxelsBuffers.SetPositions(GPUPositionData);
+            voxelsBuffers.SetScales(GPUScaleData);
+            voxelsBuffers.SetTextureHandles(GPUTextureHandlesData);
         }
 
         /// <summary>
@@ -279,125 +272,28 @@ namespace Voxel_Project
         /// </summary>
         public void UpdateGPUFenceData()
         {
-            fencePostsBuffers.SetObjectCount(fences.GetCount());
+            int totalCubeCount = 0;
+            fenceBuffers.SetObjectCount(fenceManager.GetCount());
 
-            List<float> GPUFencePostPositions = new List<float>(fencePostsBuffers.GetObjectCount() * 3); // Reserve space for performance increase
-            List<float> GPUFencePostScales = new List<float>(fencePostsBuffers.GetObjectCount() * 3); // Reserve space for performance increase
-            List<ulong> GPUFencePostTextureHandles = new List<ulong>(fencePostsBuffers.GetObjectCount());
+            List<float> GPUFencePositions = new List<float>(fenceBuffers.GetObjectCount() * 3); // Reserve space for performance increase
+            List<float> GPUFenceScales = new List<float>(fenceBuffers.GetObjectCount() * 3); // Reserve space for performance increase
+            List<ulong> GPUFenceTextureHandles = new List<ulong>(fenceBuffers.GetObjectCount());
 
-            // POSITIONS
-            // Position data is stored as x1, y1, z1, x2, y2, z2...
-            // because vec3 is not memory compact with SSBOs
-            // and there may be differences in the memory layout between CPU and GPU
-            for (int i = 0; i < fences.GetCount(); i++)
+            for (int i = 0; i < fenceManager.GetCount(); i++)
             {
-                GPUFencePostPositions.Add(fences[i].GetPosition().X);
-                GPUFencePostPositions.Add(fences[i].GetPosition().Y);
-                GPUFencePostPositions.Add(fences[i].GetPosition().Z);
+                ShaderListSet listSet;
+                int cubeCount;
+                (listSet, cubeCount) = fenceManager[i].GetGPUData(textureManager);
+                totalCubeCount += cubeCount;
+                GPUFencePositions.AddRange(listSet.positions);
+                GPUFenceScales.AddRange(listSet.scales);
+                GPUFenceTextureHandles.AddRange(listSet.textureHandles);
             }
 
-            // SCALES
-            // Position data is stored as x1, y1, z1, x2, y2, z2...
-            for (int i = 0; i < fences.GetCount(); i++)
-            {
-                GPUFencePostScales.Add(0.2f);
-                GPUFencePostScales.Add(1);
-                GPUFencePostScales.Add(0.2f);
-            }
-
-            // TEXTURES
-            for (int i = 0; i < fencePostsBuffers.GetObjectCount(); i++)
-            {
-                GPUFencePostTextureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
-            }
-
-            fencePostsBuffers.positions.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUFencePostPositions.Count * sizeof(float), GPUFencePostPositions.ToArray(), BufferUsageHint.DynamicCopy);
-
-            fencePostsBuffers.scales.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUFencePostScales.Count * sizeof(float), GPUFencePostScales.ToArray(), BufferUsageHint.DynamicCopy);
-
-            fencePostsBuffers.textures.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUFencePostTextureHandles.Count * sizeof(ulong), GPUFencePostTextureHandles.ToArray(), BufferUsageHint.DynamicCopy);
-
-            // CONNECTORS
-            int connectorCount = 0;
-
-            List<float> GPUFenceConnectorPositions = new List<float>();
-            List<float> GPUFenceConnectorScales = new List<float>();
-            List<ulong> GPUFenceConnectorTextureHandles = new List<ulong>();
-
-            for (int i = 0; i < fences.GetCount(); ++i)
-            {
-                Fence fence = fences[i];
-
-                if (fence.GetConnection(Fence.ConnectionType.posX))
-                {
-                    ++connectorCount;
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().X + 0.25f);
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().Y);
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().Z);
-
-                    GPUFenceConnectorScales.Add(0.5f);
-                    GPUFenceConnectorScales.Add(0.1f);
-                    GPUFenceConnectorScales.Add(0.1f);
-
-                    GPUFenceConnectorTextureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
-                }
-
-                if (fence.GetConnection(Fence.ConnectionType.negX))
-                {
-                    ++connectorCount;
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().X - 0.25f);
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().Y);
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().Z);
-
-                    GPUFenceConnectorScales.Add(0.5f);
-                    GPUFenceConnectorScales.Add(0.1f);
-                    GPUFenceConnectorScales.Add(0.1f);
-
-                    GPUFenceConnectorTextureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
-                }
-
-                if (fence.GetConnection(Fence.ConnectionType.posZ))
-                {
-                    ++connectorCount;
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().X);
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().Y);
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().Z + 0.25f);
-
-                    GPUFenceConnectorScales.Add(0.1f);
-                    GPUFenceConnectorScales.Add(0.1f);
-                    GPUFenceConnectorScales.Add(0.5f);
-
-                    GPUFenceConnectorTextureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
-                }
-
-                if (fence.GetConnection(Fence.ConnectionType.negZ))
-                {
-                    ++connectorCount;
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().X);
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().Y);
-                    GPUFenceConnectorPositions.Add(fence.GetPosition().Z - 0.25f);
-
-                    GPUFenceConnectorScales.Add(0.1f);
-                    GPUFenceConnectorScales.Add(0.1f);
-                    GPUFenceConnectorScales.Add(0.5f);
-
-                    GPUFenceConnectorTextureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
-                }
-            }
-            
-            fenceConnectorsBuffers.SetObjectCount(connectorCount);
-
-            fenceConnectorsBuffers.positions.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUFenceConnectorPositions.Count * sizeof(float), GPUFenceConnectorPositions.ToArray(), BufferUsageHint.DynamicCopy);
-            
-            fenceConnectorsBuffers.scales.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUFenceConnectorScales.Count * sizeof(float), GPUFenceConnectorScales.ToArray(), BufferUsageHint.DynamicCopy);
-
-            fenceConnectorsBuffers.textures.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, GPUFenceConnectorTextureHandles.Count * sizeof(ulong), GPUFenceConnectorTextureHandles.ToArray(), BufferUsageHint.DynamicCopy);
+            fenceBuffers.SetObjectCount(totalCubeCount);
+            fenceBuffers.SetPositions(GPUFencePositions);
+            fenceBuffers.SetScales(GPUFenceScales);
+            fenceBuffers.SetTextureHandles(GPUFenceTextureHandles);
         }
     }
 }

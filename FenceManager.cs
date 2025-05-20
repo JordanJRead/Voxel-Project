@@ -10,7 +10,7 @@ namespace Voxel_Project
     /// <summary>
     /// A list of fences that also automatically updates fence connections
     /// </summary>
-    internal class FenceList
+    internal class FenceManager
     {
         List<Fence> fences = new List<Fence>();
 

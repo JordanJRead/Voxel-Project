@@ -36,6 +36,11 @@ namespace Voxel_Project
             return position;
         }
 
+        public void MoveBy(Vector3 moveBy)
+        {
+            position += moveBy;
+        }
+
         public Voxel(Vector3 position, Type type)
         {
             this.position = position;
@@ -53,6 +58,16 @@ namespace Voxel_Project
             return typeNames[(int)type];
         }
 
+        public Type GetVoxelType()
+        {
+            return type;
+        }
+
+        public void SetType(Type type)
+        {
+            this.type = type;
+        }
+
         private static Type VoxelTypeFromString(string name)
         {
             int index = Array.IndexOf(typeNames, name);
@@ -66,6 +81,29 @@ namespace Voxel_Project
         public override string ToString()
         {
             return $"Voxel( x = {position.X}, y = {position.Y}, z = {position.Z}, type = {GetTypeName()} = {(int)type})";
+        }
+
+        public ShaderListSet GetGPUData(TextureManager textureManager)
+        {
+            ShaderListSet listSet = new ShaderListSet();
+
+            // POSITIONS
+            // Position data is stored as x1, y1, z1, x2, y2, z2...
+            // because vec3 is not memory compact with SSBOs
+            // and there may be differences in the memory layout between CPU and GPU
+            listSet.positions.Add(position.X);
+            listSet.positions.Add(position.Y);
+            listSet.positions.Add(position.Z);
+
+            // SCALES
+            // Scale data is stored as x1, y1, z1, x2, y2, z2...
+            listSet.scales.Add(1);
+            listSet.scales.Add(1);
+            listSet.scales.Add(1);
+
+            listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(type));
+
+            return listSet;
         }
     }
 }

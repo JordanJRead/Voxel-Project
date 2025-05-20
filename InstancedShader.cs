@@ -22,7 +22,7 @@ namespace Voxel_Project
         {
         }
 
-        public void Render(Camera camera, VertexArray vertexArray, InstancedBufferSet buffers)
+        public void Render(Camera camera, VertexArray vertexArray, ShaderBufferSet buffers)
         {
             // Bind SSBOs
             buffers.positions.Use(BufferTarget.ShaderStorageBuffer);

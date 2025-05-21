@@ -33,8 +33,6 @@ namespace Voxel_Project
         /// </summary>
         public Scene(string filePath)
         {
-            fenceManager.AddFence(new Vector3(0, 1, 0));
-            fenceManager.AddFence(new Vector3(0, 1, 1));
             cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, true, textureManager); // The transparent voxel that can be moved around in editor mode
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
@@ -46,12 +44,24 @@ namespace Voxel_Project
                 if (line == "")
                     continue;
 
-                string[] voxelInfo = line.Split(',');
-                Vector3 pos = new Vector3();
-                pos.X = float.Parse(voxelInfo[0]);
-                pos.Y = float.Parse(voxelInfo[1]);
-                pos.Z = float.Parse(voxelInfo[2]);
-                voxels.Add(new Voxel(pos, voxelInfo[3]));
+                string[] objectInfo = line.Split(',');
+
+                if (objectInfo[0] == "voxel")
+                {
+                    Vector3 pos = new Vector3();
+                    pos.X = float.Parse(objectInfo[1]);
+                    pos.Y = float.Parse(objectInfo[2]);
+                    pos.Z = float.Parse(objectInfo[3]);
+                    voxels.Add(new Voxel(pos, objectInfo[4]));
+                }
+                else if (objectInfo[0] == "fence")
+                {
+                    Vector3 pos = new Vector3();
+                    pos.X = float.Parse(objectInfo[1]);
+                    pos.Y = float.Parse(objectInfo[2]);
+                    pos.Z = float.Parse(objectInfo[3]);
+                    fenceManager.AddFence(pos);
+                }
             }
             UpdateGPUVoxelData();
             UpdateGPUFenceData();
@@ -165,6 +175,7 @@ namespace Voxel_Project
             string fileSrc = "";
             foreach (Voxel voxel in voxels)
             {
+                fileSrc += "voxel,";
                 fileSrc += voxel.GetPosition().X;
                 fileSrc += ',';
                 fileSrc += voxel.GetPosition().Y;
@@ -172,6 +183,18 @@ namespace Voxel_Project
                 fileSrc += voxel.GetPosition().Z;
                 fileSrc += ',';
                 fileSrc += voxel.GetTypeName();
+                fileSrc += '\n';
+            }
+
+            for (int i = 0; i < fenceManager.GetCount(); ++i)
+            {
+                Fence fence = fenceManager[i];
+                fileSrc += "fence,";
+                fileSrc += fence.GetPosition().X;
+                fileSrc += ',';
+                fileSrc += fence.GetPosition().Y;
+                fileSrc += ',';
+                fileSrc += fence.GetPosition().Z;
                 fileSrc += '\n';
             }
 

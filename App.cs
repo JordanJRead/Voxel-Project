@@ -17,7 +17,9 @@ namespace Voxel_Project
     internal class App : GameWindow
     {
         Scene scene;
-        Camera camera;
+        EditorCamera editorCamera;
+        PlayerCamera playerCamera;
+        CameraBase currentCamera;
 
         unsafe static void ExtensionsCheck()
         {
@@ -50,7 +52,10 @@ namespace Voxel_Project
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             scene = new Scene("scene.txt");
-            camera = new Camera(width, height, new Vector3(0, 0, 0));
+            editorCamera = new EditorCamera(width, height, new Vector3(0, 0, 0));
+            playerCamera = new PlayerCamera(width, height, new Vector3(0, 3, 0));
+            currentCamera = playerCamera;
+            //currentCamera = editorCamera;
             CursorState = CursorState.Grabbed;
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1);
         }
@@ -61,22 +66,22 @@ namespace Voxel_Project
             {
                 Close();
             }
-            camera.Update(MouseState, KeyboardState, (float)e.Time);
-            scene.Update(KeyboardState, MouseState, camera);
+            currentCamera.Update(MouseState, KeyboardState, (float)e.Time, scene);
+            scene.Update(KeyboardState, MouseState, currentCamera);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            scene.Render(camera);
+            scene.Render(currentCamera);
 
             SwapBuffers();
         }
         protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
-            camera.Resize(e.Width, e.Height);
+            currentCamera.Resize(e.Width, e.Height);
         }
 
         protected override void OnClosing(CancelEventArgs e)

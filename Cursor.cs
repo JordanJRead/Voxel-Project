@@ -44,7 +44,7 @@ namespace Voxel_Project
         /// <param name="camera"></param>
         /// <param name="keyboard"></param>
         /// <returns>Whether the scene voxel data should be updated on the GPU</returns>
-        public bool Update(Camera camera, KeyboardState keyboard, MouseState mouse, Scene scene, TextureManager textureManager, FenceManager fenceManager)
+        public bool Update(CameraBase camera, KeyboardState keyboard, MouseState mouse, Scene scene, TextureManager textureManager, FenceManager fenceManager)
         {
             bool hasSceneChanged = false;
             bool hasCursorChanged = false;
@@ -179,7 +179,7 @@ namespace Voxel_Project
         /// Moves the cursor with keyboard input
         /// </summary>
         /// <returns>Whether the cursor moved or not</returns>
-        private bool UpdatePosition(Camera camera, KeyboardState keyboard)
+        private bool UpdatePosition(CameraBase camera, KeyboardState keyboard)
         {
             Vector3 cameraForward = camera.GetForward();
             Vector3 cursorForwardAxis = new Vector3(1, 0, 0);

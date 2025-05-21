@@ -181,7 +181,7 @@ namespace Voxel_Project
             }
         }
 
-        public void Render(Camera camera)
+        public void Render(CameraBase camera)
         {
             cubeShader.Render(camera, cubeVertexArray, voxelsBuffers);
             cubeShader.Render(camera, cubeVertexArray, fenceBuffers);
@@ -194,7 +194,7 @@ namespace Voxel_Project
         /// <summary>
         /// Mostly deals with moving the editor's 'selection' cube
         /// </summary>
-        public void Update(KeyboardState keyboard, MouseState mouse, Camera camera)
+        public void Update(KeyboardState keyboard, MouseState mouse, CameraBase camera)
         {
             if (cursor == null)
                 return;

@@ -46,17 +46,36 @@ namespace Voxel_Project
         /// <returns>Whether the scene voxel data should be updated on the GPU</returns>
         public bool Update(Camera camera, KeyboardState keyboard, MouseState mouse, Scene scene, TextureManager textureManager, FenceManager fenceManager)
         {
+            bool hasSceneChanged = false;
+            bool hasCursorChanged = false;
+
             // Switch voxel/fence mode
             if (keyboard.IsKeyPressed(Keys.R))
             {
                 isVoxel = !isVoxel;
                 UpdateGPUBuffers(textureManager);
+                if (isVoxel)
+                {
+                    fenceManager.UnFakeFence(voxel.GetPosition());
+                }
+                else
+                {
+                    fence = fenceManager.FakeFence(fence.GetPosition()); // fence.position and voxel.position are the same, I could use either one
+                }
+                hasSceneChanged = true;
+                hasCursorChanged = true;
             }
-            bool hasSceneChanged = false;
-            bool hasCursorChanged = false;
+
+            Vector3 prevPosition = voxel.GetPosition();
             if (keyboard.IsKeyDown(Keys.LeftControl))
             {
-                hasCursorChanged = UpdatePosition(camera, keyboard);
+                hasCursorChanged = UpdatePosition(camera, keyboard) || hasCursorChanged;
+                if (hasCursorChanged && !isVoxel)
+                {
+                    fenceManager.UnFakeFence(prevPosition);
+                    fence = fenceManager.FakeFence(fence.GetPosition());
+                    hasSceneChanged = true;
+                } 
 
                 // Cycle through cursor voxel types
                 // Voxel.Type.none is the maximum enum value
@@ -119,7 +138,7 @@ namespace Voxel_Project
                 {
                     if (mouse.IsButtonPressed(MouseButton.Left))
                     {
-                        Fence? selectedFence = scene.GetFenceAtPosition(this.fence.GetPosition());
+                        Fence? selectedFence = fenceManager.GetFenceAtPosition(this.fence.GetPosition());
 
                         // Replacing fence
                         if (selectedFence != null)
@@ -138,11 +157,12 @@ namespace Voxel_Project
                     // Deleting fence
                     if (mouse.IsButtonPressed(MouseButton.Right))
                     {
-                        Fence? selectedFence = scene.GetFenceAtPosition(this.fence.GetPosition());
+                        Fence? selectedFence = fenceManager.GetFenceAtPosition(this.fence.GetPosition());
 
                         if (selectedFence != null)
                         {
                             fenceManager.RemoveFence(selectedFence);
+                            fence = fenceManager.FakeFence(fence.GetPosition());
                             hasSceneChanged = true;
                         }
                     }
@@ -161,7 +181,6 @@ namespace Voxel_Project
         /// <returns>Whether the cursor moved or not</returns>
         private bool UpdatePosition(Camera camera, KeyboardState keyboard)
         {
-            bool hasMoved = false;
             Vector3 cameraForward = camera.GetForward();
             Vector3 cursorForwardAxis = new Vector3(1, 0, 0);
 
@@ -199,39 +218,39 @@ namespace Voxel_Project
             {
                 voxel.MoveBy(cursorForwardAxis);
                 fence.MoveBy(cursorForwardAxis);
-                hasMoved = true;
+                return true;
             }
             if (keyboard.IsKeyPressed(Keys.S))
             {
                 voxel.MoveBy(-cursorForwardAxis);
                 fence.MoveBy(-cursorForwardAxis);
-                hasMoved = true;
+                return true;
             }
             if (keyboard.IsKeyPressed(Keys.A))
             {
                 voxel.MoveBy(-rightAxis);
                 fence.MoveBy(-rightAxis);
-                hasMoved = true;
+                return true;
             }
             if (keyboard.IsKeyPressed(Keys.D))
             {
                 voxel.MoveBy(rightAxis);
                 fence.MoveBy(rightAxis);
-                hasMoved = true;
+                return true;
             }
             if (keyboard.IsKeyPressed(Keys.Space))
             {
                 voxel.MoveBy(Vector3.UnitY);
                 fence.MoveBy(Vector3.UnitY);
-                hasMoved = true;
+                return true;
             }
             if (keyboard.IsKeyPressed(Keys.LeftShift))
             {
                 voxel.MoveBy(-Vector3.UnitY);
                 fence.MoveBy(-Vector3.UnitY);
-                hasMoved = true;
+                return true;
             }
-            return hasMoved;
+            return false;
         }
 
         private void SwitchType()

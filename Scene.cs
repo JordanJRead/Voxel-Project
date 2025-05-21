@@ -224,23 +224,6 @@ namespace Voxel_Project
         }
 
         /// <summary>
-        /// Checks which fence is at a specific position, if any
-        /// </summary>
-        /// <returns>The fence at the given position, or null if there is no fence there</returns>
-        public Fence? GetFenceAtPosition(Vector3 position)
-        {
-            for (int i = 0; i < fenceManager.GetCount(); ++i)
-            {
-                Fence fence = fenceManager[i];
-                if ((fence.GetPosition() - position).Length < 0.01)
-                {
-                    return fence;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
         /// Sends voxel data to the GPU
         /// </summary>
         public void UpdateGPUVoxelData()

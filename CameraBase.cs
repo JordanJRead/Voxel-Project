@@ -23,12 +23,13 @@ namespace Voxel_Project
         protected Vector3 position = new Vector3();
         protected Vector2 prevMousePos = new Vector2();
 
-        public CameraBase(int screenWidth, int screenHeight, Vector3 position, float speed = 5)
+        public CameraBase(int screenWidth, int screenHeight, Vector3 position, float speed = 5, float yaw = 0)
         {
             this.position = position;
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;
             this.speed = speed;
+            this.yaw = yaw;
         }
 
         public abstract void Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene);

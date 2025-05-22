@@ -108,39 +108,39 @@ namespace Voxel_Project
                 right, down, far, 0, 0, far,
 
                 // Right face
-                right, up,   far, right, 0, 0,
+                right, up,   far,  right, 0, 0,
                 right, up,   near, right, 0, 0,
                 right, down, near, right, 0, 0,
 
                 right, down, near, right, 0, 0,
-                right, down, far, right, 0, 0,
-                right, up,   far, right, 0, 0,
+                right, down, far,  right, 0, 0,
+                right, up,   far,  right, 0, 0,
                 
                 // Left face
                 left, down, near, left, 0, 0,
                 left, up,   near, left, 0, 0,
-                left, up,   far, left, 0, 0,
+                left, up,   far,  left, 0, 0,
 
-                left, up,   far, left, 0, 0,
-                left, down, far, left, 0, 0,
+                left, up,   far,  left, 0, 0,
+                left, down, far,  left, 0, 0,
                 left, down, near, left, 0, 0,
 
                 // Top face
-                left,  up, far, 0, up, 0,
+                left,  up, far,  0, up, 0,
                 left,  up, near, 0, up, 0,
                 right, up, near, 0, up, 0,
 
                 right, up, near, 0, up, 0,
-                right, up, far, 0, up, 0,
-                left,  up, far, 0, up, 0,
+                right, up, far,  0, up, 0,
+                left,  up, far,  0, up, 0,
 
                 // Bottom face
                 right, down, near, 0, down, 0,
                 left,  down, near, 0, down, 0,
-                left,  down, far, 0, down, 0,
+                left,  down, far,  0, down, 0,
 
-                left,  down, far, 0, down, 0,
-                right, down, far, 0, down, 0,
+                left,  down, far,  0, down, 0,
+                right, down, far,  0, down, 0,
                 right, down, near, 0, down, 0,
             };
             cubeVertexBuffer = new VertexBuffer(vertices, 6);

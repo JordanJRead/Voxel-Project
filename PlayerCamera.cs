@@ -12,7 +12,7 @@ namespace Voxel_Project
     {
         PhysicsManager physicsManager = new PhysicsManager();
 
-        public PlayerCamera(int screenWidth, int screenHeight, Vector3 position, float speed = 5) : base(screenWidth, screenHeight, position, speed)
+        public PlayerCamera(int screenWidth, int screenHeight, Vector3 position, float speed = 5, float yaw = 0) : base(screenWidth, screenHeight, position, speed, yaw)
         {
         }
 
@@ -27,8 +27,8 @@ namespace Voxel_Project
             Vector2 mouseMovement = mouse.Position - prevMousePos;
             prevMousePos = mouse.Position;
 
-            yaw -= mouseMovement.X * sensitivity;
-            pitch -= mouseMovement.Y * sensitivity;
+            //yaw -= mouseMovement.X * sensitivity;
+            //pitch -= mouseMovement.Y * sensitivity;
 
             if (yaw < 0)
                 yaw += 360;

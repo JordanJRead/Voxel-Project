@@ -53,7 +53,7 @@ namespace Voxel_Project
 
             scene = new Scene("scene.txt");
             editorCamera = new EditorCamera(width, height, new Vector3(0, 0, 0));
-            playerCamera = new PlayerCamera(width, height, new Vector3(0, 3, 0));
+            playerCamera = new PlayerCamera(width, height, new Vector3(0, 3, 0), 5, 270);
             currentCamera = playerCamera;
             //currentCamera = editorCamera;
             CursorState = CursorState.Grabbed;
@@ -68,6 +68,7 @@ namespace Voxel_Project
             }
             currentCamera.Update(MouseState, KeyboardState, (float)e.Time, scene);
             scene.Update(KeyboardState, MouseState, currentCamera);
+            Console.WriteLine($"FPS: {1.0f / e.Time}");
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)

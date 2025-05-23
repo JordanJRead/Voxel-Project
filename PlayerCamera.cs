@@ -27,8 +27,8 @@ namespace Voxel_Project
             Vector2 mouseMovement = mouse.Position - prevMousePos;
             prevMousePos = mouse.Position;
 
-            //yaw -= mouseMovement.X * sensitivity;
-            //pitch -= mouseMovement.Y * sensitivity;
+            yaw -= mouseMovement.X * sensitivity;
+            pitch -= mouseMovement.Y * sensitivity;
 
             if (yaw < 0)
                 yaw += 360;
@@ -59,9 +59,9 @@ namespace Voxel_Project
                     moveVector -= Vector3.UnitY;
                 if (keyboard.IsKeyDown(Keys.W))
                     moveVector += forward;
-                if (keyboard.IsKeyDown(Keys.S))
+                if (keyboard.IsKeyDown(Keys.S))// || true)
                     moveVector -= forward;
-                if (keyboard.IsKeyDown(Keys.A))
+                if (keyboard.IsKeyDown(Keys.A))// || true)
                     moveVector -= right;
                 if (keyboard.IsKeyDown(Keys.D))
                     moveVector += right;

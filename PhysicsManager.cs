@@ -28,7 +28,7 @@ namespace Voxel_Project
 
             public bool Intersects(AABB other)
             {
-                return !(this.min.X > other.max.X || this.max.X < other.min.X || this.min.Y > other.max.Y || this.max.Y < other.min.Y || this.min.Z > other.max.Z || this.max.Z < other.min.Z);
+                return !(this.min.X >= other.max.X || this.max.X <= other.min.X || this.min.Y >= other.max.Y || this.max.Y <= other.min.Y || this.min.Z >= other.max.Z || this.max.Z <= other.min.Z);
             }
 
             /// <summary>
@@ -84,7 +84,27 @@ namespace Voxel_Project
             AABB playerAABB = new AABB(playerCamera.GetPosition() - new Vector3(0.5f), playerCamera.GetPosition() + new Vector3(0.5f));
             AABB desiredPlayerAABB = new AABB(desiredPlayerPosition - new Vector3(0.5f), desiredPlayerPosition + new Vector3(0.5f));
             AABB mergedAABB = AABB.Merge(desiredPlayerAABB, playerAABB);
+
+            List<Voxel> possibleCollisionVoxels = new List<Voxel>();
+
             foreach (Voxel voxel in scene.GetVoxels())
+            {
+                AABB voxelAABB = new AABB(voxel.GetPosition() - new Vector3(0.5f), voxel.GetPosition() + new Vector3(0.5f));
+                if (mergedAABB.Intersects(voxelAABB))
+                {
+                    possibleCollisionVoxels.Add(voxel);
+                }
+            }
+
+            possibleCollisionVoxels.Sort(new Comparison<Voxel>((Voxel v1, Voxel v2) =>
+            {
+                float dist1 = (v1.GetPosition() - playerCamera.GetPosition()).Length;
+                float dist2 = (v2.GetPosition() - playerCamera.GetPosition()).Length;
+
+                return dist1 < dist2 ? -1 : 1;
+            }));
+
+            foreach (Voxel voxel in possibleCollisionVoxels)
             {
                 AABB voxelAABB = new AABB(voxel.GetPosition() - new Vector3(0.5f), voxel.GetPosition() + new Vector3(0.5f));
                 if (mergedAABB.Intersects(voxelAABB)) // Possible collision
@@ -216,24 +236,34 @@ namespace Voxel_Project
                         }
                     }
 
-                    if (xT < 4 || yT < 4 || zT < 4) // They default to 5. Checks if a collision actually happenedf
+                    if (xT < 4 || yT < 4 || zT < 4) // They default to 5. Checks if a collision actually happened
                     {
                         float closestT = MathF.Min(xT, MathF.Min(yT, zT));
-                        playerCamera.MoveBy(displacement * closestT);
+
                         Vector3 newDisplacement = displacement;
+                        Vector3 safeToMove = new Vector3();
+                        Vector3 pushBack = new Vector3();
+
                         if (closestT == xT)
                         {
                             newDisplacement.X = 0;
+                            safeToMove.X = displacement.X * closestT;
+                            pushBack.X = 0.0001f * -xSign;
+
                         }
                         else if (closestT == yT)
                         {
                             newDisplacement.Y = 0;
+                            safeToMove.Y = displacement.Y * closestT;
+                            pushBack.Y = 0.0001f * -ySign;
                         }
                         else
                         {
                             newDisplacement.Z = 0;
+                            safeToMove.Z = displacement.Z * closestT;
+                            pushBack.Z = 0.0001f * -zSign;
                         }
-
+                        playerCamera.MoveBy(safeToMove + pushBack);
                         return MoveInScene(playerCamera, scene, newDisplacement, depth + 1);
                     }
                 }

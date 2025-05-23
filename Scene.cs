@@ -206,11 +206,11 @@ namespace Voxel_Project
 
         public void Render(CameraBase camera)
         {
-            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers);
-            cubeShader.Render(camera, cubeVertexArray, fenceBuffers);
+            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, textureManager);
+            cubeShader.Render(camera, cubeVertexArray, fenceBuffers, textureManager);
             if (cursor.IsActive())
             {
-                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), true);
+                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), textureManager, true);
             }
         }
 

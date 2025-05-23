@@ -107,165 +107,162 @@ namespace Voxel_Project
             foreach (Voxel voxel in possibleCollisionVoxels)
             {
                 AABB voxelAABB = new AABB(voxel.GetPosition() - new Vector3(0.5f), voxel.GetPosition() + new Vector3(0.5f));
-                if (mergedAABB.Intersects(voxelAABB)) // Possible collision
+                int xSign = (displacement.X > 0 ? 1 : (displacement.X < 0 ? -1 : 0));
+                int ySign = (displacement.Y > 0 ? 1 : (displacement.Y < 0 ? -1 : 0));
+                int zSign = (displacement.Z > 0 ? 1 : (displacement.Z < 0 ? -1 : 0));
+                float xT = 5;
+                float yT = 5;
+                float zT = 5;
+
+                if (xSign != 0)
                 {
-                    int xSign = (displacement.X > 0 ? 1 : (displacement.X < 0 ? -1 : 0));
-                    int ySign = (displacement.Y > 0 ? 1 : (displacement.Y < 0 ? -1 : 0));
-                    int zSign = (displacement.Z > 0 ? 1 : (displacement.Z < 0 ? -1 : 0));
-                    float xT = 5;
-                    float yT = 5;
-                    float zT = 5;
+                    float t;
 
-                    if (xSign != 0)
+                    /*
+                    This is a rough description of the t-value finder
+                    Assuming the player is moving in the +x direction,
+                    The player's maxX (right side) will hit the object's minX (left side)
+                    If they intersect, then voxelMinX (left side of object) should be inbetween the player's initial right and ending right
+
+                    playerMaxX     voxelMinX  desiredMaxX
+                            |             |          |
+                    x-----------------------------
+
+                        */
+                    if (xSign == 1)
                     {
-                        float t;
-
+                        // player's max.X will possibly collide with object's min.X
+                        t = (voxelAABB.min.X - playerAABB.max.X) / (desiredPlayerAABB.max.X - playerAABB.max.X);
+                    }
+                    else
+                    {
+                        t = (playerAABB.min.X - voxelAABB.max.X) / (playerAABB.min.X - desiredPlayerAABB.min.X);
+                    }
+                    if (t >= 0 && t <= 1)
+                    {
                         /*
-                        This is a rough description of the t-value finder
-                        Assuming the player is moving in the +x direction,
-                        The player's maxX (right side) will hit the object's minX (left side)
-                        If they intersect, then voxelMinX (left side of object) should be inbetween the player's initial right and ending right
-
-                        playerMaxX     voxelMinX  desiredMaxX
-                              |             |          |
-                        x-----------------------------
-
-                         */
-                        if (xSign == 1)
-                        {
-                            // player's max.X will possibly collide with object's min.X
-                            t = (voxelAABB.min.X - playerAABB.max.X) / (desiredPlayerAABB.max.X - playerAABB.max.X);
-                        }
-                        else
-                        {
-                            t = (playerAABB.min.X - voxelAABB.max.X) / (playerAABB.min.X - desiredPlayerAABB.min.X);
-                        }
-                        if (t >= 0 && t <= 1)
-                        {
-                            /*
-                            It is possible that there is no actual collision at the found t-value
-                            As seen below, if the x-values collide, they still may not be touching
-                            y
-                            |          ___________
-                            |          |         |
-                            |          |         |
-                            |          L_________|
-                            |
-                            |
-                            |  _________
-                            |  |       |
-                            |  |       |
-                            |  |       |
-                            |  L_______|
-                            |
-                            -------------------------x
+                        It is possible that there is no actual collision at the found t-value
+                        As seen below, if the x-values collide, they still may not be touching
+                        y
+                        |          ___________
+                        |          |         |
+                        |          |         |
+                        |          L_________|
+                        |
+                        |
+                        |  _________
+                        |  |       |
+                        |  |       |
+                        |  |       |
+                        |  L_______|
+                        |
+                        -------------------------x
 
                             
-                            So we need to see if they overlap just by looking at the y direction:
+                        So we need to see if they overlap just by looking at the y direction:
                             
-                            y
-                            |
-                            |
-                            []
-                            [] (right square)
-                            []
-                            []
-                            |
-                            |
-                            []
-                            []
-                            [] (left square)
-                            []
-                            []
-                            |
+                        y
+                        |
+                        |
+                        []
+                        [] (right square)
+                        []
+                        []
+                        |
+                        |
+                        []
+                        []
+                        [] (left square)
+                        []
+                        []
+                        |
 
-                            They don't so we don't count this as an intersection
-                            For 3d, we imagine the squares as cubes and line segments as squares (in the y-z plane, using x as an example)
-                             */
-                            Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
-                            AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
-                            if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, 'x'))
-                            {
-                                xT = t;
-                            }
+                        They don't so we don't count this as an intersection
+                        For 3d, we imagine the squares as cubes and line segments as squares (in the y-z plane, using x as an example)
+                            */
+                        Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
+                        AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
+                        if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, 'x'))
+                        {
+                            xT = t;
                         }
                     }
+                }
 
-                    if (ySign != 0)
+                if (ySign != 0)
+                {
+                    float t;
+                    if (ySign == 1)
                     {
-                        float t;
-                        if (ySign == 1)
-                        {
-                            t = (voxelAABB.min.Y - playerAABB.max.Y) / (desiredPlayerAABB.max.Y - playerAABB.max.Y);
-                        }
-                        else
-                        {
-                            t = (playerAABB.min.Y - voxelAABB.max.Y) / (playerAABB.min.Y - desiredPlayerAABB.min.Y);
-                        }
-                        if (t >= 0 && t <= 1)
-                        {
-                            Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
-                            AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
-                            if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, 'y'))
-                            {
-                                yT = t;
-                            }
-                        }
+                        t = (voxelAABB.min.Y - playerAABB.max.Y) / (desiredPlayerAABB.max.Y - playerAABB.max.Y);
                     }
-
-
-                    if (zSign != 0)
+                    else
                     {
-                        float t;
-                        if (zSign == 1)
-                        {
-                            t = (voxelAABB.min.Z - playerAABB.max.Z) / (desiredPlayerAABB.max.Z - playerAABB.max.Z);
-                        }
-                        else
-                        {
-                            t = (playerAABB.min.Z - voxelAABB.max.Z) / (playerAABB.min.Z - desiredPlayerAABB.min.Z);
-                        }
-                        if (t >= 0 && t <= 1)
-                        {
-                            Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
-                            AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
-                            if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, 'z'))
-                            {
-                                zT = t;
-                            }
-                        }
+                        t = (playerAABB.min.Y - voxelAABB.max.Y) / (playerAABB.min.Y - desiredPlayerAABB.min.Y);
                     }
-
-                    if (xT < 4 || yT < 4 || zT < 4) // They default to 5. Checks if a collision actually happened
+                    if (t >= 0 && t <= 1)
                     {
-                        float closestT = MathF.Min(xT, MathF.Min(yT, zT));
-
-                        Vector3 newDisplacement = displacement;
-                        Vector3 safeToMove = new Vector3();
-                        Vector3 pushBack = new Vector3();
-
-                        if (closestT == xT)
+                        Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
+                        AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
+                        if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, 'y'))
                         {
-                            newDisplacement.X = 0;
-                            safeToMove.X = displacement.X * closestT;
-                            pushBack.X = 0.0001f * -xSign;
-
+                            yT = t;
                         }
-                        else if (closestT == yT)
-                        {
-                            newDisplacement.Y = 0;
-                            safeToMove.Y = displacement.Y * closestT;
-                            pushBack.Y = 0.0001f * -ySign;
-                        }
-                        else
-                        {
-                            newDisplacement.Z = 0;
-                            safeToMove.Z = displacement.Z * closestT;
-                            pushBack.Z = 0.0001f * -zSign;
-                        }
-                        playerCamera.MoveBy(safeToMove + pushBack);
-                        return MoveInScene(playerCamera, scene, newDisplacement, depth + 1);
                     }
+                }
+
+
+                if (zSign != 0)
+                {
+                    float t;
+                    if (zSign == 1)
+                    {
+                        t = (voxelAABB.min.Z - playerAABB.max.Z) / (desiredPlayerAABB.max.Z - playerAABB.max.Z);
+                    }
+                    else
+                    {
+                        t = (playerAABB.min.Z - voxelAABB.max.Z) / (playerAABB.min.Z - desiredPlayerAABB.min.Z);
+                    }
+                    if (t >= 0 && t <= 1)
+                    {
+                        Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
+                        AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
+                        if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, 'z'))
+                        {
+                            zT = t;
+                        }
+                    }
+                }
+
+                if (xT < 4 || yT < 4 || zT < 4) // They default to 5. Checks if a collision actually happened
+                {
+                    float closestT = MathF.Min(xT, MathF.Min(yT, zT));
+
+                    Vector3 newDisplacement = displacement;
+                    Vector3 safeToMove = new Vector3();
+                    Vector3 pushBack = new Vector3();
+
+                    if (closestT == xT)
+                    {
+                        newDisplacement.X = 0;
+                        safeToMove.X = displacement.X * closestT;
+                        pushBack.X = 0.0001f * -xSign;
+
+                    }
+                    else if (closestT == yT)
+                    {
+                        newDisplacement.Y = 0;
+                        safeToMove.Y = displacement.Y * closestT;
+                        pushBack.Y = 0.0001f * -ySign;
+                    }
+                    else
+                    {
+                        newDisplacement.Z = 0;
+                        safeToMove.Z = displacement.Z * closestT;
+                        pushBack.Z = 0.0001f * -zSign;
+                    }
+                    playerCamera.MoveBy(safeToMove + pushBack);
+                    return MoveInScene(playerCamera, scene, newDisplacement, depth + 1);
                 }
             }
             return playerCamera.GetPosition() + displacement;

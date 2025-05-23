@@ -168,7 +168,7 @@ namespace Voxel_Project
             listSet.scales.Add(1);
             listSet.scales.Add(0.2f);
 
-            listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+            listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
 
             /// This deals with the fence connectors
             if (GetConnection(Fence.ConnectionType.posX))
@@ -182,7 +182,7 @@ namespace Voxel_Project
                 listSet.scales.Add(0.1f);
                 listSet.scales.Add(0.1f);
 
-                listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+                listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
             }
 
             if (GetConnection(Fence.ConnectionType.negX))
@@ -196,7 +196,7 @@ namespace Voxel_Project
                 listSet.scales.Add(0.1f);
                 listSet.scales.Add(0.1f);
 
-                listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+                listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
             }
 
             if (GetConnection(Fence.ConnectionType.posZ))
@@ -210,7 +210,7 @@ namespace Voxel_Project
                 listSet.scales.Add(0.1f);
                 listSet.scales.Add(0.5f);
 
-                listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+                listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
             }
 
             if (GetConnection(Fence.ConnectionType.negZ))
@@ -224,7 +224,7 @@ namespace Voxel_Project
                 listSet.scales.Add(0.1f);
                 listSet.scales.Add(0.5f);
 
-                listSet.textureHandles.Add((ulong)textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+                listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
             }
 
             return (listSet, cubeCount);

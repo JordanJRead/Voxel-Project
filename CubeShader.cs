@@ -20,6 +20,7 @@ namespace Voxel_Project
 
         public CubeShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {
+            SetInt("white", 0);
         }
 
         /// <summary>
@@ -28,7 +29,7 @@ namespace Voxel_Project
         /// <param name="vertexArray">The vertices of the object to draw</param>
         /// <param name="buffers">The location, texture, and count information about the object(s)</param>
         /// <param name="drawCursor">Whether to draw transparent and ignoring depth</param>
-        public void Render(CameraBase camera, VertexArray vertexArray, ShaderBufferSet buffers, bool drawCursor = false)
+        public void Render(CameraBase camera, VertexArray vertexArray, ShaderBufferSet buffers, TextureManager textureManager, bool drawCursor = false)
         {
             // Bind SSBOs
             buffers.positions.Use(BufferTarget.ShaderStorageBuffer);
@@ -43,6 +44,9 @@ namespace Voxel_Project
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            textureManager.whiteNoise.Use();
 
             if (drawCursor)
             {

@@ -13,6 +13,7 @@ namespace Voxel_Project
     {
         CubeMap[] cubeMaps = new CubeMap[(int)Voxel.Type.none + 1];
         long[] textureHandles = new long[(int)Voxel.Type.none + 1]; // Should be the same size as the voxel types
+        public Texture2D whiteNoise = new Texture2D("Images/white.png");
         public TextureManager()
         {
             for (int i = 0; i < textureHandles.Length; i++)
@@ -26,10 +27,9 @@ namespace Voxel_Project
         /// <summary>
         /// Used when using a shader that utilizes bindless textures
         /// </summary>
-        public long GetBindlessTextureHandle(Voxel.Type voxelType)
+        public ulong GetBindlessTextureHandle(Voxel.Type voxelType)
         {
-            long test = textureHandles[(int)voxelType];
-            return textureHandles[(int)voxelType];
+            return (ulong)textureHandles[(int)voxelType];
         }
     }
 }

@@ -65,7 +65,8 @@ namespace Voxel_Project
                     moveVector -= right;
                 if (keyboard.IsKeyDown(Keys.D))
                     moveVector += right;
-
+                if (moveVector.X != 0 || moveVector.Y != 0 || moveVector.Z != 0)
+                    moveVector.Normalize();
                 position = physicsManager.MoveInScene(this, scene, moveVector * deltaTime * speed);
             }
         }

@@ -19,6 +19,10 @@ namespace Voxel_Project
             return fences.Count;
         }
 
+        public List<Fence> GetFences()
+        {
+            return fences;
+        }
         public Fence this[int i]
         {
             get => fences[i];

@@ -152,6 +152,11 @@ namespace Voxel_Project
             return voxels;
         }
 
+        public List<Fence> GetFences()
+        {
+            return fenceManager.GetFences();
+        }
+
         public void AddVoxel(Voxel voxel)
         {
             voxels.Add(voxel);

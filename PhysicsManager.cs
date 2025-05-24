@@ -26,6 +26,11 @@ namespace Voxel_Project
                 this.max = max;
             }
 
+            public Vector3 GetCenter()
+            {
+                return min + (max - min) * 0.5f;
+            }
+
             public bool Intersects(AABB other)
             {
                 return !(this.min.X >= other.max.X || this.max.X <= other.min.X || this.min.Y >= other.max.Y || this.max.Y <= other.min.Y || this.min.Z >= other.max.Z || this.max.Z <= other.min.Z);
@@ -85,28 +90,46 @@ namespace Voxel_Project
             AABB desiredPlayerAABB = new AABB(desiredPlayerPosition - new Vector3(0.5f), desiredPlayerPosition + new Vector3(0.5f));
             AABB mergedAABB = AABB.Merge(desiredPlayerAABB, playerAABB);
 
-            List<Voxel> possibleCollisionVoxels = new List<Voxel>();
+            List<AABB> possibleCollisionAABBs = new List<AABB>();
 
             foreach (Voxel voxel in scene.GetVoxels())
             {
                 AABB voxelAABB = new AABB(voxel.GetPosition() - new Vector3(0.5f), voxel.GetPosition() + new Vector3(0.5f));
                 if (mergedAABB.Intersects(voxelAABB))
                 {
-                    possibleCollisionVoxels.Add(voxel);
+                    possibleCollisionAABBs.Add(voxelAABB);
                 }
             }
 
-            possibleCollisionVoxels.Sort(new Comparison<Voxel>((Voxel v1, Voxel v2) =>
+            // TODO fence
+            foreach (Fence fence in scene.GetFences())
             {
-                float dist1 = (v1.GetPosition() - playerCamera.GetPosition()).Length;
-                float dist2 = (v2.GetPosition() - playerCamera.GetPosition()).Length;
+                AABB postAABB = new AABB(fence.GetPosition() - new Vector3(0.1f, 0.5f, 0.1f), fence.GetPosition() + new Vector3(0.1f, 0.5f, 0.1f));
+                if (mergedAABB.Intersects(postAABB))
+                {
+                    possibleCollisionAABBs.Add(postAABB);
+                }
+
+                //if (fence.GetConnection(Fence.ConnectionType.posX))
+                //{
+                //    AABB connectionAABB = new AABB(fence.GetPosition() + new Vector3(0.25f) - new Vector3(0.25f, 0.05f, 0.05f), fence.GetPosition() + new Vector3(0.25f, 0.05f, 0.05f);
+                //    if (mergedAABB.Intersects(connectionAABB))
+                //    {
+                //        possibleCollisionAABBs.Add(connectionAABB);
+                //    }
+                //}
+            }
+
+            possibleCollisionAABBs.Sort(new Comparison<AABB>((AABB aabb1, AABB aabb2) =>
+            {
+                float dist1 = (aabb1.GetCenter() - playerCamera.GetPosition()).Length;
+                float dist2 = (aabb2.GetCenter() - playerCamera.GetPosition()).Length;
 
                 return dist1 < dist2 ? -1 : 1;
             }));
 
-            foreach (Voxel voxel in possibleCollisionVoxels)
+            foreach (AABB aabb in possibleCollisionAABBs)
             {
-                AABB voxelAABB = new AABB(voxel.GetPosition() - new Vector3(0.5f), voxel.GetPosition() + new Vector3(0.5f));
                 int xSign = (displacement.X > 0 ? 1 : (displacement.X < 0 ? -1 : 0));
                 int ySign = (displacement.Y > 0 ? 1 : (displacement.Y < 0 ? -1 : 0));
                 int zSign = (displacement.Z > 0 ? 1 : (displacement.Z < 0 ? -1 : 0));
@@ -132,11 +155,11 @@ namespace Voxel_Project
                     if (xSign == 1)
                     {
                         // player's max.X will possibly collide with object's min.X
-                        t = (voxelAABB.min.X - playerAABB.max.X) / (desiredPlayerAABB.max.X - playerAABB.max.X);
+                        t = (aabb.min.X - playerAABB.max.X) / (desiredPlayerAABB.max.X - playerAABB.max.X);
                     }
                     else
                     {
-                        t = (playerAABB.min.X - voxelAABB.max.X) / (playerAABB.min.X - desiredPlayerAABB.min.X);
+                        t = (playerAABB.min.X - aabb.max.X) / (playerAABB.min.X - desiredPlayerAABB.min.X);
                     }
                     if (t >= 0 && t <= 1)
                     {
@@ -182,7 +205,7 @@ namespace Voxel_Project
                             */
                         Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
                         AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
-                        if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, 'x'))
+                        if (possibleCollisionAABB.DoSquaresIntersect(aabb, 'x'))
                         {
                             xT = t;
                         }
@@ -194,17 +217,17 @@ namespace Voxel_Project
                     float t;
                     if (ySign == 1)
                     {
-                        t = (voxelAABB.min.Y - playerAABB.max.Y) / (desiredPlayerAABB.max.Y - playerAABB.max.Y);
+                        t = (aabb.min.Y - playerAABB.max.Y) / (desiredPlayerAABB.max.Y - playerAABB.max.Y);
                     }
                     else
                     {
-                        t = (playerAABB.min.Y - voxelAABB.max.Y) / (playerAABB.min.Y - desiredPlayerAABB.min.Y);
+                        t = (playerAABB.min.Y - aabb.max.Y) / (playerAABB.min.Y - desiredPlayerAABB.min.Y);
                     }
                     if (t >= 0 && t <= 1)
                     {
                         Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
                         AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
-                        if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, 'y'))
+                        if (possibleCollisionAABB.DoSquaresIntersect(aabb, 'y'))
                         {
                             yT = t;
                         }
@@ -217,17 +240,17 @@ namespace Voxel_Project
                     float t;
                     if (zSign == 1)
                     {
-                        t = (voxelAABB.min.Z - playerAABB.max.Z) / (desiredPlayerAABB.max.Z - playerAABB.max.Z);
+                        t = (aabb.min.Z - playerAABB.max.Z) / (desiredPlayerAABB.max.Z - playerAABB.max.Z);
                     }
                     else
                     {
-                        t = (playerAABB.min.Z - voxelAABB.max.Z) / (playerAABB.min.Z - desiredPlayerAABB.min.Z);
+                        t = (playerAABB.min.Z - aabb.max.Z) / (playerAABB.min.Z - desiredPlayerAABB.min.Z);
                     }
                     if (t >= 0 && t <= 1)
                     {
                         Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
                         AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
-                        if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, 'z'))
+                        if (possibleCollisionAABB.DoSquaresIntersect(aabb, 'z'))
                         {
                             zT = t;
                         }

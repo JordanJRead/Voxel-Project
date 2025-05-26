@@ -11,16 +11,17 @@ namespace Voxel_Project
     /// <summary>
     /// Represents a player that can play the game
     /// </summary>
-    internal class PlayerGame : PlayerBase
+    internal class PlayerController : ControllerBase
     {
         Vector3 position;
         Vector3 scale = new Vector3(1, 2, 1);
         Vector3 cameraOffset = new Vector3(0, 0.5f, 0);
 
-        public PlayerGame(Vector3 position, Camera camera) : base(camera)
+        public PlayerController(Vector3 position, Camera camera) : base(camera)
         {
             this.speed = 2;
             this.position = position;
+            this.camera.SetPosition(position);
         }
 
         public override bool Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene)

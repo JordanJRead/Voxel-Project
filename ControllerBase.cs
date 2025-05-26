@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
-    internal abstract class PlayerBase
+    /// <summary>
+    /// Baisically the player in the world
+    /// </summary>
+    internal abstract class ControllerBase
     {
         protected Camera camera;
         protected float speed;
 
-        protected PlayerBase(Camera camera)
+        protected ControllerBase(Camera camera)
         {
             this.camera = camera;
         }

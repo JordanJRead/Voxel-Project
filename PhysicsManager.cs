@@ -85,7 +85,7 @@ namespace Voxel_Project
             }
         }
 
-        public static Vector3 MoveInScene(PlayerGame player, Scene scene, Vector3 displacement, int depth = 0, int maxDepth = 20)
+        public static Vector3 MoveInScene(PlayerController player, Scene scene, Vector3 displacement, int depth = 0, int maxDepth = 20)
         {
             if (depth == maxDepth)
                 return player.GetPosition() + displacement;

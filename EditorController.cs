@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
-    internal class PlayerEditor : PlayerBase
+    internal class EditorController : ControllerBase
     {
-        Cursor cursor; // The transparent voxel that can be moved around in editor mode
+        Cursor cursor; // The transparent voxel / fence that can be moved around in editor mode
 
-        public PlayerEditor(Camera camera, TextureManager textureManager) : base(camera)
+        public EditorController(Camera camera, TextureManager textureManager) : base(camera)
         {
             this.speed = 5;
             cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, textureManager); // The transparent voxel that can be moved around in editor mode
+            this.camera.SetPosition(position);
         }
 
         public Cursor GetCursor() { return cursor; }

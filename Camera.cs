@@ -22,7 +22,7 @@ namespace Voxel_Project
         protected Vector3 position = new Vector3();
         protected Vector2 prevMousePos = new Vector2();
 
-        public Camera(int screenWidth, int screenHeight, Vector3 position, float speed = 5, float yaw = 0)
+        public Camera(int screenWidth, int screenHeight, Vector3 position = new Vector3(), float speed = 5, float yaw = 0)
         {
             this.position = position;
             this.screenWidth = screenWidth;

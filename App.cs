@@ -17,9 +17,9 @@ namespace Voxel_Project
     internal class App : GameWindow
     {
         Scene scene;
-        PlayerEditor playerEditor;
-        PlayerGame playerGame;
-        PlayerBase currentPlayer;
+        EditorController editorController;
+        PlayerController playerController;
+        ControllerBase currentController;
 
         unsafe static void ExtensionsCheck()
         {
@@ -38,7 +38,7 @@ namespace Voxel_Project
             }
             if (!found)
             {
-                Console.WriteLine("ERROR: Missing OpenGL extension GL_ARB_bindless_texture");
+                Console.WriteLine("ERROR: Missing OpenGL extension GL_ARB_bindless_texture. Get a better GPU");
             }
         }
 
@@ -52,9 +52,9 @@ namespace Voxel_Project
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             scene = new Scene("scene.txt");
-            playerEditor = new PlayerEditor(new Camera(width, height, new Vector3(0, 0, 0)), scene.GetTextureManager());
-            playerGame = new PlayerGame(new Vector3(0, 0, 0), new Camera(width, height, new Vector3(0, 0, 0))); // TODO change
-            currentPlayer = playerEditor;
+            editorController = new EditorController(new Camera(width, height), scene.GetTextureManager());
+            playerController = new PlayerController(new Vector3(0, 0, 0), new Camera(width, height));
+            currentController = editorController;
             //currentCamera = editorCamera;
             CursorState = CursorState.Grabbed;
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1);
@@ -64,16 +64,16 @@ namespace Voxel_Project
         {
             if (KeyboardState.IsKeyPressed(Keys.C))
             {
-                if (currentPlayer == playerEditor)
-                    currentPlayer = playerGame;
+                if (currentController == editorController)
+                    currentController = playerController;
                 else
-                    currentPlayer = playerEditor;
+                    currentController = editorController;
             }
             if (KeyboardState.IsKeyDown(Keys.Escape))
             {
                 Close();
             }
-            if (currentPlayer.Update(MouseState, KeyboardState, (float)e.Time, scene))
+            if (currentController.Update(MouseState, KeyboardState, (float)e.Time, scene))
             {
                 scene.Update(KeyboardState, MouseState);
             }
@@ -84,21 +84,21 @@ namespace Voxel_Project
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            if (currentPlayer == playerEditor)
+            if (currentController == editorController)
             {
-                scene.Render(currentPlayer.GetCamera(), playerEditor.GetCursor());
+                scene.Render(currentController.GetCamera(), editorController.GetCursor());
             }
             else
             {
-                scene.Render(currentPlayer.GetCamera());
+                scene.Render(currentController.GetCamera());
             }
             SwapBuffers();
         }
         protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
-            playerGame.GetCamera().Resize(e.Width, e.Height);
-            playerEditor.GetCamera().Resize(e.Width, e.Height);
+            playerController.GetCamera().Resize(e.Width, e.Height);
+            editorController.GetCamera().Resize(e.Width, e.Height);
         }
 
         protected override void OnClosing(CancelEventArgs e)

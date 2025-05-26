@@ -16,7 +16,6 @@ namespace Voxel_Project
         {
             this.speed = 5;
             cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, textureManager); // The transparent voxel that can be moved around in editor mode
-            this.camera.SetPosition(position);
         }
 
         public Cursor GetCursor() { return cursor; }

@@ -11,7 +11,8 @@ namespace Voxel_Project
     internal class PlayerCamera : CameraBase
     {
         PhysicsManager physicsManager = new PhysicsManager();
-
+        Vector3 playerCenterOffset = new Vector3(0, -0.5f, 0);
+        Vector3 playerPhysicsScale = new Vector3(1, 2, 1);
         public PlayerCamera(int screenWidth, int screenHeight, Vector3 position, float speed = 5, float yaw = 0) : base(screenWidth, screenHeight, position, speed, yaw)
         {
         }
@@ -69,6 +70,16 @@ namespace Voxel_Project
                     moveVector.Normalize();
                 position = physicsManager.MoveInScene(this, scene, moveVector * deltaTime * speed);
             }
+        }
+
+        public Vector3 GetCenterOffset()
+        {
+            return playerCenterOffset;
+        }
+
+        public Vector3 GetPhysicsScale()
+        {
+            return playerPhysicsScale;
         }
     }
 }

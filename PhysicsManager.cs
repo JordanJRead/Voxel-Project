@@ -104,13 +104,11 @@ namespace Voxel_Project
             I did look at https://gamedev.stackexchange.com/questions/164774/aabb-to-aabb-collision-response
             but all the code is mine, and most of the algorithms I though of myself
              */
-            Vector3 playerCenter = playerCamera.GetPosition() - new Vector3(0, 0.5f, 0);
+            Vector3 playerCenter = playerCamera.GetPosition() + playerCamera.GetCenterOffset();
             Vector3 desiredPlayerCenter = playerCenter + displacement;
 
-            Vector3 playerScale = new Vector3(1, 2, 1);
-
-            AABB playerAABB = AABB.FromPositionAndScale(playerCenter, playerScale);
-            AABB desiredPlayerAABB = AABB.FromPositionAndScale(desiredPlayerCenter, playerScale);
+            AABB playerAABB = AABB.FromPositionAndScale(playerCenter, playerCamera.GetPhysicsScale());
+            AABB desiredPlayerAABB = AABB.FromPositionAndScale(desiredPlayerCenter, playerCamera.GetPhysicsScale());
             AABB mergedAABB = AABB.Merge(desiredPlayerAABB, playerAABB);
 
             List<AABB> possibleCollisionAABBs = new List<AABB>();
@@ -152,160 +150,121 @@ namespace Voxel_Project
 
             foreach (AABB aabb in possibleCollisionAABBs)
             {
-                int xSign = (displacement.X > 0 ? 1 : (displacement.X < 0 ? -1 : 0));
-                int ySign = (displacement.Y > 0 ? 1 : (displacement.Y < 0 ? -1 : 0));
-                int zSign = (displacement.Z > 0 ? 1 : (displacement.Z < 0 ? -1 : 0));
-                float xT = 5;
-                float yT = 5;
-                float zT = 5;
-
-                if (xSign != 0)
+                // The motion sign in each dimension
+                float[] signDim =
                 {
-                    float t;
+                    (displacement.X > 0 ? 1 : (displacement.X < 0 ? -1 : 0)),
+                    (displacement.Y > 0 ? 1 : (displacement.Y < 0 ? -1 : 0)),
+                    (displacement.Z > 0 ? 1 : (displacement.Z < 0 ? -1 : 0))
+                };
 
-                    /*
-                    This is a rough description of the t-value finder
-                    Assuming the player is moving in the +x direction,
-                    The player's maxX (right side) will hit the object's minX (left side)
-                    If they intersect, then voxelMinX (left side of object) should be inbetween the player's initial right and ending right
+                // t intersection values found in each dimension
+                float[] tDim = { 5, 5, 5 };
 
-                    playerMaxX     voxelMinX  desiredMaxX
-                            |             |          |
-                    x-----------------------------
+                char[] charDim =
+                {
+                    'x',
+                    'y',
+                    'z'
+                };
 
-                        */
-                    if (xSign == 1)
+                for (int dim = 0; dim < 3; ++dim)
+                {
+                    if (signDim[dim] != 0)
                     {
-                        // player's max.X will possibly collide with object's min.X
-                        t = (aabb.min.X - playerAABB.max.X) / (desiredPlayerAABB.max.X - playerAABB.max.X);
-                    }
-                    else
-                    {
-                        t = (playerAABB.min.X - aabb.max.X) / (playerAABB.min.X - desiredPlayerAABB.min.X);
-                    }
-                    if (t >= 0 && t <= 1)
-                    {
+                        float t;
+
                         /*
-                        It is possible that there is no actual collision at the found t-value
-                        As seen below, if the x-values collide, they still may not be touching
-                        y
-                        |          ___________
-                        |          |         |
-                        |          |         |
-                        |          L_________|
-                        |
-                        |
-                        |  _________
-                        |  |       |
-                        |  |       |
-                        |  |       |
-                        |  L_______|
-                        |
-                        -------------------------x
+                        This is a rough description of the t-value finder
+                        Assuming the player is moving in the +x direction,
+                        The player's maxX (right side) will hit the object's minX (left side)
+                        If they intersect, then voxelMinX (left side of object) should be inbetween the player's initial right and ending right
 
-                            
-                        So we need to see if they overlap just by looking at the y direction:
-                            
-                        y
-                        |
-                        |
-                        []
-                        [] (right square)
-                        []
-                        []
-                        |
-                        |
-                        []
-                        []
-                        [] (left square)
-                        []
-                        []
-                        |
+                        playerMaxX     voxelMinX  desiredMaxX
+                                |             |          |
+                        x-----------------------------
 
-                        They don't so we don't count this as an intersection
-                        For 3d, we imagine the squares as cubes and line segments as squares (in the y-z plane, using x as an example)
                             */
-                        Vector3 collisionPlayerPosition = playerAABB.GetCenter() + displacement * t;
-                        AABB possibleCollisionAABB = AABB.FromPositionAndScale(collisionPlayerPosition, playerScale);
-                        if (possibleCollisionAABB.DoSquaresIntersect(aabb, 'x'))
+                        if (signDim[dim] == 1)
                         {
-                            xT = t;
+                            // player's max.X will possibly collide with object's min.X
+                            t = (aabb.min[dim] - playerAABB.max[dim]) / (desiredPlayerAABB.max[dim] - playerAABB.max[dim]);
+                        }
+                        else
+                        {
+                            t = (playerAABB.min[dim] - aabb.max[dim]) / (playerAABB.min[dim] - desiredPlayerAABB.min[dim]);
+                        }
+                        if (t >= 0 && t <= 1)
+                        {
+                            /*
+                            It is possible that there is no actual collision at the found t-value
+                            As seen below, if the x-values collide, they still may not be touching
+                            y
+                            |          ___________
+                            |          |         |
+                            |          |         |
+                            |          L_________|
+                            |
+                            |
+                            |  _________
+                            |  |       |
+                            |  |       |
+                            |  |       |
+                            |  L_______|
+                            |
+                            -------------------------x
+
+
+                            So we need to see if they overlap just by looking at the y direction:
+
+                            y
+                            |
+                            |
+                            []
+                            [] (right square)
+                            []
+                            []
+                            |
+                            |
+                            []
+                            []
+                            [] (left square)
+                            []
+                            []
+                            |
+
+                            They don't so we don't count this as an intersection
+                            For 3d, we imagine the squares as cubes and line segments as squares (in the y-z plane, using x as an example)
+                                */
+                            Vector3 collisionPlayerPosition = playerAABB.GetCenter() + displacement * t;
+                            AABB possibleCollisionAABB = AABB.FromPositionAndScale(collisionPlayerPosition, playerCamera.GetPhysicsScale());
+                            if (possibleCollisionAABB.DoSquaresIntersect(aabb, charDim[dim]))
+                            {
+                                tDim[dim] = t;
+                            }
                         }
                     }
                 }
 
-                if (ySign != 0)
+                // Actually move
+                float closestT = tDim.Min();
+                if (closestT < 4) // They default to 5. Checks if a collision actually happened
                 {
-                    float t;
-                    if (ySign == 1)
-                    {
-                        t = (aabb.min.Y - playerAABB.max.Y) / (desiredPlayerAABB.max.Y - playerAABB.max.Y);
-                    }
-                    else
-                    {
-                        t = (playerAABB.min.Y - aabb.max.Y) / (playerAABB.min.Y - desiredPlayerAABB.min.Y);
-                    }
-                    if (t >= 0 && t <= 1)
-                    {
-                        Vector3 collisionPlayerPosition = playerAABB.GetCenter() + displacement * t;
-                        AABB possibleCollisionAABB = AABB.FromPositionAndScale(collisionPlayerPosition, playerScale);
-                        if (possibleCollisionAABB.DoSquaresIntersect(aabb, 'y'))
-                        {
-                            yT = t;
-                        }
-                    }
-                }
-
-
-                if (zSign != 0)
-                {
-                    float t;
-                    if (zSign == 1)
-                    {
-                        t = (aabb.min.Z - playerAABB.max.Z) / (desiredPlayerAABB.max.Z - playerAABB.max.Z);
-                    }
-                    else
-                    {
-                        t = (playerAABB.min.Z - aabb.max.Z) / (playerAABB.min.Z - desiredPlayerAABB.min.Z);
-                    }
-                    if (t >= 0 && t <= 1)
-                    {
-                        Vector3 collisionPlayerPosition = playerAABB.GetCenter() + displacement * t;
-                        AABB possibleCollisionAABB = AABB.FromPositionAndScale(collisionPlayerPosition, playerScale);
-                        if (possibleCollisionAABB.DoSquaresIntersect(aabb, 'z'))
-                        {
-                            zT = t;
-                        }
-                    }
-                }
-
-                if (xT < 4 || yT < 4 || zT < 4) // They default to 5. Checks if a collision actually happened
-                {
-                    float closestT = MathF.Min(xT, MathF.Min(yT, zT));
-
-                    Vector3 newDisplacement = displacement;
-                    Vector3 safeToMove = new Vector3();
+                    Vector3 newDisplacement = displacement; // New desired direction from new position
+                    Vector3 safeToMove = new Vector3(); // The amount to move toward the collided AABB
                     Vector3 pushBack = new Vector3();
 
-                    if (closestT == xT)
+                    for (int dim = 0; dim < 3; ++dim)
                     {
-                        newDisplacement.X = 0;
-                        safeToMove.X = displacement.X * closestT;
-                        pushBack.X = 0.0001f * -xSign;
+                        if (closestT == tDim[dim])
+                        {
+                            newDisplacement[dim] = 0;
+                            safeToMove[dim] = displacement[dim] * closestT;
+                            pushBack[dim] = 0.0001f * -signDim[dim];
+                            break;
+                        }
+                    }
 
-                    }
-                    else if (closestT == yT)
-                    {
-                        newDisplacement.Y = 0;
-                        safeToMove.Y = displacement.Y * closestT;
-                        pushBack.Y = 0.0001f * -ySign;
-                    }
-                    else
-                    {
-                        newDisplacement.Z = 0;
-                        safeToMove.Z = displacement.Z * closestT;
-                        pushBack.Z = 0.0001f * -zSign;
-                    }
                     playerCamera.MoveBy(safeToMove + pushBack);
                     return MoveInScene(playerCamera, scene, newDisplacement, depth + 1);
                 }

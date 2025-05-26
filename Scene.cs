@@ -227,6 +227,11 @@ namespace Voxel_Project
             }
         }
 
+        public void RenderBufferSet(Camera camera, ShaderBufferSet bufferSet)
+        {
+            cubeShader.Render(camera, cubeVertexArray, bufferSet, textureManager);
+        }
+
         /// <summary>
         /// Updates the GPU with the current scene data
         /// </summary>
@@ -258,8 +263,6 @@ namespace Voxel_Project
         /// </summary>
         public void UpdateGPUVoxelData()
         {
-            voxelsBuffers.SetObjectCount(voxels.Count);
-
             List<float> GPUPositionData = new List<float>(voxelsBuffers.GetObjectCount() * 3); // Reserve space for performance increase
             List<float> GPUScaleData = new List<float>(voxelsBuffers.GetObjectCount() * 3);
             List<ulong> GPUTextureHandlesData = new List<ulong>(voxelsBuffers.GetObjectCount());
@@ -298,8 +301,6 @@ namespace Voxel_Project
                 GPUFenceScales.AddRange(listSet.scales);
                 GPUFenceTextureHandles.AddRange(listSet.textureHandles);
             }
-
-            fenceBuffers.SetObjectCount(totalCubeCount);
 
             fenceBuffers.SetPositions(GPUFencePositions);
             fenceBuffers.SetScales(GPUFenceScales);

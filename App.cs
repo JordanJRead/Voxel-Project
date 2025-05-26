@@ -52,8 +52,9 @@ namespace Voxel_Project
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             scene = new Scene("scene.txt");
-            editorController = new EditorController(new Camera(width, height), scene.GetTextureManager());
             playerController = new PlayerController(new Vector3(0, 0, 0), new Camera(width, height));
+            editorController = new EditorController(new Camera(width, height), scene.GetTextureManager());
+            editorController.Activate(playerController, scene.GetTextureManager());
             currentController = editorController;
             //currentCamera = editorCamera;
             CursorState = CursorState.Grabbed;
@@ -67,7 +68,10 @@ namespace Voxel_Project
                 if (currentController == editorController)
                     currentController = playerController;
                 else
+                {
                     currentController = editorController;
+                    editorController.Activate(playerController, scene.GetTextureManager());
+                }
             }
             if (KeyboardState.IsKeyDown(Keys.Escape))
             {
@@ -87,6 +91,7 @@ namespace Voxel_Project
             if (currentController == editorController)
             {
                 scene.Render(currentController.GetCamera(), editorController.GetCursor());
+                scene.RenderBufferSet(currentController.GetCamera(), editorController.GetPlayerBufferSet());
             }
             else
             {

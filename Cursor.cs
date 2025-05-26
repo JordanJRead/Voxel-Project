@@ -267,7 +267,6 @@ namespace Voxel_Project
             {
                 (listSet, cubeCount) = fence.GetGPUData(textureManager);
             }
-            bufferSet.SetObjectCount(cubeCount);
             bufferSet.SetPositions(listSet.positions);
             bufferSet.SetScales(listSet.scales);
             bufferSet.SetTextureHandles(listSet.textureHandles);

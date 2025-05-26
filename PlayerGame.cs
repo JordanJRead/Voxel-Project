@@ -15,14 +15,15 @@ namespace Voxel_Project
     {
         Vector3 position;
         Vector3 scale = new Vector3(1, 2, 1);
-        PhysicsManager physicsManager = new PhysicsManager();
+        Vector3 cameraOffset = new Vector3(0, 0.5f, 0);
 
         public PlayerGame(Vector3 position, Camera camera) : base(camera)
         {
+            this.speed = 2;
             this.position = position;
         }
 
-        public override void Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene)
+        public override bool Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene)
         {
             if (!keyboard.IsKeyDown(Keys.LeftControl))
             {
@@ -46,13 +47,26 @@ namespace Voxel_Project
                     moveVector += right;
                 if (moveVector.X != 0 || moveVector.Y != 0 || moveVector.Z != 0)
                     moveVector.Normalize();
-                position = physicsManager.MoveInScene(this, scene, moveVector * deltaTime * speed);
+                position = PhysicsManager.MoveInScene(this, scene, moveVector * deltaTime * speed);
+                camera.SetPosition(position + cameraOffset);
             }
+            camera.Update(mouse, keyboard);
+            return false;
         }
 
         public Vector3 GetPosition()
         {
             return position;
+        }
+
+        public Vector3 GetSize()
+        {
+            return scale;
+        }
+
+        public void MoveBy(Vector3 move)
+        {
+            position += move;
         }
     }
 }

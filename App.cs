@@ -17,9 +17,9 @@ namespace Voxel_Project
     internal class App : GameWindow
     {
         Scene scene;
-        EditorCamera editorCamera;
-        Camera playerCamera;
-        CameraBase currentCamera;
+        PlayerEditor playerEditor;
+        PlayerGame playerGame;
+        PlayerBase currentPlayer;
 
         unsafe static void ExtensionsCheck()
         {
@@ -52,9 +52,9 @@ namespace Voxel_Project
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             scene = new Scene("scene.txt");
-            editorCamera = new EditorCamera(width, height, new Vector3(0, 0, 0));
-            playerCamera = new Camera(width, height, new Vector3(1.9999f, 2, -0.9999f), 5, 270);
-            currentCamera = playerCamera;
+            playerEditor = new PlayerEditor(new Camera(width, height, new Vector3(0, 0, 0)), scene.GetTextureManager());
+            playerGame = new PlayerGame(new Vector3(0, 0, 0), new Camera(width, height, new Vector3(0, 0, 0))); // TODO change
+            currentPlayer = playerEditor;
             //currentCamera = editorCamera;
             CursorState = CursorState.Grabbed;
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1);
@@ -62,12 +62,21 @@ namespace Voxel_Project
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            if (KeyboardState.IsKeyPressed(Keys.C))
+            {
+                if (currentPlayer == playerEditor)
+                    currentPlayer = playerGame;
+                else
+                    currentPlayer = playerEditor;
+            }
             if (KeyboardState.IsKeyDown(Keys.Escape))
             {
                 Close();
             }
-            currentCamera.Update(MouseState, KeyboardState, (float)e.Time, scene);
-            scene.Update(KeyboardState, MouseState, currentCamera);
+            if (currentPlayer.Update(MouseState, KeyboardState, (float)e.Time, scene))
+            {
+                scene.Update(KeyboardState, MouseState);
+            }
             Console.WriteLine($"FPS: {1.0f / e.Time}");
         }
 
@@ -75,14 +84,21 @@ namespace Voxel_Project
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            scene.Render(currentCamera);
-
+            if (currentPlayer == playerEditor)
+            {
+                scene.Render(currentPlayer.GetCamera(), playerEditor.GetCursor());
+            }
+            else
+            {
+                scene.Render(currentPlayer.GetCamera());
+            }
             SwapBuffers();
         }
         protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
-            currentCamera.Resize(e.Width, e.Height);
+            playerGame.GetCamera().Resize(e.Width, e.Height);
+            playerEditor.GetCamera().Resize(e.Width, e.Height);
         }
 
         protected override void OnClosing(CancelEventArgs e)

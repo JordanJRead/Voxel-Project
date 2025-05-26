@@ -17,7 +17,10 @@ namespace Voxel_Project
             this.camera = camera;
         }
 
-        public abstract void Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene);
+        /// <summary>
+        /// Returns true if the scene was changed because of the update
+        /// </summary>
+        public abstract bool Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene);
 
         public Camera GetCamera()
         {

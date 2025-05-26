@@ -12,15 +12,13 @@ namespace Voxel_Project
 {
     internal class Cursor
     {
-        bool isActive = true;
         bool isVoxel = true;
         Voxel voxel;
         Fence fence;
         ShaderBufferSet bufferSet = new ShaderBufferSet();
 
-        public Cursor(Vector3 position, Voxel.Type type, bool isActive, TextureManager textureManager)
+        public Cursor(Vector3 position, Voxel.Type type, TextureManager textureManager)
         {
-            this.isActive = isActive;
             voxel = new Voxel(position, type);
             fence = new Fence(position);
             UpdateGPUBuffers(textureManager);
@@ -33,21 +31,19 @@ namespace Voxel_Project
             return fence.GetPosition();
         }
 
-        public bool IsActive()
-        {
-            return isActive;
-        }
-
         /// <summary>
         /// Updates the editor cursor with keyboard and mouse inputs
         /// </summary>
         /// <param name="camera"></param>
         /// <param name="keyboard"></param>
         /// <returns>Whether the scene voxel data should be updated on the GPU</returns>
-        public bool Update(CameraBase camera, KeyboardState keyboard, MouseState mouse, Scene scene, TextureManager textureManager, FenceManager fenceManager)
+        public bool Update(Camera camera, KeyboardState keyboard, MouseState mouse, Scene scene)
         {
             bool hasSceneChanged = false;
             bool hasCursorChanged = false;
+
+            TextureManager textureManager = scene.GetTextureManager();
+            FenceManager fenceManager = scene.GetFenceManager();
 
             // Switch voxel/fence mode
             if (keyboard.IsKeyPressed(Keys.R))
@@ -179,7 +175,7 @@ namespace Voxel_Project
         /// Moves the cursor with keyboard input
         /// </summary>
         /// <returns>Whether the cursor moved or not</returns>
-        private bool UpdatePosition(CameraBase camera, KeyboardState keyboard)
+        private bool UpdatePosition(Camera camera, KeyboardState keyboard)
         {
             Vector3 cameraForward = camera.GetForward();
             Vector3 cursorForwardAxis = new Vector3(1, 0, 0);

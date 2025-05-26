@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
-    internal class PhysicsManager
+    internal static class PhysicsManager
     {
         public static bool SquareOverlap(Vector2 aMin, Vector2 aMax, Vector2 bMin, Vector2 bMax)
         {
@@ -85,7 +85,7 @@ namespace Voxel_Project
             }
         }
 
-        public Vector3 MoveInScene(PlayerGame player, Scene scene, Vector3 displacement, int depth = 0, int maxDepth = 20)
+        public static Vector3 MoveInScene(PlayerGame player, Scene scene, Vector3 displacement, int depth = 0, int maxDepth = 20)
         {
             if (depth == maxDepth)
                 return player.GetPosition() + displacement;
@@ -104,11 +104,11 @@ namespace Voxel_Project
             I did look at https://gamedev.stackexchange.com/questions/164774/aabb-to-aabb-collision-response
             but all the code is mine, and most of the algorithms I though of myself
              */
-            Vector3 playerCenter = playerCamera.GetPosition() + playerCamera.GetCenterOffset();
+            Vector3 playerCenter = player.GetPosition();
             Vector3 desiredPlayerCenter = playerCenter + displacement;
 
-            AABB playerAABB = AABB.FromPositionAndScale(playerCenter, playerCamera.GetPhysicsScale());
-            AABB desiredPlayerAABB = AABB.FromPositionAndScale(desiredPlayerCenter, playerCamera.GetPhysicsScale());
+            AABB playerAABB = AABB.FromPositionAndScale(playerCenter, player.GetSize());
+            AABB desiredPlayerAABB = AABB.FromPositionAndScale(desiredPlayerCenter, player.GetSize());
             AABB mergedAABB = AABB.Merge(desiredPlayerAABB, playerAABB);
 
             List<AABB> possibleCollisionAABBs = new List<AABB>();
@@ -237,7 +237,7 @@ namespace Voxel_Project
                             For 3d, we imagine the squares as cubes and line segments as squares (in the y-z plane, using x as an example)
                                 */
                             Vector3 collisionPlayerPosition = playerAABB.GetCenter() + displacement * t;
-                            AABB possibleCollisionAABB = AABB.FromPositionAndScale(collisionPlayerPosition, playerCamera.GetPhysicsScale());
+                            AABB possibleCollisionAABB = AABB.FromPositionAndScale(collisionPlayerPosition, player.GetSize());
                             if (possibleCollisionAABB.DoSquaresIntersect(aabb, charDim[dim]))
                             {
                                 tDim[dim] = t;
@@ -265,11 +265,11 @@ namespace Voxel_Project
                         }
                     }
 
-                    playerCamera.MoveBy(safeToMove + pushBack);
-                    return MoveInScene(playerCamera, scene, newDisplacement, depth + 1);
+                    player.MoveBy(safeToMove + pushBack);
+                    return MoveInScene(player, scene, newDisplacement, depth + 1);
                 }
             }
-            return playerCamera.GetPosition() + displacement;
+            return player.GetPosition() + displacement;
         }
     }
 }

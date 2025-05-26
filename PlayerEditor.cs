@@ -10,12 +10,17 @@ namespace Voxel_Project
 {
     internal class PlayerEditor : PlayerBase
     {
-        public PlayerEditor(Camera camera) : base(camera)
-        {
+        Cursor cursor; // The transparent voxel that can be moved around in editor mode
 
+        public PlayerEditor(Camera camera, TextureManager textureManager) : base(camera)
+        {
+            this.speed = 5;
+            cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, textureManager); // The transparent voxel that can be moved around in editor mode
         }
 
-        public override void Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene)
+        public Cursor GetCursor() { return cursor; }
+
+        public override bool Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene)
         {
             if (!keyboard.IsKeyDown(Keys.LeftControl))
             {
@@ -36,9 +41,11 @@ namespace Voxel_Project
                     moveVector -= right;
                 if (keyboard.IsKeyDown(Keys.D))
                     moveVector += right;
-
-                camera.MoveBy(moveVector * deltaTime * speed);
+                
+                camera.SetPosition(moveVector * deltaTime * speed + camera.GetPosition());
             }
+            camera.Update(mouse, keyboard);
+            return cursor.Update(camera, keyboard, mouse, scene);
         }
     }
 }

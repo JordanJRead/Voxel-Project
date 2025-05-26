@@ -15,7 +15,6 @@ namespace Voxel_Project
         protected float yaw = 0;
         protected float sensitivity = 0.1f;
         protected bool isFirstMove = true; // Stops the camera from jerking quickly when loaded
-        protected float speed = 5;
 
         protected int screenWidth;
         protected int screenHeight;
@@ -28,13 +27,17 @@ namespace Voxel_Project
             this.position = position;
             this.screenWidth = screenWidth;
             this.screenHeight = screenHeight;
-            this.speed = speed;
             this.yaw = yaw;
         }
 
         public Vector3 GetPosition()
         {
             return position;
+        }
+
+        public void SetPosition(Vector3 pos)
+        {
+            this.position = pos;
         }
 
         public Matrix4 GetViewMatrix()
@@ -46,11 +49,6 @@ namespace Voxel_Project
         public Matrix4 GetProjectionMatrix()
         {
             return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(80), (float)screenWidth / screenHeight, 0.1f, 100);
-        }
-
-        public void MoveBy(Vector3 moveBy)
-        {
-            position += moveBy;
         }
 
         public Vector3 GetForward()

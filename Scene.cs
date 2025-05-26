@@ -20,7 +20,6 @@ namespace Voxel_Project
         VertexBuffer cubeVertexBuffer;
 
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
-        Cursor cursor;
 
         ShaderBufferSet voxelsBuffers = new ShaderBufferSet();
         ShaderBufferSet fenceBuffers = new ShaderBufferSet();
@@ -33,7 +32,6 @@ namespace Voxel_Project
         /// </summary>
         public Scene(string filePath)
         {
-            cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, true, textureManager); // The transparent voxel that can be moved around in editor mode
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
 
@@ -162,6 +160,16 @@ namespace Voxel_Project
             voxels.Add(voxel);
         }
 
+        public FenceManager GetFenceManager()
+        {
+            return fenceManager;
+        }
+
+        public TextureManager GetTextureManager()
+        {
+            return textureManager;
+        }
+
         /// <summary>
         /// Writes scene data to the same file path that the scene was loaded from, overwriting that file
         /// </summary>
@@ -209,29 +217,23 @@ namespace Voxel_Project
             }
         }
 
-        public void Render(CameraBase camera)
+        public void Render(Camera camera, Cursor? cursor = null)
         {
             cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, textureManager);
             cubeShader.Render(camera, cubeVertexArray, fenceBuffers, textureManager);
-            if (cursor.IsActive())
+            if (cursor != null)
             {
                 cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), textureManager, true);
             }
         }
 
         /// <summary>
-        /// Mostly deals with moving the editor's 'selection' cube
+        /// Updates the GPU with the current scene data
         /// </summary>
-        public void Update(KeyboardState keyboard, MouseState mouse, CameraBase camera)
+        public void Update(KeyboardState keyboard, MouseState mouse) // CALL THIS FUNCTION IF RETURN VALUE OF PLAYER.UPDATE IS TRUE
         {
-            if (cursor == null)
-                return;
-
-            if (cursor.Update(camera, keyboard, mouse, this, textureManager, fenceManager))
-            {
-                UpdateGPUVoxelData();
-                UpdateGPUFenceData();
-            }
+            UpdateGPUVoxelData();
+            UpdateGPUFenceData();
         }
 
         /// <summary>

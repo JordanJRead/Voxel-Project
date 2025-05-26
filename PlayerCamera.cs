@@ -59,9 +59,9 @@ namespace Voxel_Project
                     moveVector -= Vector3.UnitY;
                 if (keyboard.IsKeyDown(Keys.W))
                     moveVector += forward;
-                if (keyboard.IsKeyDown(Keys.S))// || true)
+                if (keyboard.IsKeyDown(Keys.S))
                     moveVector -= forward;
-                if (keyboard.IsKeyDown(Keys.A))// || true)
+                if (keyboard.IsKeyDown(Keys.A))
                     moveVector -= right;
                 if (keyboard.IsKeyDown(Keys.D))
                     moveVector += right;

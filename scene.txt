@@ -63,3 +63,6 @@ fence,2,1,-2
 fence,1,1,-2
 fence,0,1,-2
 fence,-1,1,-2
+fence,-2,2,1
+fence,-4,2,1
+fence,-6,1,1

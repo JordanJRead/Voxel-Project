@@ -15,6 +15,9 @@ namespace Voxel_Project
             return !(aMax.X < bMin.X || aMin.X > bMax.X || aMax.Y < bMin.Y || aMin.Y > bMax.Y);
         }
 
+        /// <summary>
+        /// Axis aligned bounding box
+        /// </summary>
         class AABB
         {
             public Vector3 min;
@@ -26,11 +29,27 @@ namespace Voxel_Project
                 this.max = max;
             }
 
+            public static AABB FromPositionAndScale(Vector3 position, Vector3 scale)
+            {
+                return new AABB(position - scale * 0.5f, position + scale * 0.5f);
+            }
+
             public Vector3 GetCenter()
             {
                 return min + (max - min) * 0.5f;
             }
 
+            /// <summary>
+            /// Returns a new AABB that is the same as the current, but moved
+            /// </summary>
+            /// <param name="moveBy"></param>
+            public AABB NewMoveBy(Vector3 moveBy)
+            {
+                AABB newAABB = new AABB(min, max);
+                newAABB.min += moveBy;
+                newAABB.max += moveBy;
+                return newAABB;
+            }
             public bool Intersects(AABB other)
             {
                 return !(this.min.X >= other.max.X || this.max.X <= other.min.X || this.min.Y >= other.max.Y || this.max.Y <= other.min.Y || this.min.Z >= other.max.Z || this.max.Z <= other.min.Z);
@@ -85,26 +104,29 @@ namespace Voxel_Project
             I did look at https://gamedev.stackexchange.com/questions/164774/aabb-to-aabb-collision-response
             but all the code is mine, and most of the algorithms I though of myself
              */
-            Vector3 desiredPlayerPosition = playerCamera.GetPosition() + displacement;
-            AABB playerAABB = new AABB(playerCamera.GetPosition() - new Vector3(0.5f), playerCamera.GetPosition() + new Vector3(0.5f));
-            AABB desiredPlayerAABB = new AABB(desiredPlayerPosition - new Vector3(0.5f), desiredPlayerPosition + new Vector3(0.5f));
+            Vector3 playerCenter = playerCamera.GetPosition() - new Vector3(0, 0.5f, 0);
+            Vector3 desiredPlayerCenter = playerCenter + displacement;
+
+            Vector3 playerScale = new Vector3(1, 2, 1);
+
+            AABB playerAABB = AABB.FromPositionAndScale(playerCenter, playerScale);
+            AABB desiredPlayerAABB = AABB.FromPositionAndScale(desiredPlayerCenter, playerScale);
             AABB mergedAABB = AABB.Merge(desiredPlayerAABB, playerAABB);
 
             List<AABB> possibleCollisionAABBs = new List<AABB>();
 
             foreach (Voxel voxel in scene.GetVoxels())
             {
-                AABB voxelAABB = new AABB(voxel.GetPosition() - new Vector3(0.5f), voxel.GetPosition() + new Vector3(0.5f));
+                AABB voxelAABB = AABB.FromPositionAndScale(voxel.GetPosition(), new Vector3(0.5f));
                 if (mergedAABB.Intersects(voxelAABB))
                 {
                     possibleCollisionAABBs.Add(voxelAABB);
                 }
             }
 
-            // TODO fence
             foreach (Fence fence in scene.GetFences())
             {
-                AABB postAABB = new AABB(fence.GetPosition() - new Vector3(0.1f, 0.5f, 0.1f), fence.GetPosition() + new Vector3(0.1f, 0.5f, 0.1f));
+                AABB postAABB = AABB.FromPositionAndScale(fence.GetPosition(), new Vector3(0.1f, 0.5f, 0.1f));
                 if (mergedAABB.Intersects(postAABB))
                 {
                     possibleCollisionAABBs.Add(postAABB);
@@ -122,8 +144,8 @@ namespace Voxel_Project
 
             possibleCollisionAABBs.Sort(new Comparison<AABB>((AABB aabb1, AABB aabb2) =>
             {
-                float dist1 = (aabb1.GetCenter() - playerCamera.GetPosition()).Length;
-                float dist2 = (aabb2.GetCenter() - playerCamera.GetPosition()).Length;
+                float dist1 = (aabb1.GetCenter() - playerCenter).Length;
+                float dist2 = (aabb2.GetCenter() - playerCenter).Length;
 
                 return dist1 < dist2 ? -1 : 1;
             }));
@@ -203,8 +225,8 @@ namespace Voxel_Project
                         They don't so we don't count this as an intersection
                         For 3d, we imagine the squares as cubes and line segments as squares (in the y-z plane, using x as an example)
                             */
-                        Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
-                        AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
+                        Vector3 collisionPlayerPosition = playerAABB.GetCenter() + displacement * t;
+                        AABB possibleCollisionAABB = AABB.FromPositionAndScale(collisionPlayerPosition, playerScale);
                         if (possibleCollisionAABB.DoSquaresIntersect(aabb, 'x'))
                         {
                             xT = t;
@@ -225,8 +247,8 @@ namespace Voxel_Project
                     }
                     if (t >= 0 && t <= 1)
                     {
-                        Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
-                        AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
+                        Vector3 collisionPlayerPosition = playerAABB.GetCenter() + displacement * t;
+                        AABB possibleCollisionAABB = AABB.FromPositionAndScale(collisionPlayerPosition, playerScale);
                         if (possibleCollisionAABB.DoSquaresIntersect(aabb, 'y'))
                         {
                             yT = t;
@@ -248,8 +270,8 @@ namespace Voxel_Project
                     }
                     if (t >= 0 && t <= 1)
                     {
-                        Vector3 collisionPlayerPosition = playerCamera.GetPosition() + displacement * t;
-                        AABB possibleCollisionAABB = new AABB(collisionPlayerPosition - new Vector3(0.5f), collisionPlayerPosition + new Vector3(0.5f));
+                        Vector3 collisionPlayerPosition = playerAABB.GetCenter() + displacement * t;
+                        AABB possibleCollisionAABB = AABB.FromPositionAndScale(collisionPlayerPosition, playerScale);
                         if (possibleCollisionAABB.DoSquaresIntersect(aabb, 'z'))
                         {
                             zT = t;

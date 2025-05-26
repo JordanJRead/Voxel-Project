@@ -18,7 +18,7 @@ namespace Voxel_Project
     {
         Scene scene;
         EditorCamera editorCamera;
-        PlayerCamera playerCamera;
+        Camera playerCamera;
         CameraBase currentCamera;
 
         unsafe static void ExtensionsCheck()
@@ -53,7 +53,7 @@ namespace Voxel_Project
 
             scene = new Scene("scene.txt");
             editorCamera = new EditorCamera(width, height, new Vector3(0, 0, 0));
-            playerCamera = new PlayerCamera(width, height, new Vector3(1.9999f, 2, -0.9999f), 5, 270);
+            playerCamera = new Camera(width, height, new Vector3(1.9999f, 2, -0.9999f), 5, 270);
             currentCamera = playerCamera;
             //currentCamera = editorCamera;
             CursorState = CursorState.Grabbed;

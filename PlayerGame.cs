@@ -8,51 +8,29 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
-    internal class PlayerCamera : CameraBase
+    /// <summary>
+    /// Represents a player that can play the game
+    /// </summary>
+    internal class PlayerGame : PlayerBase
     {
+        Vector3 position;
+        Vector3 scale = new Vector3(1, 2, 1);
         PhysicsManager physicsManager = new PhysicsManager();
-        Vector3 playerCenterOffset = new Vector3(0, -0.5f, 0);
-        Vector3 playerPhysicsScale = new Vector3(1, 2, 1);
-        public PlayerCamera(int screenWidth, int screenHeight, Vector3 position, float speed = 5, float yaw = 0) : base(screenWidth, screenHeight, position, speed, yaw)
+
+        public PlayerGame(Vector3 position, Camera camera) : base(camera)
         {
+            this.position = position;
         }
 
         public override void Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene)
         {
-            if (isFirstMove)
-            {
-                prevMousePos = mouse.Position;
-                isFirstMove = false;
-            }
-
-            Vector2 mouseMovement = mouse.Position - prevMousePos;
-            prevMousePos = mouse.Position;
-
-            yaw -= mouseMovement.X * sensitivity;
-            pitch -= mouseMovement.Y * sensitivity;
-
-            if (yaw < 0)
-                yaw += 360;
-            if (pitch < 0)
-                pitch += 360;
-            yaw %= 360;
-            pitch %= 360;
-
-            // Stop from going too high up
-            if (pitch > 89 && pitch < 180)
-                pitch = 89;
-
-            // Stop from going straight down
-            if (pitch < 270 && pitch >= 180)
-                pitch = 271;
-
             if (!keyboard.IsKeyDown(Keys.LeftControl))
             {
                 Vector3 moveVector = new Vector3();
 
-                Vector3 badForward = GetForward();
+                Vector3 badForward = camera.GetForward();
                 Vector3 forward = new Vector3(badForward.X, 0, badForward.Z).Normalized();
-                Vector3 right = GetRight();
+                Vector3 right = camera.GetRight();
 
                 if (keyboard.IsKeyDown(Keys.Space))
                     moveVector += Vector3.UnitY;
@@ -72,14 +50,9 @@ namespace Voxel_Project
             }
         }
 
-        public Vector3 GetCenterOffset()
+        public Vector3 GetPosition()
         {
-            return playerCenterOffset;
-        }
-
-        public Vector3 GetPhysicsScale()
-        {
-            return playerPhysicsScale;
+            return position;
         }
     }
 }

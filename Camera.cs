@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
-    internal abstract class CameraBase
+    internal class Camera
     {
         // yaw and pitch are in degrees
         protected float pitch = 0;
@@ -23,7 +23,7 @@ namespace Voxel_Project
         protected Vector3 position = new Vector3();
         protected Vector2 prevMousePos = new Vector2();
 
-        public CameraBase(int screenWidth, int screenHeight, Vector3 position, float speed = 5, float yaw = 0)
+        public Camera(int screenWidth, int screenHeight, Vector3 position, float speed = 5, float yaw = 0)
         {
             this.position = position;
             this.screenWidth = screenWidth;
@@ -31,8 +31,6 @@ namespace Voxel_Project
             this.speed = speed;
             this.yaw = yaw;
         }
-
-        public abstract void Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene);
 
         public Vector3 GetPosition()
         {
@@ -81,6 +79,36 @@ namespace Voxel_Project
         {
             this.screenWidth = width;
             this.screenHeight = height;
+        }
+
+        public void Update(MouseState mouse, KeyboardState keyboard)
+        {
+            if (isFirstMove)
+            {
+                prevMousePos = mouse.Position;
+                isFirstMove = false;
+            }
+
+            Vector2 mouseMovement = mouse.Position - prevMousePos;
+            prevMousePos = mouse.Position;
+
+            yaw -= mouseMovement.X * sensitivity;
+            pitch -= mouseMovement.Y * sensitivity;
+
+            if (yaw < 0)
+                yaw += 360;
+            if (pitch < 0)
+                pitch += 360;
+            yaw %= 360;
+            pitch %= 360;
+
+            // Stop from going too high up
+            if (pitch > 89 && pitch < 180)
+                pitch = 89;
+
+            // Stop from going straight down
+            if (pitch < 270 && pitch >= 180)
+                pitch = 271;
         }
     }
 }

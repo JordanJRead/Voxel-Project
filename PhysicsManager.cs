@@ -85,10 +85,10 @@ namespace Voxel_Project
             }
         }
 
-        public Vector3 MoveInScene(PlayerCamera playerCamera, Scene scene, Vector3 displacement, int depth = 0, int maxDepth = 20)
+        public Vector3 MoveInScene(PlayerGame player, Scene scene, Vector3 displacement, int depth = 0, int maxDepth = 20)
         {
             if (depth == maxDepth)
-                return playerCamera.GetPosition() + displacement;
+                return player.GetPosition() + displacement;
             /*
             THE ALGORITHM:
             - Check each axis for the closest collision t-value (0-1)

@@ -17,9 +17,9 @@ namespace Voxel_Project
     internal class App : GameWindow
     {
         Scene scene;
-        EditorCamera editorCamera;
-        PlayerCamera playerCamera;
-        CameraBase currentCamera;
+        EditorController editorController;
+        PlayerController playerController;
+        ControllerBase currentController;
 
         unsafe static void ExtensionsCheck()
         {
@@ -38,7 +38,7 @@ namespace Voxel_Project
             }
             if (!found)
             {
-                Console.WriteLine("ERROR: Missing OpenGL extension GL_ARB_bindless_texture");
+                Console.WriteLine("ERROR: Missing OpenGL extension GL_ARB_bindless_texture. Get a better GPU");
             }
         }
 
@@ -52,9 +52,9 @@ namespace Voxel_Project
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             scene = new Scene("scene.txt");
-            editorCamera = new EditorCamera(width, height, new Vector3(0, 0, 0));
-            playerCamera = new PlayerCamera(width, height, new Vector3(1.9999f, 2, -0.9999f), 5, 270);
-            currentCamera = playerCamera;
+            editorController = new EditorController(new Camera(width, height), scene.GetTextureManager());
+            playerController = new PlayerController(new Vector3(0, 0, 0), new Camera(width, height));
+            currentController = editorController;
             //currentCamera = editorCamera;
             CursorState = CursorState.Grabbed;
             GL.ClearColor(0.2f, 0.2f, 0.2f, 1);
@@ -62,12 +62,21 @@ namespace Voxel_Project
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
+            if (KeyboardState.IsKeyPressed(Keys.C))
+            {
+                if (currentController == editorController)
+                    currentController = playerController;
+                else
+                    currentController = editorController;
+            }
             if (KeyboardState.IsKeyDown(Keys.Escape))
             {
                 Close();
             }
-            currentCamera.Update(MouseState, KeyboardState, (float)e.Time, scene);
-            scene.Update(KeyboardState, MouseState, currentCamera);
+            if (currentController.Update(MouseState, KeyboardState, (float)e.Time, scene))
+            {
+                scene.Update(KeyboardState, MouseState);
+            }
             Console.WriteLine($"FPS: {1.0f / e.Time}");
         }
 
@@ -75,14 +84,21 @@ namespace Voxel_Project
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            scene.Render(currentCamera);
-
+            if (currentController == editorController)
+            {
+                scene.Render(currentController.GetCamera(), editorController.GetCursor());
+            }
+            else
+            {
+                scene.Render(currentController.GetCamera());
+            }
             SwapBuffers();
         }
         protected override void OnFramebufferResize(FramebufferResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
-            currentCamera.Resize(e.Width, e.Height);
+            playerController.GetCamera().Resize(e.Width, e.Height);
+            editorController.GetCamera().Resize(e.Width, e.Height);
         }
 
         protected override void OnClosing(CancelEventArgs e)

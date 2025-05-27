@@ -11,17 +11,17 @@ namespace Voxel_Project
     internal class EditorController : ControllerBase
     {
         Cursor cursor; // The transparent voxel / fence that can be moved around in editor mode
-        ShaderBufferSet playerBufferSet = new ShaderBufferSet();
+        CubeShaderBufferSet playerCubeBufferSet = new CubeShaderBufferSet();
 
-        public EditorController(Camera camera, TextureManager textureManager) : base(camera)
+        public EditorController(Camera camera, CubeTextureManager cubeTextureManager) : base(camera)
         {
             this.speed = 5;
-            cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, textureManager); // The transparent voxel that can be moved around in editor mode
+            cursor = new Cursor(new Vector3(0, 0, 0), Voxel.Type.none, cubeTextureManager); // The transparent voxel that can be moved around in editor mode
         }
 
         public Cursor GetCursor() { return cursor; }
 
-        public void Activate(PlayerController playerController, TextureManager textureManager)
+        public void Activate(PlayerController playerController, CubeTextureManager cubeTextureManager)
         {
             List<float> position = new List<float>(3);
             position.Add(playerController.GetPosition().X);
@@ -34,19 +34,19 @@ namespace Voxel_Project
             scale.Add(playerController.GetSize().Z);
 
             List<ulong> texture = new List<ulong>();
-            texture.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+            texture.Add(cubeTextureManager.GetBindlessTextureHandle(Voxel.Type.none));
 
-            playerBufferSet.SetPositions(position);
-            playerBufferSet.SetScales(scale);
-            playerBufferSet.SetTextureHandles(texture);
+            playerCubeBufferSet.SetPositions(position);
+            playerCubeBufferSet.SetScales(scale);
+            playerCubeBufferSet.SetTextureHandles(texture);
         }
 
         /// <summary>
         /// Gets the buffer set representing the player controller
         /// </summary>
-        public ShaderBufferSet GetPlayerBufferSet()
+        public CubeShaderBufferSet GetPlayerCubeBufferSet()
         {
-            return playerBufferSet;
+            return playerCubeBufferSet;
         }
 
         public override bool Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene)

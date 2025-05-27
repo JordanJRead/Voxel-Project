@@ -145,13 +145,13 @@ namespace Voxel_Project
         /// <summary>
         /// Gets the data the shader needs to draw this fence.
         /// </summary>
-        /// <param name="textureManager"></param>
+        /// <param name="cubeTextureManager"></param>
         /// <returns>The lists of GPU data AND the number of cubes drawn from this fence (1 to 5 inclusive)</returns>
-        public (ShaderListSet, int) GetGPUData(TextureManager textureManager)
+        public (CubeShaderListSet, int) GetGPUData(CubeTextureManager cubeTextureManager)
         {
             int cubeCount = 1;
 
-            ShaderListSet listSet = new ShaderListSet();
+            CubeShaderListSet listSet = new CubeShaderListSet();
 
             /// First bit deals with the fence post
             // POSITIONS
@@ -168,7 +168,7 @@ namespace Voxel_Project
             listSet.scales.Add(1);
             listSet.scales.Add(0.2f);
 
-            listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+            listSet.textureHandles.Add(cubeTextureManager.GetBindlessTextureHandle(Voxel.Type.none));
 
             /// This deals with the fence connectors
             if (GetConnection(Fence.ConnectionType.posX))
@@ -182,7 +182,7 @@ namespace Voxel_Project
                 listSet.scales.Add(0.1f);
                 listSet.scales.Add(0.1f);
 
-                listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+                listSet.textureHandles.Add(cubeTextureManager.GetBindlessTextureHandle(Voxel.Type.none));
             }
 
             if (GetConnection(Fence.ConnectionType.negX))
@@ -196,7 +196,7 @@ namespace Voxel_Project
                 listSet.scales.Add(0.1f);
                 listSet.scales.Add(0.1f);
 
-                listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+                listSet.textureHandles.Add(cubeTextureManager.GetBindlessTextureHandle(Voxel.Type.none));
             }
 
             if (GetConnection(Fence.ConnectionType.posZ))
@@ -210,7 +210,7 @@ namespace Voxel_Project
                 listSet.scales.Add(0.1f);
                 listSet.scales.Add(0.5f);
 
-                listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+                listSet.textureHandles.Add(cubeTextureManager.GetBindlessTextureHandle(Voxel.Type.none));
             }
 
             if (GetConnection(Fence.ConnectionType.negZ))
@@ -224,7 +224,7 @@ namespace Voxel_Project
                 listSet.scales.Add(0.1f);
                 listSet.scales.Add(0.5f);
 
-                listSet.textureHandles.Add(textureManager.GetBindlessTextureHandle(Voxel.Type.none));
+                listSet.textureHandles.Add(cubeTextureManager.GetBindlessTextureHandle(Voxel.Type.none));
             }
 
             return (listSet, cubeCount);

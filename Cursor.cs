@@ -15,13 +15,13 @@ namespace Voxel_Project
         bool isVoxel = true;
         Voxel voxel;
         Fence fence;
-        ShaderBufferSet bufferSet = new ShaderBufferSet();
+        CubeShaderBufferSet bufferSet = new CubeShaderBufferSet();
 
-        public Cursor(Vector3 position, Voxel.Type type, TextureManager textureManager)
+        public Cursor(Vector3 position, Voxel.Type type, CubeTextureManager cubeTextureManager)
         {
             voxel = new Voxel(position, type);
             fence = new Fence(position);
-            UpdateGPUBuffers(textureManager);
+            UpdateGPUBuffers(cubeTextureManager);
         }
 
         public Vector3 GetPosition()
@@ -42,14 +42,14 @@ namespace Voxel_Project
             bool hasSceneChanged = false;
             bool hasCursorChanged = false;
 
-            TextureManager textureManager = scene.GetTextureManager();
+            CubeTextureManager cubeTextureManager = scene.GetTextureManager();
             FenceManager fenceManager = scene.GetFenceManager();
 
             // Switch voxel/fence mode
             if (keyboard.IsKeyPressed(Keys.R))
             {
                 isVoxel = !isVoxel;
-                UpdateGPUBuffers(textureManager);
+                UpdateGPUBuffers(cubeTextureManager);
                 if (isVoxel)
                 {
                     fenceManager.UnFakeFence(voxel.GetPosition());
@@ -166,7 +166,7 @@ namespace Voxel_Project
             }
             if (hasCursorChanged)
             {
-                UpdateGPUBuffers(textureManager);
+                UpdateGPUBuffers(cubeTextureManager);
             }
             return hasSceneChanged;
         }
@@ -254,25 +254,25 @@ namespace Voxel_Project
             isVoxel = !isVoxel;
         }
 
-        private void UpdateGPUBuffers(TextureManager textureManager)
+        private void UpdateGPUBuffers(CubeTextureManager cubeTextureManager)
         {
-            ShaderListSet listSet;
+            CubeShaderListSet listSet;
             int cubeCount;
             if (isVoxel)
             {
-                listSet = voxel.GetGPUData(textureManager);
+                listSet = voxel.GetGPUData(cubeTextureManager);
                 cubeCount = 1;
             }
             else
             {
-                (listSet, cubeCount) = fence.GetGPUData(textureManager);
+                (listSet, cubeCount) = fence.GetGPUData(cubeTextureManager);
             }
             bufferSet.SetPositions(listSet.positions);
             bufferSet.SetScales(listSet.scales);
             bufferSet.SetTextureHandles(listSet.textureHandles);
         }
 
-        public ShaderBufferSet GetShaderBuffers()
+        public CubeShaderBufferSet GetShaderBuffers()
         {
             return bufferSet;
         }

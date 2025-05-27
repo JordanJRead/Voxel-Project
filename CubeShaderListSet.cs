@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Voxel_Project
 {
     /// <summary>
-    /// Contains lists for each of the data types the GPU needs. Similar to InstancedBufferSet
+    /// Contains lists for each of the data types the GPU needs for the cube shader. Similar to CubeShaderBufferSet
     /// </summary>
-    internal class ShaderListSet
+    internal class CubeShaderListSet
     {
         public List<float> positions = new List<float>();
         public List<float> scales = new List<float>();

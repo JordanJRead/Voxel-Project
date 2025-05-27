@@ -27,26 +27,23 @@ namespace Voxel_Project
         /// Renders the scene
         /// </summary>
         /// <param name="vertexArray">The vertices of the object to draw</param>
-        /// <param name="buffers">The location, texture, and count information about the object(s)</param>
+        /// <param name="cubeBuffers">The location, texture, and count information about the object(s)</param>
         /// <param name="drawCursor">Whether to draw transparent and ignoring depth</param>
-        public void Render(Camera camera, VertexArray vertexArray, ShaderBufferSet buffers, TextureManager textureManager, bool drawCursor = false)
+        public void Render(Camera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, bool drawCursor = false)
         {
             // Bind SSBOs
-            buffers.positions.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, positionsBufferIndex, buffers.positions);
+            cubeBuffers.positions.Use(BufferTarget.ShaderStorageBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, positionsBufferIndex, cubeBuffers.positions);
 
-            buffers.scales.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, scalesBufferIndex, buffers.scales);
+            cubeBuffers.scales.Use(BufferTarget.ShaderStorageBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, scalesBufferIndex, cubeBuffers.scales);
 
-            buffers.textures.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, texturesBufferIndex, buffers.textures);
+            cubeBuffers.textures.Use(BufferTarget.ShaderStorageBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, texturesBufferIndex, cubeBuffers.textures);
 
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            textureManager.whiteNoise.Use();
 
             if (drawCursor)
             {
@@ -63,7 +60,7 @@ namespace Voxel_Project
 
             const int triangleCount = 12;
             const int verticesPerTriangle = 3;
-            GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, triangleCount * verticesPerTriangle, buffers.GetObjectCount());
+            GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, triangleCount * verticesPerTriangle, cubeBuffers.GetObjectCount());
         }
     }
 }

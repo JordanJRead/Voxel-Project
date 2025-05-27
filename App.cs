@@ -79,7 +79,7 @@ namespace Voxel_Project
             }
             if (currentController.Update(MouseState, KeyboardState, (float)e.Time, scene))
             {
-                scene.Update(KeyboardState, MouseState);
+                scene.UpdateGPU(KeyboardState, MouseState);
             }
             Console.WriteLine($"FPS: {1.0f / e.Time}");
         }
@@ -91,7 +91,7 @@ namespace Voxel_Project
             if (currentController == editorController)
             {
                 scene.Render(currentController.GetCamera(), editorController.GetCursor());
-                scene.RenderBufferSet(currentController.GetCamera(), editorController.GetPlayerBufferSet());
+                scene.RenderCubeBufferSet(currentController.GetCamera(), editorController.GetPlayerCubeBufferSet());
             }
             else
             {

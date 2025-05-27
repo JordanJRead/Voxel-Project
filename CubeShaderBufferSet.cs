@@ -9,9 +9,9 @@ using OpenTK.Graphics.OpenGL4;
 namespace Voxel_Project
 {
     /// <summary>
-    /// Contains all the information the shader needs for drawing several of one type of object
+    /// Contains all the information the shader needs for drawing several cubes
     /// </summary>
-    internal class ShaderBufferSet
+    internal class CubeShaderBufferSet
     {
         public BUF positions = new BUF();
         public BUF scales = new BUF();
@@ -42,6 +42,13 @@ namespace Voxel_Project
             textures.Use(BufferTarget.ShaderStorageBuffer);
             GL.BufferData(BufferTarget.ShaderStorageBuffer, newTextures.Count * sizeof(ulong), newTextures.ToArray(), BufferUsageHint.DynamicCopy);
             objectCount = newTextures.Count;
+        }
+
+        public void SetFromListSet(CubeShaderListSet listSet)
+        {
+            SetPositions(listSet.positions);
+            SetScales(listSet.scales);
+            SetTextureHandles(listSet.textureHandles);
         }
     }
 }

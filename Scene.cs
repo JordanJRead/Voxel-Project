@@ -19,12 +19,19 @@ namespace Voxel_Project
         VertexArray cubeVertexArray;
         VertexBuffer cubeVertexBuffer;
 
+        // Plant vertices
+        VertexArray plantVertexArray;
+        VertexBuffer plantVertexBuffer;
+
+        PlantManager plantManager = new PlantManager();
+
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
+        PlantShader plantShader = new PlantShader("Shaders/plant.vert", "Shaders/plant.frag");
 
-        ShaderBufferSet voxelsBuffers = new ShaderBufferSet();
-        ShaderBufferSet fenceBuffers = new ShaderBufferSet();
+        CubeShaderBufferSet voxelsBuffers = new CubeShaderBufferSet();
+        CubeShaderBufferSet fenceBuffers = new CubeShaderBufferSet();
 
-        TextureManager textureManager = new TextureManager();
+        CubeTextureManager cubeTextureManager = new CubeTextureManager();
         string initialPath;
 
         /// <summary>
@@ -64,85 +71,13 @@ namespace Voxel_Project
             UpdateGPUVoxelData();
             UpdateGPUFenceData();
 
-            // Cube vertices
-            // x1, y1, z1, x2, y2, z2, etc.
-            // Cube is centerd on (0, 0, 0) and has dimensions of 1 (-0.5 to 0.5)
-            /*
-              Y
-              |
-              |
-              |
-              |
-              ----------X
-             /
-            /
-           Z
-            */
-            float right = 0.5f;
-            float left = -0.5f;
-            float up = 0.5f;
-            float down = -0.5f;
-            float near = 0.5f;
-            float far = -0.5f;
+            float[] cubeVertices = Vertices.GetCubeVertices();
 
-            float[] vertices =
-            {
-                // Front face
-                left,  up,   near, 0, 0, near,
-                left,  down, near, 0, 0, near,
-                right, down, near, 0, 0, near,
-
-                right, down, near, 0, 0, near,
-                right, up,   near, 0, 0, near,
-                left,  up,   near, 0, 0, near,
-
-                // Back face
-                right, down, far, 0, 0, far,
-                left,  down, far, 0, 0, far,
-                left,  up,   far, 0, 0, far,
-
-                left,  up,   far, 0, 0, far,
-                right, up,   far, 0, 0, far,
-                right, down, far, 0, 0, far,
-
-                // Right face
-                right, up,   far,  right, 0, 0,
-                right, up,   near, right, 0, 0,
-                right, down, near, right, 0, 0,
-
-                right, down, near, right, 0, 0,
-                right, down, far,  right, 0, 0,
-                right, up,   far,  right, 0, 0,
-                
-                // Left face
-                left, down, near, left, 0, 0,
-                left, up,   near, left, 0, 0,
-                left, up,   far,  left, 0, 0,
-
-                left, up,   far,  left, 0, 0,
-                left, down, far,  left, 0, 0,
-                left, down, near, left, 0, 0,
-
-                // Top face
-                left,  up, far,  0, up, 0,
-                left,  up, near, 0, up, 0,
-                right, up, near, 0, up, 0,
-
-                right, up, near, 0, up, 0,
-                right, up, far,  0, up, 0,
-                left,  up, far,  0, up, 0,
-
-                // Bottom face
-                right, down, near, 0, down, 0,
-                left,  down, near, 0, down, 0,
-                left,  down, far,  0, down, 0,
-
-                left,  down, far,  0, down, 0,
-                right, down, far,  0, down, 0,
-                right, down, near, 0, down, 0,
-            };
-            cubeVertexBuffer = new VertexBuffer(vertices, 6);
+            cubeVertexBuffer = new VertexBuffer(cubeVertices, 6);
             cubeVertexArray = new VertexArray([3, 3], cubeVertexBuffer);
+
+            plantVertexBuffer = new VertexBuffer(Vertices.GetPlantVertices(), 8);
+            plantVertexArray = new VertexArray([3, 3, 2], plantVertexBuffer);
         }
 
         public List<Voxel> GetVoxels()
@@ -165,9 +100,9 @@ namespace Voxel_Project
             return fenceManager;
         }
 
-        public TextureManager GetTextureManager()
+        public CubeTextureManager GetTextureManager()
         {
-            return textureManager;
+            return cubeTextureManager;
         }
 
         /// <summary>
@@ -219,23 +154,24 @@ namespace Voxel_Project
 
         public void Render(Camera camera, Cursor? cursor = null)
         {
-            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, textureManager);
-            cubeShader.Render(camera, cubeVertexArray, fenceBuffers, textureManager);
+            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers);
+            cubeShader.Render(camera, cubeVertexArray, fenceBuffers);
+            plantShader.Render(camera, plantVertexArray, plantManager.GetBuffers());
             if (cursor != null)
             {
-                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), textureManager, true);
+                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), true);
             }
         }
 
-        public void RenderBufferSet(Camera camera, ShaderBufferSet bufferSet)
+        public void RenderCubeBufferSet(Camera camera, CubeShaderBufferSet bufferSet)
         {
-            cubeShader.Render(camera, cubeVertexArray, bufferSet, textureManager);
+            cubeShader.Render(camera, cubeVertexArray, bufferSet);
         }
 
         /// <summary>
         /// Updates the GPU with the current scene data
         /// </summary>
-        public void Update(KeyboardState keyboard, MouseState mouse) // CALL THIS FUNCTION IF RETURN VALUE OF PLAYER.UPDATE IS TRUE
+        public void UpdateGPU(KeyboardState keyboard, MouseState mouse) // CALL THIS FUNCTION IF RETURN VALUE OF PLAYER.UPDATE IS TRUE
         {
             UpdateGPUVoxelData();
             UpdateGPUFenceData();
@@ -269,7 +205,7 @@ namespace Voxel_Project
 
             for (int i = 0; i < voxels.Count; i++)
             {
-                ShaderListSet listSet = voxels[i].GetGPUData(textureManager);
+                CubeShaderListSet listSet = voxels[i].GetGPUData(cubeTextureManager);
                 GPUPositionData.AddRange(listSet.positions);
                 GPUScaleData.AddRange(listSet.scales);
                 GPUTextureHandlesData.AddRange(listSet.textureHandles);
@@ -293,9 +229,9 @@ namespace Voxel_Project
 
             for (int i = 0; i < fenceManager.GetCount(); i++)
             {
-                ShaderListSet listSet;
+                CubeShaderListSet listSet;
                 int cubeCount;
-                (listSet, cubeCount) = fenceManager[i].GetGPUData(textureManager);
+                (listSet, cubeCount) = fenceManager[i].GetGPUData(cubeTextureManager);
                 totalCubeCount += cubeCount;
                 GPUFencePositions.AddRange(listSet.positions);
                 GPUFenceScales.AddRange(listSet.scales);

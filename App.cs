@@ -52,7 +52,7 @@ namespace Voxel_Project
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             scene = new Scene("scene.txt");
-            playerController = new PlayerController(new Vector3(0, 0, 0), new Camera(width, height));
+            playerController = new PlayerController(new Vector3(0, 1.51f, 0), new Camera(width, height));
             editorController = new EditorController(new Camera(width, height), scene.GetTextureManager());
             editorController.Activate(playerController, scene.GetTextureManager());
             currentController = editorController;

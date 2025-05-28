@@ -34,10 +34,10 @@ namespace Voxel_Project
                 Vector3 forward = new Vector3(badForward.X, 0, badForward.Z).Normalized();
                 Vector3 right = camera.GetRight();
 
-                if (keyboard.IsKeyDown(Keys.Space))
-                    moveVector += Vector3.UnitY;
-                if (keyboard.IsKeyDown(Keys.LeftShift))
-                    moveVector -= Vector3.UnitY;
+                //if (keyboard.IsKeyDown(Keys.Space))
+                //    moveVector += Vector3.UnitY;
+                //if (keyboard.IsKeyDown(Keys.LeftShift))
+                //    moveVector -= Vector3.UnitY;
                 if (keyboard.IsKeyDown(Keys.W))
                     moveVector += forward;
                 if (keyboard.IsKeyDown(Keys.S))

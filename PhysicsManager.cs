@@ -29,6 +29,48 @@ namespace Voxel_Project
                 this.max = max;
             }
 
+            public static Vector3 MinVectorFromList(Vector3[] vectors)
+            {
+                float minX = float.MaxValue;
+                float minY = float.MaxValue;
+                float minZ = float.MaxValue;
+                for (int i = 0; i < vectors.Length; i++)
+                {
+                    minX = MathF.Min(vectors[i].X, minX);
+                    minY = MathF.Min(vectors[i].X, minX);
+                    minZ = MathF.Min(vectors[i].X, minX);
+                }
+                return new Vector3(minX, minY, minZ);
+            }
+
+            public static Vector3 MaxVectorFromList(Vector3[] vectors)
+            {
+                float minX = -float.MaxValue;
+                float minY = -float.MaxValue;
+                float minZ = -float.MaxValue;
+                for (int i = 0; i < vectors.Length; i++)
+                {
+                    minX = MathF.Max(vectors[i].X, minX);
+                    minY = MathF.Max(vectors[i].X, minX);
+                    minZ = MathF.Max(vectors[i].X, minX);
+                }
+                return new Vector3(minX, minY, minZ);
+            }
+
+            public AABB(Vector3 pos1, Vector3 pos2) // TODO
+            {
+                // Get all corners of AABB
+                Vector3 pos3 = pos1 + new Vector3(pos2.X - pos1.X, 0,               0);
+                Vector3 pos4 = pos1 + new Vector3(0,               pos2.Y - pos1.Y, 0);
+                Vector3 pos5 = pos1 + new Vector3(0,               0,               pos2.Z - pos1.Z);
+                Vector3 pos6 = pos1 + new Vector3(pos2.X - pos1.X, pos2.Y - pos1.Y, 0);
+                Vector3 pos7 = pos1 + new Vector3(0,               pos2.Y - pos1.Y, pos2.Z - pos1.Z);
+                Vector3 pos8 = pos1 + new Vector3(pos2.X - pos1.X, 0,               pos2.Z - pos1.Z);
+                Vector3[] corners = { pos1, pos2, pos3, pos4, pos5, pos6, pos7, pos8 };
+                this.min = MinVectorFromList(corners);
+                this.max = MaxVectorFromList(corners);
+            }
+
             public static AABB FromPositionAndScale(Vector3 position, Vector3 scale)
             {
                 return new AABB(position - scale * 0.5f, position + scale * 0.5f);
@@ -85,6 +127,12 @@ namespace Voxel_Project
             }
         }
 
+        /// <summary>
+        /// Decides where the player will move in a frame
+        /// </summary>
+        /// <param name="displacement">The movement vector that the player wants to move by</param>
+        /// <param name="depth">Recursion depth</param>
+        /// <returns></returns>
         public static Vector3 MoveInScene(PlayerController player, Scene scene, Vector3 displacement, int depth = 0, int maxDepth = 20)
         {
             if (depth == maxDepth)
@@ -270,6 +318,11 @@ namespace Voxel_Project
                 }
             }
             return player.GetPosition() + displacement;
+        }
+
+        public Voxel? RayTraceVoxel(Vector3 origin, Vector3 direction, float length)
+        {
+            AABB rayAABB = new AABB()
         }
     }
 }

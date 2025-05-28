@@ -14,9 +14,9 @@ namespace Voxel_Project
     /// </summary>
     internal class PlantShader : ShaderBase
     {
-        uint positionsBufferIndex = 0;
-        uint growthsBufferIndex = 1;
-        uint texturesBufferIndex = 2;
+        uint positionsBufferIndex = 3;
+        uint growthsBufferIndex = 4;
+        uint texturesBufferIndex = 5;
 
         public PlantShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {

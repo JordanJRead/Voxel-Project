@@ -67,6 +67,15 @@ namespace Voxel_Project
                     pos.Z = float.Parse(objectInfo[3]);
                     fenceManager.AddFence(pos);
                 }
+                else if (objectInfo[0] == "plant")
+                {
+                    Vector3 pos = new Vector3();
+                    pos.X = float.Parse(objectInfo[1]);
+                    pos.Y = float.Parse(objectInfo[2]);
+                    pos.Z = float.Parse(objectInfo[3]);
+                    float growth = float.Parse(objectInfo[5]);
+                    plantManager.AddPlant(new Plant(pos, objectInfo[4], growth));
+                }
             }
             UpdateGPUVoxelData();
             UpdateGPUFenceData();
@@ -146,6 +155,21 @@ namespace Voxel_Project
                 fileSrc += '\n';
             }
 
+            foreach (Plant plant in plantManager.GetPlants())
+            {
+                fileSrc += "plant,";
+                fileSrc += plant.GetPosition().X;
+                fileSrc += ",";
+                fileSrc += plant.GetPosition().Y;
+                fileSrc += ",";
+                fileSrc += plant.GetPosition().Z;
+                fileSrc += ",";
+                fileSrc += Plant.typeNames[(int)plant.GetPlantType()];
+                fileSrc += ",";
+                fileSrc += plant.GetGrowth();
+                fileSrc += "\n";
+            }
+
             using (StreamWriter sw = new StreamWriter(filePath))
             {
                 sw.Write(fileSrc);
@@ -156,7 +180,11 @@ namespace Voxel_Project
         {
             cubeShader.Render(camera, cubeVertexArray, voxelsBuffers);
             cubeShader.Render(camera, cubeVertexArray, fenceBuffers);
+
+            GL.Disable(EnableCap.CullFace);
             plantShader.Render(camera, plantVertexArray, plantManager.GetBuffers());
+            GL.Enable(EnableCap.CullFace);
+
             if (cursor != null)
             {
                 cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), true);
@@ -166,6 +194,11 @@ namespace Voxel_Project
         public void RenderCubeBufferSet(Camera camera, CubeShaderBufferSet bufferSet)
         {
             cubeShader.Render(camera, cubeVertexArray, bufferSet);
+        }
+
+        public void FrameUpdate(float deltaTime)
+        {
+            plantManager.UpdateGrowths(deltaTime);
         }
 
         /// <summary>

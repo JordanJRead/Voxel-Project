@@ -130,13 +130,13 @@ namespace Voxel_Project
             // x, y, z, nx, ny, nz, u, v
             float[] quadVertices1 =
             {
-                left,  up,   near, 0, 0, near, 0,    1.0f,
-                left,  down, near, 0, 0, near, 0,    0,
-                right, down, near, 0, 0, near, 1.0f, 0,
+                left,  up,   0, 0, 0, near, 0,    1.0f,
+                left,  down, 0, 0, 0, near, 0,    0,
+                right, down, 0, 0, 0, near, 1.0f, 0,
 
-                right, down, near, 0, 0, near, 1.0f, 0,
-                right, up,   near, 0, 0, near, 1.0f, 1.0f,
-                left,  up,   near, 0, 0, near, 0,    1.0f
+                right, down, 0, 0, 0, near, 1.0f, 0,
+                right, up,   0, 0, 0, near, 1.0f, 1.0f,
+                left,  up,   0, 0, 0, near, 0,    1.0f
             };
 
             float[] quadVertices2 = RotateQuad(quadVertices1, 120);

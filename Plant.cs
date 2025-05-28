@@ -1,7 +1,7 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,14 +27,16 @@ namespace Voxel_Project
         float growth = 0.0f; // 0 - 1
         Type type = Type.none;
 
-        public Plant(Vector3 position, Type type)
+        public Plant(Vector3 position, Type type, float growth = 0)
         {
+            this.growth = growth;
             this.position = position;
             this.type = type;
         }
 
-        public Plant(Vector3 position, string typeName)
+        public Plant(Vector3 position, string typeName, float growth = 0)
         {
+            this.growth = growth;
             this.position = position;
             this.type = PlantTypeFromString(typeName);
         }

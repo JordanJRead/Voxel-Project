@@ -10,6 +10,8 @@ namespace Voxel_Project
     {
         List<Plant> plants = new List<Plant>();
         PlantShaderBufferSet bufferSet = new PlantShaderBufferSet();
+        PlantTextxureManager plantTextureManager = new PlantTextxureManager();
+
         float[] plantGrowTimes = new float[(int)Plant.Type.none + 1]
         {
             10,
@@ -21,9 +23,19 @@ namespace Voxel_Project
         {
         }
 
+        public void AddPlant(Plant plant)
+        {
+            plants.Add(plant);
+        }
+
         public PlantShaderBufferSet GetBuffers()
         {
             return bufferSet;
+        }
+
+        public List<Plant> GetPlants()
+        {
+            return plants;
         }
 
         /// <summary>
@@ -34,14 +46,16 @@ namespace Voxel_Project
             foreach (Plant plant in plants)
             {
                 plant.GrowBy(deltaTime /  plantGrowTimes[(int)plant.GetPlantType()]);
+                //Console.WriteLine(plant.GetGrowth());
                 if (plant.GetGrowth() > 1)
                 {
                     plant.SetGrowth(1);
                 }
             }
+            UpdateGPUInfo();
         }
 
-        public void UpdateGPUInfo(PlantTextxureManager plantTextxureManager)
+        public void UpdateGPUInfo()
         {
             PlantShaderListSet listSet = new PlantShaderListSet();
 
@@ -53,7 +67,7 @@ namespace Voxel_Project
 
                 listSet.growths.Add(plant.GetGrowth());
 
-                listSet.textureHandles.Add(plantTextxureManager.GetBindlessTextureHandle(plant.GetPlantType()));
+                listSet.textureHandles.Add(plantTextureManager.GetBindlessTextureHandle(plant.GetPlantType()));
             }
 
             bufferSet.SetFromListSet(listSet);

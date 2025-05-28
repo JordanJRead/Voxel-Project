@@ -20,5 +20,9 @@ void main() {
 	vec4 objectColor = texture(textures[instanceID], fragTexCoord);
 	float diffuseFactor = (dot(-lightDir, normal) + 1) * 0.5;
 
-	FragColor = vec4(objectColor.xyz * diffuseFactor, objectColor.w);
+	if (objectColor.w < 0.5) {
+		discard;
+	}
+
+	FragColor = vec4(objectColor.xyz * diffuseFactor, 1);
 }

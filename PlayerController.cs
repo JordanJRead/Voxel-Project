@@ -16,12 +16,14 @@ namespace Voxel_Project
         Vector3 position;
         Vector3 scale = new Vector3(1, 2, 1);
         Vector3 cameraOffset = new Vector3(0, 0.5f, 0);
+        Inventory inventory;
 
         public PlayerController(Vector3 position, Camera camera) : base(camera)
         {
             this.speed = 2;
             this.position = position;
             this.camera.SetPosition(position);
+            inventory = new Inventory();
         }
 
         public override bool Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene)
@@ -51,8 +53,16 @@ namespace Voxel_Project
                 position = PhysicsManager.MoveInScene(this, scene, moveVector * deltaTime * speed);
                 camera.SetPosition(position + cameraOffset);
             }
+
+            inventory.InputUpdate(mouse, keyboard);
+
             camera.Update(mouse, keyboard);
             return false;
+        }
+
+        public void DrawUI(UIShader uiShader, float aspectRatio)
+        {
+            inventory.Draw(uiShader, aspectRatio);
         }
 
         public Vector3 GetPosition()

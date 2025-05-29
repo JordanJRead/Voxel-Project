@@ -20,7 +20,6 @@ namespace Voxel_Project
         EditorController editorController;
         PlayerController playerController;
         ControllerBase currentController;
-        Texture2D texture;
         UIShader uiShader;
         int screenWidth;
         int screenHeight;
@@ -49,8 +48,7 @@ namespace Voxel_Project
         unsafe public App(int width, int height, string title)
             : base(new GameWindowSettings() { UpdateFrequency = 0 }, new NativeWindowSettings() { Size = (width, height), Title = title, APIVersion = new System.Version(4, 3) })
         {
-            texture = new Texture2D("Images/Cubes/none.png");
-            uiShader = new UIShader("Shaders/ui.vert", "Shaders/ui.frag");
+            uiShader = new UIShader("Shaders/ui.vert", "shaders/ui.frag");
             screenWidth = width;
             screenHeight = height;
             ExtensionsCheck();
@@ -105,8 +103,8 @@ namespace Voxel_Project
             else
             {
                 scene.Render(currentController.GetCamera());
+                playerController.DrawUI(uiShader, ((float)screenWidth) / screenHeight);
             }
-            uiShader.Draw(texture, new Vector2(0.5f, 0.5f), 0.25f, ((float)screenWidth) / screenHeight);
             SwapBuffers();
         }
         protected override void OnFramebufferResize(FramebufferResizeEventArgs e)

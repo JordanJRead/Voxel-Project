@@ -46,8 +46,9 @@ namespace Voxel_Project
             return texture.tex;
         }
 
-        public void Use()
+        public void Use(int textureUnit)
         {
+            GL.ActiveTexture(TextureUnit.Texture0 + textureUnit);
             tex.Use(TextureTarget.Texture2D);
         }
     }

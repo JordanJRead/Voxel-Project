@@ -26,5 +26,10 @@ namespace Voxel_Project
         {
             buf.Use(BufferTarget.ArrayBuffer);
         }
+
+        public int GetVertexCount()
+        {
+            return vertexCount;
+        }
     }
 }

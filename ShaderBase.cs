@@ -45,6 +45,11 @@ namespace Voxel_Project
             GL.Uniform3(GL.GetUniformLocation(id, name), value);
         }
 
+        protected void SetVec2(string name, Vector2 value)
+        {
+            GL.Uniform2(GL.GetUniformLocation(id, name), value);
+        }
+
         protected void SetULongTextureHandle(string name, ulong value)
         {
             GL.Arb.UniformHandle(GL.GetUniformLocation(id, name), value);

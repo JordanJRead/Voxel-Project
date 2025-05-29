@@ -72,6 +72,12 @@ namespace Voxel_Project
                     moveVector += right;
                 
                 camera.SetPosition(moveVector * deltaTime * speed + camera.GetPosition());
+
+                if (mouse.IsButtonPressed(MouseButton.Left))
+                {
+                    Voxel? voxel = PhysicsManager.RayTraceVoxel(camera.GetPosition(), camera.GetForward(), 5, scene);
+                    Console.WriteLine(voxel);
+                }
             }
             camera.Update(mouse, keyboard);
             return cursor.Update(camera, keyboard, mouse, scene);

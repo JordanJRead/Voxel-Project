@@ -1,10 +1,4 @@
-﻿using OpenTK.Graphics.ES11;
-using OpenTK.Mathematics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OpenTK.Mathematics;
 
 namespace Voxel_Project
 {
@@ -23,52 +17,10 @@ namespace Voxel_Project
             public Vector3 min;
             public Vector3 max;
 
-            public AABB(Vector3 min, Vector3 max)
+            public AABB(Vector3 p1, Vector3 p2)
             {
-                this.min = min;
-                this.max = max;
-            }
-
-            public static Vector3 MinVectorFromList(Vector3[] vectors)
-            {
-                float minX = float.MaxValue;
-                float minY = float.MaxValue;
-                float minZ = float.MaxValue;
-                for (int i = 0; i < vectors.Length; i++)
-                {
-                    minX = MathF.Min(vectors[i].X, minX);
-                    minY = MathF.Min(vectors[i].X, minX);
-                    minZ = MathF.Min(vectors[i].X, minX);
-                }
-                return new Vector3(minX, minY, minZ);
-            }
-
-            public static Vector3 MaxVectorFromList(Vector3[] vectors)
-            {
-                float minX = -float.MaxValue;
-                float minY = -float.MaxValue;
-                float minZ = -float.MaxValue;
-                for (int i = 0; i < vectors.Length; i++)
-                {
-                    minX = MathF.Max(vectors[i].X, minX);
-                    minY = MathF.Max(vectors[i].X, minX);
-                    minZ = MathF.Max(vectors[i].X, minX);
-                }
-                return new Vector3(minX, minY, minZ);
-            }
-
-            public AABB(Vector3 pos1, Vector3 pos2) // TODO
-            {
-                // Get all corners of AABB
-                Vector3 pos3 = pos1 + new Vector3(pos2.X - pos1.X, 0,               0);
-                Vector3 pos4 = pos1 + new Vector3(0,               pos2.Y - pos1.Y, 0);
-                Vector3 pos5 = pos1 + new Vector3(0,               0,               pos2.Z - pos1.Z);
-                Vector3 pos6 = pos1 + new Vector3(pos2.X - pos1.X, pos2.Y - pos1.Y, 0);
-                Vector3 pos7 = pos1 + new Vector3(0,               pos2.Y - pos1.Y, pos2.Z - pos1.Z);
-                Vector3 pos8 = pos1 + new Vector3(pos2.X - pos1.X, 0,               pos2.Z - pos1.Z);
-                Vector3[] corners = { pos1, pos2, pos3, pos4, pos5, pos6, pos7, pos8 };
-                this.min = MinVectorFromList(corners);
-                this.max = MaxVectorFromList(corners);
+                this.min = new Vector3(MathF.Min(p1.X, p2.X), MathF.Min(p1.Y, p2.Y), MathF.Min(p1.Z, p2.Z));
+                this.max = new Vector3(MathF.Max(p1.X, p2.X), MathF.Max(p1.Y, p2.Y), MathF.Max(p1.Z, p2.Z));
             }
 
             public static AABB FromPositionAndScale(Vector3 position, Vector3 scale)
@@ -121,8 +73,8 @@ namespace Voxel_Project
             public static AABB Merge(AABB a, AABB b)
             {
                 return new AABB(
-                    min: new Vector3(Math.Min(a.min.X, b.min.X), Math.Min(a.min.Y, b.min.Y), Math.Min(a.min.Z, b.min.Z)),
-                    max: new Vector3(Math.Max(a.max.X, b.max.X), Math.Max(a.max.Y, b.max.Y), Math.Max(a.max.Z, b.max.Z))
+                    p1: new Vector3(Math.Min(a.min.X, b.min.X), Math.Min(a.min.Y, b.min.Y), Math.Min(a.min.Z, b.min.Z)),
+                    p2: new Vector3(Math.Max(a.max.X, b.max.X), Math.Max(a.max.Y, b.max.Y), Math.Max(a.max.Z, b.max.Z))
                     );
             }
         }
@@ -320,9 +272,83 @@ namespace Voxel_Project
             return player.GetPosition() + displacement;
         }
 
-        public Voxel? RayTraceVoxel(Vector3 origin, Vector3 direction, float length)
+        public static Voxel? RayTraceVoxel(Vector3 rayOrigin, Vector3 rayDirection, float length, Scene scene)
         {
-            AABB rayAABB = new AABB()
+            if (rayDirection == Vector3.Zero)
+                return null;
+
+            Vector3 rayEndPosition = rayOrigin + rayDirection * length;
+            rayDirection.Normalize();
+            AABB rayAABB = new AABB(rayOrigin, rayOrigin + rayDirection * length);
+
+            List<(Voxel, AABB)> possibleVoxels = new List<(Voxel, AABB)>();
+
+            foreach (Voxel voxel in scene.GetVoxels())
+            {
+                AABB voxelAABB = AABB.FromPositionAndScale(voxel.GetPosition(), new Vector3(1.0f));
+                if (rayAABB.Intersects(voxelAABB))
+                {
+                    possibleVoxels.Add((voxel, voxelAABB));
+                }
+            }
+
+            float overallClosestT = 5; // t goes between 0 and 1, and represents 0 to length
+            Voxel? closestVoxel = null;
+            foreach ((Voxel, AABB) voxelAABBPair in possibleVoxels)
+            {
+                Voxel voxel = voxelAABBPair.Item1;
+                AABB voxelAABB = voxelAABBPair.Item2;
+
+                float[] signDim =
+                {
+                    (rayDirection.X > 0 ? 1 : (rayDirection.X < 0 ? -1 : 0)),
+                    (rayDirection.Y > 0 ? 1 : (rayDirection.Y < 0 ? -1 : 0)),
+                    (rayDirection.Z > 0 ? 1 : (rayDirection.Z < 0 ? -1 : 0))
+                };
+
+                // t intersection values found in each dimension
+                float[] tDim = { 5, 5, 5 };
+
+                char[] charDim =
+                {
+                    'x',
+                    'y',
+                    'z'
+                };
+
+                for (int dim = 0; dim < 3; ++dim)
+                {
+                    if (signDim[dim] != 0)
+                    {
+                        float t;
+                        if (signDim[dim] == 1)
+                        {
+                            t = (voxelAABB.min[dim] - rayOrigin[dim]) / (rayEndPosition[dim] - rayOrigin[dim]);
+                        }
+                        else
+                        {
+                            t = (rayOrigin[dim] - voxelAABB.max[dim]) / (rayOrigin[dim] - rayEndPosition[dim]);
+                        }
+                        if (t >= 0 && t <= 1)
+                        {
+                            Vector3 intersectionPosition = rayOrigin + rayDirection * length * t;
+                            AABB possibleCollisionAABB = AABB.FromPositionAndScale(intersectionPosition, Vector3.Zero);
+                            if (possibleCollisionAABB.DoSquaresIntersect(voxelAABB, charDim[dim]))
+                            {
+                                tDim[dim] = t;
+                            }
+                        }
+                    }
+                }
+
+                float voxelClosestT = tDim.Min();
+                if (voxelClosestT < overallClosestT) // They default to 5. Checks if a collision actually happened
+                {
+                    overallClosestT = voxelClosestT;
+                    closestVoxel = voxel;
+                }
+            }
+            return closestVoxel;
         }
     }
 }

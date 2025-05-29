@@ -37,6 +37,9 @@ voxel,-1,0,-2,grass
 voxel,0,2,6,grass
 voxel,-1,2,6,grass
 voxel,-1,2,7,grass
+voxel,0,3,4,none
+voxel,-1,3,4,grass
+voxel,-2,3,4,stone
 fence,-2,1,-2
 fence,-2,2,-2
 fence,-2,1,-1

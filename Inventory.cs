@@ -72,7 +72,7 @@ namespace Voxel_Project
                             lookingAtVoxel.SetType(Voxel.Type.tilled);
                             hasSceneChanged = true;
                         }
-                        else if (lookingAtVoxel.GetVoxelType() == Voxel.Type.tilled)
+                        else if (lookingAtVoxel.GetVoxelType() == Voxel.Type.tilled && scene.GetPlantOnVoxel(lookingAtVoxel) == null)
                         {
                             lookingAtVoxel.SetType(Voxel.Type.grass);
                             hasSceneChanged = true;
@@ -87,7 +87,7 @@ namespace Voxel_Project
                 case Item.scythe:
                     if (mouse.IsButtonPressed(MouseButton.Left) && lookingAtVoxel != null)
                     {
-                        Plant? plant = scene.GetPlantOnBlockAtPosition(lookingAtVoxel.GetPosition());
+                        Plant? plant = scene.GetPlantOnVoxel(lookingAtVoxel);
                         if (plant != null)
                         {
                             if (plant.GetGrowth() >= 1.0f)
@@ -123,6 +123,7 @@ namespace Voxel_Project
                 uiShader.Draw(background, slotPosition, slotWidth * scale, aspectRatio);
                 uiShader.Draw(itemIcons[i], slotPosition, slotWidth * scale, aspectRatio);
 
+                // Seeds
                 if (i == (int)Item.seedManager)
                 {
                     uiShader.Draw(seedManager.GetCurrentIcon(), slotPosition + new Vector2(seedIconCenterOffset * scale, seedIconCenterOffset * scale * aspectRatio), seedIconWidth * scale, aspectRatio);

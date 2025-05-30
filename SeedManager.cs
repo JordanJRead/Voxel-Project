@@ -54,7 +54,7 @@ namespace Voxel_Project
                 if (lookingAtVoxel != null)
                 {
                     // If clicking on tilled ground
-                    if (lookingAtVoxel.GetVoxelType() == Voxel.Type.tilled && scene.GetPlantOnBlockAtPosition(lookingAtVoxel.GetPosition()) == null)
+                    if (lookingAtVoxel.GetVoxelType() == Voxel.Type.tilled && scene.GetPlantOnVoxelAtPosition(lookingAtVoxel.GetPosition()) == null)
                     {
                         isSeedPositionVacant = true;
                     }

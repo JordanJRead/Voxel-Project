@@ -23,7 +23,7 @@ voxel,0,0,3,grass
 voxel,3,0,2,grass
 voxel,3,0,3,grass
 voxel,2,0,3,grass
-voxel,2,0,2,tilled
+voxel,2,0,2,grass
 voxel,-1,0,3,grass
 voxel,-1,0,1,grass
 voxel,-1,0,2,tilled
@@ -60,7 +60,3 @@ fence,2,1,-2
 fence,1,1,-2
 fence,0,1,-2
 fence,-1,1,-2
-plant,2,1,2,grass,1
-plant,1,1,2,grass,1
-plant,0,1,2,wheat,1
-plant,-1,1,2,wheat,1

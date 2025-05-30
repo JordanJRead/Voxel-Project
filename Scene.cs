@@ -231,7 +231,7 @@ namespace Voxel_Project
         /// Checks which plant is at a specific position, if any
         /// </summary>
         /// <returns>The plant sitting on top of a block at 'position', or null if there is no plant there</returns>
-        public Plant? GetPlantOnBlockAtPosition(Vector3 position)
+        public Plant? GetPlantOnVoxelAtPosition(Vector3 position)
         {
             foreach (Plant plant in plantManager.GetPlants())
             {
@@ -242,6 +242,16 @@ namespace Voxel_Project
                 }
             }
             return null;
+        }
+
+        /// <summary>
+        /// Checks which plant is on top of a block, if any
+        /// </summary>
+        /// <param name="voxel"></param>
+        /// <returns>The plant sitting on top of the block, or null if there is no plant there</returns>
+        public Plant? GetPlantOnVoxel(Voxel voxel)
+        {
+            return GetPlantOnVoxelAtPosition(voxel.GetPosition());
         }
 
         public void PlantSeed(Vector3 position, Plant.Type type)

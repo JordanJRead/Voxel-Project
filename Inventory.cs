@@ -60,38 +60,37 @@ namespace Voxel_Project
                 }
             }
 
-            // Till grass
-            if (mouse.IsButtonPressed(MouseButton.Left))
+            switch (selectedItem)
             {
-                if (selectedItem == Item.hoe && lookingAtVoxel != null)
-                {
-                    if (lookingAtVoxel.GetVoxelType() == Voxel.Type.grass)
+                case Item.hoe:
+                    if (mouse.IsButtonPressed(MouseButton.Left) && lookingAtVoxel != null)
                     {
-                        lookingAtVoxel.SetType(Voxel.Type.tilled);
-                        hasSceneChanged = true;
-                    }
-                }
-            }
-
-            if (selectedItem == Item.seedManager)
-            {
-                seedManager.InputUpdate(keyboard, mouse, scene, camera, money, lookingAtVoxel);
-            }
-
-            if (selectedItem == Item.scythe)
-            {
-                if (mouse.IsButtonPressed(MouseButton.Left) && lookingAtVoxel != null)
-                {
-                    Plant? plant = scene.GetPlantOnBlockAtPosition(lookingAtVoxel.GetPosition());
-                    if (plant != null)
-                    {
-                        if (plant.GetGrowth() >= 1.0f)
+                        if (lookingAtVoxel.GetVoxelType() == Voxel.Type.grass)
                         {
-                            scene.RemovePlant(plant);
+                            lookingAtVoxel.SetType(Voxel.Type.tilled);
                             hasSceneChanged = true;
                         }
                     }
-                }
+                    break;
+
+                case Item.seedManager:
+                    seedManager.InputUpdate(keyboard, mouse, scene, camera, money, lookingAtVoxel);
+                    break;
+
+                case Item.scythe:
+                    if (mouse.IsButtonPressed(MouseButton.Left) && lookingAtVoxel != null)
+                    {
+                        Plant? plant = scene.GetPlantOnBlockAtPosition(lookingAtVoxel.GetPosition());
+                        if (plant != null)
+                        {
+                            if (plant.GetGrowth() >= 1.0f)
+                            {
+                                scene.RemovePlant(plant);
+                                hasSceneChanged = true;
+                            }
+                        }
+                    }
+                    break;
             }
 
             return hasSceneChanged;

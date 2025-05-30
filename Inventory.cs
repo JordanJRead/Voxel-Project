@@ -26,8 +26,13 @@ namespace Voxel_Project
             new Texture2D("Images/Inventory/shovel.png"),
         };
 
-        public void InputUpdate(MouseState mouse, KeyboardState keyboard)
+        /// <summary>
+        /// Per-frame update for the inventory
+        /// </summary>
+        /// <returns>Whether the scene has changed or not</returns>
+        public bool InputUpdate(MouseState mouse, KeyboardState keyboard, Scene scene, Camera camera)
         {
+            bool hasSceneChanged = false;
             for (int i = 1; i <= 9; ++i)
             {
                 if (keyboard.IsKeyPressed(Keys.D0 + i))
@@ -38,6 +43,19 @@ namespace Voxel_Project
                     }
                 }
             }
+            if (mouse.IsButtonPressed(MouseButton.Left))
+            {
+                Voxel? lookingAtVoxel = PhysicsManager.RayTraceVoxel(camera.GetPosition(), camera.GetForward(), 5, scene);
+                if (selectedItem == Item.hoe && lookingAtVoxel != null)
+                {
+                    if (lookingAtVoxel.GetVoxelType() == Voxel.Type.grass)
+                    {
+                        lookingAtVoxel.SetType(Voxel.Type.tilled);
+                        hasSceneChanged = true;
+                    }
+                }
+            }
+            return hasSceneChanged;
         }
 
         public void Draw(UIShader uiShader, float aspectRatio)

@@ -18,6 +18,7 @@ namespace Voxel_Project
         {
             grass,
             stone,
+            tilled,
             none
         }
 
@@ -25,6 +26,7 @@ namespace Voxel_Project
         {
             "grass",
             "stone",
+            "tilled",
             "none"
         };
 

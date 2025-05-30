@@ -17,6 +17,7 @@ namespace Voxel_Project
         Vector3 scale = new Vector3(1, 2, 1);
         Vector3 cameraOffset = new Vector3(0, 0.5f, 0);
         Inventory inventory;
+        Texture2D crosshair = new Texture2D("Images/inventory/crosshair.png");
 
         public PlayerController(Vector3 position, Camera camera) : base(camera)
         {
@@ -54,15 +55,14 @@ namespace Voxel_Project
                 camera.SetPosition(position + cameraOffset);
             }
 
-            inventory.InputUpdate(mouse, keyboard);
-
             camera.Update(mouse, keyboard);
-            return false;
+            return inventory.InputUpdate(mouse, keyboard, scene, camera);
         }
 
         public void DrawUI(UIShader uiShader, float aspectRatio)
         {
             inventory.Draw(uiShader, aspectRatio);
+            uiShader.Draw(crosshair, new Vector2(0.5f, 0.5f), 0.05f, aspectRatio);
         }
 
         public Vector3 GetPosition()

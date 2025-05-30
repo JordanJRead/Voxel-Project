@@ -28,6 +28,11 @@ namespace Voxel_Project
             plants.Add(plant);
         }
 
+        public void RemovePlant(Plant plant)
+        {
+            plants.Remove(plant);
+        }
+
         public PlantShaderBufferSet GetBuffers()
         {
             return bufferSet;

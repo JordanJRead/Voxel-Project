@@ -56,7 +56,7 @@ namespace Voxel_Project
             }
 
             camera.Update(mouse, keyboard);
-            return inventory.InputUpdate(mouse, keyboard, scene, camera);
+            return inventory.InputUpdate(mouse, keyboard, scene, camera, 10);
         }
 
         public void DrawUI(UIShader uiShader, float aspectRatio)

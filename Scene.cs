@@ -228,6 +228,33 @@ namespace Voxel_Project
         }
 
         /// <summary>
+        /// Checks which plant is at a specific position, if any
+        /// </summary>
+        /// <returns>The plant sitting on top of a block at 'position', or null if there is no plant there</returns>
+        public Plant? GetPlantOnBlockAtPosition(Vector3 position)
+        {
+            foreach (Plant plant in plantManager.GetPlants())
+            {
+                // If positions are equal
+                if (((plant.GetPosition() - Vector3.UnitY) - position).Length < 0.01)
+                {
+                    return plant;
+                }
+            }
+            return null;
+        }
+
+        public void PlantSeed(Vector3 position, Plant.Type type)
+        {
+            plantManager.AddPlant(new Plant(position, type));
+        }
+
+        public void RemovePlant(Plant plant)
+        {
+            plantManager.RemovePlant(plant);
+        }
+
+        /// <summary>
         /// Sends voxel data to the GPU
         /// </summary>
         public void UpdateGPUVoxelData()

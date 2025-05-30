@@ -9,12 +9,12 @@ voxel,-2,0,-1,grass
 voxel,-2,0,-2,grass
 voxel,1,0,1,tilled
 voxel,0,0,1,tilled
-voxel,1,0,0,grass
+voxel,1,0,0,tilled
 voxel,2,0,-2,grass
 voxel,3,0,-2,grass
 voxel,1,0,-2,grass
 voxel,2,0,-1,tilled
-voxel,1,0,-1,grass
+voxel,1,0,-1,tilled
 voxel,2,0,0,tilled
 voxel,0,0,2,grass
 voxel,1,0,2,grass
@@ -74,4 +74,4 @@ fence,-2,2,2
 fence,-2,2,3
 fence,-1,2,3
 plant,0,4,0,grass,1
-plant,2,1,-1,wheat,1
+plant,2,1,-1,wheat,0.26717496

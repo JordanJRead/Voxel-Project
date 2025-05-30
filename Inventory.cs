@@ -70,6 +70,11 @@ namespace Voxel_Project
                             lookingAtVoxel.SetType(Voxel.Type.tilled);
                             hasSceneChanged = true;
                         }
+                        else if (lookingAtVoxel.GetVoxelType() == Voxel.Type.tilled)
+                        {
+                            lookingAtVoxel.SetType(Voxel.Type.grass);
+                            hasSceneChanged = true;
+                        }
                     }
                     break;
 

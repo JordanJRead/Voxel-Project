@@ -12,15 +12,16 @@ namespace Voxel_Project
         PlantShaderBufferSet bufferSet = new PlantShaderBufferSet();
         PlantTextxureManager plantTextureManager = new PlantTextxureManager();
 
-        float[] plantGrowTimes = new float[(int)Plant.Type.none + 1]
-        {
-            10,
-            10,
-            10
-        };
+        float[] plantGrowTimes;
 
         public PlantManager()
         {
+            plantGrowTimes = new float[(int)Plant.Type.none + 1]
+            {
+                10,
+                10,
+                10
+            };
         }
 
         public void AddPlant(Plant plant)

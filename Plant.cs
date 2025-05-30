@@ -13,19 +13,13 @@ namespace Voxel_Project
         {
             grass,
             wheat,
+
             none
         }
 
-        public static readonly string[] typeNames = new string[(int)Type.none + 1] // Makes sure that the size of typeNames equals the number of Types
-        {
-            "grass",
-            "wheat",
-            "none"
-        };
-
         Vector3 position;
         float growth = 0.0f; // 0 - 1
-        Type type = Type.none;
+        Type type;
 
         public Plant(Vector3 position, Type type, float growth = 0)
         {
@@ -38,7 +32,7 @@ namespace Voxel_Project
         {
             this.growth = growth;
             this.position = position;
-            this.type = PlantTypeFromString(typeName);
+            this.type = Enum.Parse<Type>(typeName);
         }
 
         public Vector3 GetPosition()
@@ -61,11 +55,6 @@ namespace Voxel_Project
             growth = grow;
         }
 
-        public string GetTypeName()
-        {
-            return typeNames[(int)type];
-        }
-
         public Type GetPlantType()
         {
             return type;
@@ -74,16 +63,6 @@ namespace Voxel_Project
         public void SetType(Type type)
         {
             this.type = type;
-        }
-
-        private static Type PlantTypeFromString(string name)
-        {
-            int index = Array.IndexOf(typeNames, name);
-            if (index != -1)
-            {
-                return (Type)index;
-            }
-            return Type.none;
         }
 
         public CubeShaderListSet GetGPUData(PlantTextxureManager plantTextureManager)

@@ -18,7 +18,7 @@ namespace Voxel_Project
         {
             for (int i = 0; i < textureHandles.Length; i++)
             {
-                cubeMaps[i] = new CubeMap($"Images/Cubes/{Voxel.typeNames[i]}.png", "Images/Cubes/none.png");
+                cubeMaps[i] = new CubeMap($"Images/Cubes/{((Voxel.Type)i)}.png", "Images/Cubes/none.png");
                 textureHandles[i] = GL.Arb.GetTextureHandle(cubeMaps[i]);
                 GL.Arb.MakeTextureHandleResident(textureHandles[i]);
             }

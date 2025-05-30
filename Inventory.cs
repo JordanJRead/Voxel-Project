@@ -21,16 +21,10 @@ namespace Voxel_Project
             hoe,
             seedManager, // Planting seeds
             scythe,
-
-            max
+            axe
         }
 
-        Texture2D[] itemIcons = new Texture2D[(int)Item.max]
-        {
-            new Texture2D("Images/Inventory/hoe.png"),
-            new Texture2D("Images/Inventory/seedManager.png"),
-            new Texture2D("Images/Inventory/scythe.png")
-        };
+        Texture2D[] itemIcons = new Texture2D[Enum.GetNames<Item>().Length];
 
         Texture2D blackBorder = new Texture2D("Images/Inventory/blackBorder.png");
         Texture2D redBorder = new Texture2D("Images/Inventory/redBorder.png");
@@ -38,6 +32,14 @@ namespace Voxel_Project
         Texture2D greenBorder = new Texture2D("Images/Inventory/greenBorder.png");
 
         Texture2D background = new Texture2D("Images/Inventory/background.png");
+
+        public Inventory()
+        {
+            for (int i = 0; i < itemIcons.Length; ++i)
+            {
+                itemIcons[i] = new Texture2D($"Images/Inventory/{(Item)i}.png");
+            }
+        }
 
         /// <summary>
         /// Per-frame update for the inventory
@@ -49,13 +51,13 @@ namespace Voxel_Project
             Voxel? lookingAtVoxel = PhysicsManager.RayTraceVoxel(camera.GetPosition(), camera.GetForward(), 5, scene);
 
             // Select item
-            for (int i = 1; i <= 9; ++i)
+            for (int num = 1; num <= 9; ++num)
             {
-                if (keyboard.IsKeyPressed(Keys.D0 + i))
+                if (keyboard.IsKeyPressed(Keys.D0 + num))
                 {
-                    if (i - 1 < (int)Item.max)
+                    if (num <= Enum.GetNames<Item>().Length)
                     {
-                        selectedItem = (Item)(i - 1);
+                        selectedItem = (Item)(num - 1);
                     }
                 }
             }

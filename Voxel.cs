@@ -19,16 +19,10 @@ namespace Voxel_Project
             grass,
             stone,
             tilled,
+            log,
+
             none
         }
-
-        public static readonly string[] typeNames = new string[(int)Type.none + 1] // Makes sure that the size of typeNames equals the number of Types
-        {
-            "grass",
-            "stone",
-            "tilled",
-            "none"
-        };
 
         protected Vector3 position; // has to be an integer
         public Type type; // type has no invarient, so it can be public
@@ -52,12 +46,7 @@ namespace Voxel_Project
         public Voxel(Vector3 position, string typeName)
         {
             this.position = position;
-            this.type = VoxelTypeFromString(typeName);
-        }
-
-        public string GetTypeName()
-        {
-            return typeNames[(int)type];
+            this.type = Enum.Parse<Type>(typeName);
         }
 
         public Type GetVoxelType()
@@ -70,19 +59,10 @@ namespace Voxel_Project
             this.type = type;
         }
 
-        private static Type VoxelTypeFromString(string name)
-        {
-            int index = Array.IndexOf(typeNames, name);
-            if (index != -1)
-            {
-                return (Type)index;
-            }
-            return Type.none;
-        }
 
         public override string ToString()
         {
-            return $"Voxel( x = {position.X}, y = {position.Y}, z = {position.Z}, type = {GetTypeName()} = {(int)type})";
+            return $"Voxel( x = {position.X}, y = {position.Y}, z = {position.Z}, type = {type.ToString()} = {(int)type})";
         }
 
         public CubeShaderListSet GetGPUData(CubeTextureManager cubeTextureManager)

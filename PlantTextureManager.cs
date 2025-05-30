@@ -11,14 +11,14 @@ namespace Voxel_Project
 {
     internal class PlantTextxureManager
     {
-        Texture2D[] textures = new Texture2D[(int)Plant.Type.none + 1];
-        long[] textureHandles = new long[(int)Plant.Type.none + 1]; // Should be the same size as the voxel types
+        Texture2D[] textures = new Texture2D[Enum.GetNames<Plant.Type>().Length];
+        long[] textureHandles = new long[Enum.GetNames<Plant.Type>().Length]; // Should be the same size as the voxel types
 
         public PlantTextxureManager()
         {
             for (int i = 0; i < textureHandles.Length; i++)
             {
-                textures[i] = new Texture2D($"Images/Plants/{Plant.typeNames[i]}.png", "Images/Cubes/none.png");
+                textures[i] = new Texture2D($"Images/Plants/{(Plant.Type)i}.png", "Images/Cubes/none.png");
                 textureHandles[i] = GL.Arb.GetTextureHandle(textures[i]);
                 GL.Arb.MakeTextureHandleResident(textureHandles[i]);
             }

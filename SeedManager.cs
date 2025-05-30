@@ -14,10 +14,11 @@ namespace Voxel_Project
     /// </summary>
     internal class SeedManager
     {
-        int[] seedCounts = new int[(int)Plant.Type.none];
+        int[] seedCounts = new int[(int)Plant.Type.none]; // Does not include Plant.Type.none
         Plant.Type selectedSeed = (Plant.Type) 0;
 
-        Texture2D[] seedIcons = new Texture2D[(int)Plant.Type.none + 1];
+        Texture2D[] seedIcons = new Texture2D[(int)Plant.Type.none];
+
         int[] seedCosts = new int[(int)Plant.Type.none]
         {
             5,
@@ -28,7 +29,7 @@ namespace Voxel_Project
         {
             for (int i = 0; i < seedIcons.Length; i++)
             {
-                seedIcons[i] = new Texture2D($"Images/Seeds/{Plant.typeNames[i]}.png");
+                seedIcons[i] = new Texture2D($"Images/Seeds/{(Plant.Type)i}.png");
             }
         }
 

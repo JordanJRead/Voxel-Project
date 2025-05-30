@@ -139,7 +139,7 @@ namespace Voxel_Project
                 fileSrc += ',';
                 fileSrc += voxel.GetPosition().Z;
                 fileSrc += ',';
-                fileSrc += voxel.GetTypeName();
+                fileSrc += voxel.GetVoxelType().ToString();
                 fileSrc += '\n';
             }
 
@@ -164,7 +164,7 @@ namespace Voxel_Project
                 fileSrc += ",";
                 fileSrc += plant.GetPosition().Z;
                 fileSrc += ",";
-                fileSrc += Plant.typeNames[(int)plant.GetPlantType()];
+                fileSrc += plant.GetPlantType().ToString();
                 fileSrc += ",";
                 fileSrc += plant.GetGrowth();
                 fileSrc += "\n";

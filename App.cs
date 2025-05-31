@@ -79,6 +79,10 @@ namespace Voxel_Project
                     editorController.Activate(playerController, scene.GetTextureManager());
                 }
             }
+            if (KeyboardState.IsKeyPressed(Keys.G))
+            {
+                playerController.AddMoney(-5);
+            }
             if (KeyboardState.IsKeyDown(Keys.Escape))
             {
                 Close();

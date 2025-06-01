@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Images\Money\" />
     <Folder Include="Images\Seeds\" />
     <Folder Include="Images\Plants\" />
   </ItemGroup>

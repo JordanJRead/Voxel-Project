@@ -8,7 +8,7 @@ using OpenTK.Mathematics;
 
 namespace Voxel_Project
 {
-    internal class MoneyNotification
+    internal class ResourceNotification
     {
         static float visibleDuration = 2; // seconds
         static float shrinkingDuration = 0.5f;
@@ -18,15 +18,15 @@ namespace Voxel_Project
 
         static bool hasLoadedTextures = false;
         static Texture2D[] numberTextures = new Texture2D[10];
-        static Texture2D plusTexture = new Texture2D("Images/Money/plus.png");
-        static Texture2D minusTexture = new Texture2D("Images/Money/minus.png");
+        static Texture2D plusTexture = new Texture2D("Images/Resource/plus.png");
+        static Texture2D minusTexture = new Texture2D("Images/Resource/minus.png");
 
         float timeAlive = 0;
         float heightScale = 1;
         int value;
-        bool isTotalMoney = false; // Whether this notification represents all of the money the player has (changes rendering)
+        bool isTotalResourceDisplay = false; // Whether this notification represents all of the {resource} the player has (changes rendering)
 
-        public MoneyNotification(int value, bool isTotalMoney = false)
+        public ResourceNotification(int value, bool isTotalResourceDisplay = false)
         {
             this.value = value;
 
@@ -34,12 +34,12 @@ namespace Voxel_Project
             {
                 for (int i = 0; i < numberTextures.Length; i++)
                 {
-                    numberTextures[i] = new Texture2D($"Images/Money/{i}.png");
+                    numberTextures[i] = new Texture2D($"Images/Resource/{i}.png");
                 }
                 hasLoadedTextures = true;
             }
 
-            this.isTotalMoney = isTotalMoney;
+            this.isTotalResourceDisplay = isTotalResourceDisplay;
         }
 
         /// <summary>
@@ -72,17 +72,29 @@ namespace Voxel_Project
         /// <param name="yPos"></param>
         /// <param name="uiShader"></param>
         /// <param name="aspectRatio"></param>
-        public void Draw(float yPos, UIShader uiShader, float aspectRatio)
+        public void Draw(float yPos, UIShader uiShader, float aspectRatio, Texture2D background, bool isLeftAligned)
         {
             if (timeAlive >= visibleDuration)
                 return;
 
             int drawValue = Math.Abs(value); // The number that needs to be written still
-            float xPos = 1 - baseSize / 2.0f;
-
-            // Draw a 0 if this is the player's total money display
-            if (value == 0 && isTotalMoney)
+            float xPos;
+            
+            if (isLeftAligned)
             {
+                int characterCount = drawValue.ToString().Length + 1; // + 1 for the sign
+
+                xPos = baseSize / 2.0f + (characterCount - 1) * (baseSize + margin);
+            }
+            else
+            {
+                xPos = 1 - baseSize / 2.0f;
+            }
+
+            // Draw a 0 if this is the player's total resource display
+            if (value == 0 && isTotalResourceDisplay)
+            {
+                uiShader.Draw(background, new Vector2(xPos, yPos), baseSize, aspectRatio);
                 uiShader.Draw(numberTextures[0], new Vector2(xPos, yPos), baseSize, aspectRatio);
                 return;
             }
@@ -92,18 +104,21 @@ namespace Voxel_Project
                 if (drawValue == 0)
                     break;
 
-                int firstDigit = drawValue % 10;
-                drawValue = drawValue / 10; // cut of last digit
-                uiShader.Draw(numberTextures[firstDigit], new Vector2(xPos, yPos), baseSize, aspectRatio);
+                int currentDigit = drawValue % 10;
+                drawValue = drawValue / 10; // cut off last digit
+                uiShader.Draw(background, new Vector2(xPos, yPos), baseSize, aspectRatio);
+                uiShader.Draw(numberTextures[currentDigit], new Vector2(xPos, yPos), baseSize, aspectRatio);
                 xPos -= baseSize + margin;
             }
 
-            if (value >= 0 && !isTotalMoney)
+            if (value >= 0 && !isTotalResourceDisplay)
             {
+                uiShader.Draw(background, new Vector2(xPos, yPos), baseSize, aspectRatio);
                 uiShader.Draw(plusTexture, new Vector2(xPos, yPos), baseSize, aspectRatio);
             }
             else if (value < 0)
             {
+                uiShader.Draw(background, new Vector2(xPos, yPos), baseSize, aspectRatio);
                 uiShader.Draw(minusTexture, new Vector2(xPos, yPos), baseSize, aspectRatio);
             }
         }

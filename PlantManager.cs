@@ -19,9 +19,9 @@ namespace Voxel_Project
         {
             plantGrowTimes = new float[(int)Plant.Type.none + 1]
             {
-                10,
-                10,
-                10
+                2,
+                2,
+                2
             };
 
             plantHarvestMoney = new int[(int)Plant.Type.none + 1]

@@ -9,6 +9,7 @@ namespace Voxel_Project
         private static float margin = 1.0f / 40;
         private static float stride = slotWidth + margin;
         private static float height = 1.0f / 40;
+        private static int fenceValue = 5;
 
         private static float seedIconWidth = slotWidth * 0.5f;
         private static float seedIconCenterOffset = -(slotWidth - seedIconWidth) * 0.5f;
@@ -21,7 +22,8 @@ namespace Voxel_Project
             hoe,
             seedManager, // Planting seeds
             scythe,
-            axe
+            axe,
+            hammer
         }
 
         Texture2D[] itemIcons = new Texture2D[Enum.GetNames<Item>().Length];
@@ -108,6 +110,34 @@ namespace Voxel_Project
                             hasSceneChanged = true;
                             scene.RemoveTree(lookingAtVoxel.GetPosition());
                             woodManager.ChangeResource(10);
+                        }
+                    }
+                    break;
+
+                case Item.hammer:
+                    // Place fence
+                    if (woodManager.GetResourceCount() >= fenceValue)
+                    {
+                        if (lookingAtVoxel != null && mouse.IsButtonPressed(MouseButton.Left))
+                        {
+                            if (scene.IsPositionEmpty(lookingAtVoxel.GetPosition() + Vector3.UnitY))
+                            {
+                                scene.AddFence(new Fence(new Vector3(lookingAtVoxel.GetPosition() + Vector3.UnitY)));
+                                woodManager.ChangeResource(-fenceValue);
+                                hasSceneChanged = true;
+                            }
+                        }
+                    }
+
+                    // Break fence
+                    if (lookingAtVoxel != null && mouse.IsButtonPressed(MouseButton.Right))
+                    {
+                        Fence? fence = scene.GetFenceManager().GetFenceAtPosition(lookingAtVoxel.GetPosition() + Vector3.UnitY);
+                        if (fence != null)
+                        {
+                            scene.GetFenceManager().RemoveFence(fence);
+                            woodManager.ChangeResource(fenceValue);
+                            hasSceneChanged = true;
                         }
                     }
                     break;

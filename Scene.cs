@@ -104,6 +104,11 @@ namespace Voxel_Project
             voxels.Add(voxel);
         }
 
+        public void AddFence(Fence fence)
+        {
+            fenceManager.AddFence(fence);
+        }
+
         public FenceManager GetFenceManager()
         {
             return fenceManager;
@@ -289,6 +294,26 @@ namespace Voxel_Project
                     }
                 }
             }
+        }
+
+        public bool IsPositionEmpty(Vector3 position)
+        {
+            foreach (Voxel voxel in voxels)
+            {
+                if (MathF.Abs((voxel.GetPosition() - position).Length) < 0.01f)
+                    return false;
+            }
+            foreach (Fence fence in fenceManager.GetFences())
+            {
+                if (MathF.Abs((fence.GetPosition() - position).Length) < 0.01f)
+                    return false;
+            }
+            foreach (Plant plant in plantManager.GetPlants())
+            {
+                if (MathF.Abs((plant.GetPosition() - position).Length) < 0.01f)
+                    return false;
+            }
+            return true;
         }
 
         public List<Voxel> GetNeighbouringVoxels(Voxel startingVoxel, List<Voxel.Type>? typeMask)

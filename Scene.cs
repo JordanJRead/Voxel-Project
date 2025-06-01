@@ -15,6 +15,8 @@ namespace Voxel_Project
         List<Voxel> voxels = new List<Voxel>();
         FenceManager fenceManager = new FenceManager();
 
+        CloudManager cloudManager = new CloudManager();
+
         // Cube vertices
         VertexArray cubeVertexArray;
         VertexBuffer cubeVertexBuffer;
@@ -185,6 +187,7 @@ namespace Voxel_Project
         {
             cubeShader.Render(camera, cubeVertexArray, voxelsBuffers);
             cubeShader.Render(camera, cubeVertexArray, fenceBuffers);
+            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet());
 
             GL.Disable(EnableCap.CullFace);
             plantShader.Render(camera, plantVertexArray, plantManager.GetBuffers());
@@ -204,6 +207,7 @@ namespace Voxel_Project
         public void FrameUpdate(float deltaTime)
         {
             plantManager.UpdateGrowths(deltaTime);
+            cloudManager.MoveClouds(deltaTime);
         }
 
         /// <summary>

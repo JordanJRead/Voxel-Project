@@ -17,6 +17,7 @@ void main() {
 	vec3 lightDir = normalize(vec3(0.4, -1, 0.4)); // Angled down
 	vec3 objectColor = texture(cubeMaps[instanceID], cubeMapCoord).xyz;
 	float diffuseFactor = (dot(-lightDir, fragNormal) + 1) * 0.5;
+	diffuseFactor = clamp(diffuseFactor, 0.3, 1.0);
 
 	float alpha = isCursor ? 0.5f : 1;
 	vec3 emission = isCursor ? vec3(0.2) : vec3(0);

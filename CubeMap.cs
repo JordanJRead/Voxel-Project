@@ -12,7 +12,7 @@ namespace Voxel_Project
     internal class CubeMap
     {
         TEX tex = new TEX();
-        public CubeMap(string path, string defaultPath)
+        public CubeMap(string path, string defaultPath = "Images/Cubes/none.png")
         {
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             string imagePath = projectPath + '/' + path;

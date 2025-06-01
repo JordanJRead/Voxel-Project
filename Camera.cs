@@ -48,7 +48,7 @@ namespace Voxel_Project
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(80), (float)screenWidth / screenHeight, 0.1f, 100);
+            return Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(80), (float)screenWidth / screenHeight, 0.1f, 10000);
         }
 
         public Vector3 GetForward()

@@ -30,6 +30,11 @@ namespace Voxel_Project
             return scale;
         }
 
+        public void SetPosition(Vector3 position)
+        {
+            this.position = position;
+        }
+
         /// <summary>
         /// Moves the cloud by its speed
         /// </summary>

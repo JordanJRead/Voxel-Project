@@ -13,6 +13,7 @@ namespace Voxel_Project
         PlantTextxureManager plantTextureManager = new PlantTextxureManager();
 
         float[] plantGrowTimes;
+        int[] plantHarvestMoney;
 
         public PlantManager()
         {
@@ -22,6 +23,13 @@ namespace Voxel_Project
                 10,
                 10
             };
+
+            plantHarvestMoney = new int[(int)Plant.Type.none + 1]
+            {
+                10,
+                15,
+                20
+            };
         }
 
         public void AddPlant(Plant plant)
@@ -29,9 +37,14 @@ namespace Voxel_Project
             plants.Add(plant);
         }
 
-        public void RemovePlant(Plant plant)
+        /// <summary>
+        /// Removes a plant from the scene
+        /// </summary>
+        /// <returns>The money the player gets from harvesting the plant</returns>
+        public int HarvestPlant(Plant plant)
         {
             plants.Remove(plant);
+            return plantHarvestMoney[(int)plant.GetPlantType()];
         }
 
         public PlantShaderBufferSet GetBuffers()

@@ -58,12 +58,7 @@ namespace Voxel_Project
 
             camera.Update(mouse, keyboard);
             moneyManager.Update(deltaTime);
-            return inventory.InputUpdate(mouse, keyboard, scene, camera, 10);
-        }
-
-        public void AddMoney(int money)
-        {
-            moneyManager.ChangeMoney(money);
+            return inventory.InputUpdate(mouse, keyboard, scene, camera, 10, moneyManager);
         }
 
         public void DrawUI(UIShader uiShader, float aspectRatio)

@@ -102,7 +102,7 @@ namespace Voxel_Project
             {
                 uiShader.Draw(plusTexture, new Vector2(xPos, yPos), baseSize, aspectRatio);
             }
-            else
+            else if (value < 0)
             {
                 uiShader.Draw(minusTexture, new Vector2(xPos, yPos), baseSize, aspectRatio);
             }

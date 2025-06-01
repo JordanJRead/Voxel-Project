@@ -45,7 +45,7 @@ namespace Voxel_Project
         /// Per-frame update for the inventory
         /// </summary>
         /// <returns>Whether the scene has changed or not</returns>
-        public bool InputUpdate(MouseState mouse, KeyboardState keyboard, Scene scene, Camera camera, int money)
+        public bool InputUpdate(MouseState mouse, KeyboardState keyboard, Scene scene, Camera camera, int money, MoneyManager moneyManager)
         {
             bool hasSceneChanged = false;
             Voxel? lookingAtVoxel = PhysicsManager.RayTraceVoxel(camera.GetPosition(), camera.GetForward(), 5, scene);
@@ -92,7 +92,8 @@ namespace Voxel_Project
                         {
                             if (plant.GetGrowth() >= 1.0f)
                             {
-                                scene.RemovePlant(plant);
+                                moneyManager.ChangeMoney(scene.HarvestPlant(plant));
+                                scene.HarvestPlant(plant);
                                 hasSceneChanged = true;
                             }
                         }

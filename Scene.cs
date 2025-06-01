@@ -259,9 +259,12 @@ namespace Voxel_Project
             plantManager.AddPlant(new Plant(position, type));
         }
 
-        public void RemovePlant(Plant plant)
+        /// <summary>
+        /// See plantManager.HarvestPlant(Plant)
+        /// </summary>
+        public int HarvestPlant(Plant plant)
         {
-            plantManager.RemovePlant(plant);
+            return plantManager.HarvestPlant(plant);
         }
 
         /// <summary>

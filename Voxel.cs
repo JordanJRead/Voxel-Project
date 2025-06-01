@@ -20,6 +20,7 @@ namespace Voxel_Project
             stone,
             tilled,
             log,
+            leaves,
 
             none
         }

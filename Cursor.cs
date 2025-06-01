@@ -71,7 +71,56 @@ namespace Voxel_Project
                     fenceManager.UnFakeFence(prevPosition);
                     fence = fenceManager.FakeFence(fence.GetPosition());
                     hasSceneChanged = true;
-                } 
+                }
+
+                Voxel? selectedVoxel = scene.GetVoxelAtPosition(this.voxel.GetPosition());
+
+                // Tree
+                if (keyboard.IsKeyPressed(Keys.T))
+                {
+                    // Delete tree
+                    if (selectedVoxel != null)
+                    {
+                        if (selectedVoxel.GetVoxelType() == Voxel.Type.log)
+                        {
+                            scene.RemoveTree(this.voxel.GetPosition());
+                            hasSceneChanged = true;
+                        }
+                    }
+
+                    // Build a tree
+                    else
+                    {
+                        hasSceneChanged = true;
+                        // Trunk
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 0, Voxel.Type.log));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 1, Voxel.Type.log));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2, Voxel.Type.log));
+
+                        // Leaves layer 1
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitX * 1, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitX * 2, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitX * -1, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitX * -2, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitZ * 1, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitZ * 2, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitZ * -1, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitZ * -2, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitX + Vector3.UnitZ, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 + Vector3.UnitX - Vector3.UnitZ, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 - Vector3.UnitX + Vector3.UnitZ, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 2 - Vector3.UnitX - Vector3.UnitZ, Voxel.Type.leaves));
+
+                        // Leaves layer 2
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 3, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 3 + Vector3.UnitX * 1, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 3 + Vector3.UnitX * -1, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 3 + Vector3.UnitZ * 1, Voxel.Type.leaves));
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 3 + Vector3.UnitZ * -1, Voxel.Type.leaves));
+
+                        scene.AddVoxel(new Voxel(this.voxel.GetPosition() + Vector3.UnitY * 4, Voxel.Type.leaves));
+                    }
+                }
 
                 // Cycle through cursor voxel types
                 // Voxel.Type.none is the maximum enum value
@@ -101,8 +150,6 @@ namespace Voxel_Project
                 {
                     if (mouse.IsButtonPressed(MouseButton.Left))
                     {
-                        Voxel? selectedVoxel = scene.GetVoxelAtPosition(this.voxel.GetPosition());
-
                         // Replacing voxel
                         if (selectedVoxel != null)
                         {
@@ -120,8 +167,6 @@ namespace Voxel_Project
                     // Deleting voxel
                     if (mouse.IsButtonPressed(MouseButton.Right))
                     {
-                        Voxel? selectedVoxel = scene.GetVoxelAtPosition(this.voxel.GetPosition());
-
                         if (selectedVoxel != null)
                         {
                             scene.GetVoxels().Remove(selectedVoxel);

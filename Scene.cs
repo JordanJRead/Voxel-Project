@@ -268,6 +268,48 @@ namespace Voxel_Project
         }
 
         /// <summary>
+        /// Removes every log and leaf voxel touching a specific position recursivly
+        /// </summary>
+        /// <param name="position"></param>
+        public void RemoveTree(Vector3 position)
+        {
+            Voxel? startingVoxel = GetVoxelAtPosition(position);
+            if (startingVoxel != null)
+            {
+                if (startingVoxel.GetVoxelType() == Voxel.Type.log)
+                {
+                    List<Voxel> voxelsToRemove = new List<Voxel>();
+                    voxelsToRemove.Add(startingVoxel);
+                    while (voxelsToRemove.Count > 0)
+                    {
+                        Voxel currentVoxel = voxelsToRemove[0];
+                        voxels.Remove(currentVoxel);
+                        voxelsToRemove.AddRange(GetNeighbouringVoxels(currentVoxel, new List<Voxel.Type>() { Voxel.Type.log, Voxel.Type.leaves }));
+                        voxelsToRemove.Remove(currentVoxel);
+                    }
+                }
+            }
+        }
+
+        public List<Voxel> GetNeighbouringVoxels(Voxel startingVoxel, List<Voxel.Type>? typeMask)
+        {
+            List<Voxel> neighbours = new List<Voxel>();
+            foreach (Voxel voxel in voxels)
+            {
+                if (MathF.Abs((startingVoxel.GetPosition() - voxel.GetPosition()).Length - 1) < 0.01f) {
+                    if (typeMask != null)
+                    {
+                        if (typeMask.Contains(voxel.GetVoxelType()))
+                        {
+                            neighbours.Add(voxel);
+                        }
+                    }
+                }
+            }
+            return neighbours;
+        }
+
+        /// <summary>
         /// Sends voxel data to the GPU
         /// </summary>
         public void UpdateGPUVoxelData()

@@ -8,7 +8,7 @@ voxel,3,0,-1,grass
 voxel,-2,0,-1,grass
 voxel,-2,0,-2,grass
 voxel,1,0,1,grass
-voxel,0,0,1,grass
+voxel,0,0,1,tilled
 voxel,1,0,0,grass
 voxel,2,0,-2,grass
 voxel,3,0,-2,grass
@@ -25,7 +25,7 @@ voxel,3,0,3,grass
 voxel,2,0,3,grass
 voxel,2,0,2,tilled
 voxel,-1,0,3,grass
-voxel,-1,0,1,grass
+voxel,-1,0,1,tilled
 voxel,-1,0,2,tilled
 voxel,-2,0,2,grass
 voxel,-2,0,3,grass

@@ -33,7 +33,7 @@ namespace Voxel_Project
             }
         }
 
-        public void InputUpdate(KeyboardState keyboard, MouseState mouse, Scene scene, Camera camera, int money, Voxel? lookingAtVoxel)
+        public void InputUpdate(KeyboardState keyboard, MouseState mouse, Scene scene, Camera camera, Voxel? lookingAtVoxel, ResourceManager moneyManager)
         {
             if (keyboard.IsKeyPressed(Keys.Q))
             {
@@ -45,7 +45,7 @@ namespace Voxel_Project
             }
             else if (keyboard.IsKeyPressed(Keys.R))
             {
-                money = BuySeed(money);
+                BuySeed(moneyManager);
             }
 
             if (mouse.IsButtonPressed(MouseButton.Left))
@@ -71,14 +71,13 @@ namespace Voxel_Project
         /// Buys the selected seed if player has enough money
         /// </summary>
         /// <returns>The money the player has after the purchase</returns>
-        public int BuySeed(int money)
+        public void BuySeed(ResourceManager moneyManager)
         {
-            if (money >= seedCosts[(int)selectedSeed])
+            if (moneyManager.GetResourceCount() >= seedCosts[(int)selectedSeed])
             {
                 seedCounts[(int)selectedSeed] += 1;
-                return money = seedCosts[(int)selectedSeed];
+                moneyManager.ChangeResource(-seedCosts[(int)selectedSeed]);
             }
-            return money;
         }
 
         /// <summary>

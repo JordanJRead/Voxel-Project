@@ -45,7 +45,7 @@ namespace Voxel_Project
         /// Per-frame update for the inventory
         /// </summary>
         /// <returns>Whether the scene has changed or not</returns>
-        public bool InputUpdate(MouseState mouse, KeyboardState keyboard, Scene scene, Camera camera, int money, ResourceManager moneyManager, ResourceManager woodManager)
+        public bool InputUpdate(MouseState mouse, KeyboardState keyboard, Scene scene, Camera camera, ResourceManager moneyManager, ResourceManager woodManager)
         {
             bool hasSceneChanged = false;
             Voxel? lookingAtVoxel = PhysicsManager.RayTraceVoxel(camera.GetPosition(), camera.GetForward(), 5, scene);
@@ -81,7 +81,7 @@ namespace Voxel_Project
                     break;
 
                 case Item.seedManager:
-                    seedManager.InputUpdate(keyboard, mouse, scene, camera, money, lookingAtVoxel);
+                    seedManager.InputUpdate(keyboard, mouse, scene, camera, lookingAtVoxel, moneyManager);
                     break;
 
                 case Item.scythe:

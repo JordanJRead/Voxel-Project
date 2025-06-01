@@ -18,8 +18,8 @@ namespace Voxel_Project
         Vector3 cameraOffset = new Vector3(0, 0.5f, 0);
         Inventory inventory;
         Texture2D crosshair = new Texture2D("Images/inventory/crosshair.png");
-        ResourceManager moneyManager = new ResourceManager(ResourceManager.Color.yellow, false);
-        ResourceManager woodManager = new ResourceManager(ResourceManager.Color.brown, true);
+        ResourceManager moneyManager = new ResourceManager(15, ResourceManager.Color.yellow, false);
+        ResourceManager woodManager = new ResourceManager(0, ResourceManager.Color.brown, true);
 
         public PlayerController(Vector3 position, Camera camera) : base(camera)
         {
@@ -60,7 +60,7 @@ namespace Voxel_Project
             camera.Update(mouse, keyboard);
             moneyManager.Update(deltaTime);
             woodManager.Update(deltaTime);
-            return inventory.InputUpdate(mouse, keyboard, scene, camera, 10, moneyManager, woodManager);
+            return inventory.InputUpdate(mouse, keyboard, scene, camera, moneyManager, woodManager);
         }
 
         public void DrawUI(UIShader uiShader, float aspectRatio)

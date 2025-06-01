@@ -21,13 +21,14 @@ namespace Voxel_Project
 
         Color color;
         bool isLeftAligned;
-        int resourceCount = 0;
+        int resourceCount;
         List<ResourceNotification> notifications = new List<ResourceNotification>();
         ResourceNotification totalDisplayNotification;
         static Texture2D[] backgrounds = new Texture2D[(int)Color.none + 1];
 
-        public ResourceManager(Color color, bool isLeftAligned)
+        public ResourceManager(int initialValue, Color color, bool isLeftAligned)
         {
+            resourceCount = initialValue;
             totalDisplayNotification = new ResourceNotification(resourceCount, true);
             this.color = color;
             this.isLeftAligned = isLeftAligned;
@@ -84,5 +85,7 @@ namespace Voxel_Project
             resourceCount += value;
             totalDisplayNotification.SetValue(resourceCount);
         }
+
+        public int GetResourceCount() { return resourceCount; }
     }
 }

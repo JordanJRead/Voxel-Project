@@ -41,6 +41,24 @@ namespace Voxel_Project
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
         }
 
+        /// <summary>
+        ///  Generates an empty image
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public Texture2D(int width, int height)
+        {
+            tex.Use(TextureTarget.Texture2D);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, 0);
+
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, [1.0f, 1.0f, 1.0f, 1.0f]);
+        }
+
         public static implicit operator uint(Texture2D texture)
         {
             return texture.tex;

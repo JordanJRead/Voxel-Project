@@ -12,37 +12,25 @@ namespace Voxel_Project
     /// <summary>
     /// Class for rendering several of a specific type of object
     /// </summary>
-    internal class PlantShader : ShaderBase
+    internal class DepthPlantShader : ShaderBase
     {
         uint positionsBufferIndex = 3;
         uint growthsBufferIndex = 4;
-        uint texturesBufferIndex = 5;
 
-        /// <summary>
-        /// Renders plants
-        /// </summary>
-        public PlantShader(string vertPath, string fragPath) : base(vertPath, fragPath)
+        public DepthPlantShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {
         }
 
-        /// <summary>
-        /// Renders the scene
-        /// </summary>
-        /// <param name="vertexArray">The vertices of the object to draw</param>
-        /// <param name="buffers">The location, texture, and count information about the object(s)</param>
         public void Render(ICamera camera, VertexArray vertexArray, PlantShaderBufferSet buffers)
         {
             GL.Disable(EnableCap.CullFace);
-
+            
             // Bind SSBOs
             buffers.positions.Use(BufferTarget.ShaderStorageBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, positionsBufferIndex, buffers.positions);
 
             buffers.growths.Use(BufferTarget.ShaderStorageBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, growthsBufferIndex, buffers.growths);
-
-            buffers.textures.Use(BufferTarget.ShaderStorageBuffer);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, texturesBufferIndex, buffers.textures);
 
             this.Use();
             SetMat4("view", camera.GetViewMatrix());

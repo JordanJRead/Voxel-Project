@@ -23,6 +23,7 @@ namespace Voxel_Project
         UIShader uiShader;
         int screenWidth;
         int screenHeight;
+        Texture2D testTexture;
 
         unsafe static void ExtensionsCheck()
         {
@@ -48,6 +49,7 @@ namespace Voxel_Project
         unsafe public App(int width, int height, string title)
             : base(new GameWindowSettings() { UpdateFrequency = 0 }, new NativeWindowSettings() { Size = (width, height), Title = title, APIVersion = new System.Version(4, 3) })
         {
+            testTexture = new Texture2D("");
             uiShader = new UIShader("Shaders/ui.vert", "shaders/ui.frag");
             screenWidth = width;
             screenHeight = height;
@@ -57,7 +59,7 @@ namespace Voxel_Project
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            scene = new Scene("scene.txt");
+            scene = new Scene("scene.txt", screenWidth, screenHeight);
             playerController = new PlayerController(new Vector3(0, 1.51f, 0), new Camera(width, height));
             editorController = new EditorController(new Camera(width, height), scene.GetTextureManager());
             editorController.Activate(playerController, scene.GetTextureManager());
@@ -104,6 +106,7 @@ namespace Voxel_Project
                 scene.Render(currentController.GetCamera());
                 playerController.DrawUI(uiShader, ((float)screenWidth) / screenHeight);
             }
+
             SwapBuffers();
         }
         protected override void OnFramebufferResize(FramebufferResizeEventArgs e)

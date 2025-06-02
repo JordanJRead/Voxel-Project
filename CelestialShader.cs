@@ -17,7 +17,7 @@ namespace Voxel_Project
 
         }
 
-        public void Render(Camera camera, VertexArray vertexArray, float dayProgress)
+        public void Render(ICamera camera, VertexArray vertexArray, float dayProgress)
         {
             this.Use();
             SetMat4("view", camera.GetViewMatrix());

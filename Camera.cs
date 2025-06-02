@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
-    internal class Camera
+    internal class Camera : ICamera
     {
         // yaw and pitch are in degrees
         protected float pitch = 0;

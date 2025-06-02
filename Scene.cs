@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Voxel_Project;
+using Voxel_Project.OpenGL_Objects;
 
 namespace Voxel_Project
 {
@@ -28,11 +29,16 @@ namespace Voxel_Project
 
         PlantManager plantManager = new PlantManager();
 
+        ScreenTextureShader screenTextureShader = new ScreenTextureShader("Shaders/screentexture.vert", "Shaders/screentexture.frag");
+
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
         PlantShader plantShader = new PlantShader("Shaders/plant.vert", "Shaders/plant.frag");
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
         float dayProgress = 0;
         const float secondsPerDayCycle = 20;
+
+        DepthCubeShader depthCubeShader = new DepthCubeShader("shaders/Depth/depthcube.vert", "shaders/Depth/depthcube.frag");
+        DepthPlantShader depthPlantShader = new DepthPlantShader("shaders/Depth/depthplant.vert", "shaders/Depth/depthplant.frag");
 
         CubeShaderBufferSet voxelsBuffers = new CubeShaderBufferSet();
         CubeShaderBufferSet fenceBuffers = new CubeShaderBufferSet();
@@ -40,11 +46,15 @@ namespace Voxel_Project
         CubeTextureManager cubeTextureManager = new CubeTextureManager();
         string initialPath;
 
+        ShadowMapper sunShadowMapper;
+
         /// <summary>
         /// Loads scene data from a file path into program memory
         /// </summary>
-        public Scene(string filePath)
+        public Scene(string filePath, int screenWidth, int screenHeight)
         {
+            sunShadowMapper = new ShadowMapper(screenWidth, screenHeight);
+
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
 
@@ -187,26 +197,42 @@ namespace Voxel_Project
             }
         }
 
-        public void Render(Camera camera, Cursor? cursor = null)
+        public void Render(ICamera camera, Cursor? cursor = null)
         {
             cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress);
             cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress);
             cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress, false, true);
             celestialShader.Render(camera, cubeVertexArray, dayProgress);
 
-            GL.Disable(EnableCap.CullFace);
             plantShader.Render(camera, plantVertexArray, plantManager.GetBuffers());
-            GL.Enable(EnableCap.CullFace);
 
             if (cursor != null)
             {
                 cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), dayProgress, true);
             }
+
+            //screenTextureShader.Render(sunShadowMapper.GetDepthTexture());
+        }
+
+
+        /// <summary>
+        /// Renders only the depth information of the scene (used for shadow mapping)
+        /// </summary>
+        public void RenderDepth(ICamera camera)
+        {
+            depthCubeShader.Render(camera, cubeVertexArray, voxelsBuffers);
+            depthCubeShader.Render(camera, cubeVertexArray, fenceBuffers);
+            depthPlantShader.Render(camera, plantVertexArray, plantManager.GetBuffers());
         }
 
         public void RenderCubeBufferSet(Camera camera, CubeShaderBufferSet bufferSet)
         {
             cubeShader.Render(camera, cubeVertexArray, bufferSet, dayProgress);
+        }
+
+        public void RenderTextureToScreen(Texture2D tex)
+        {
+            screenTextureShader.Render(tex);
         }
 
         public void FrameUpdate(float deltaTime)
@@ -219,6 +245,7 @@ namespace Voxel_Project
                 dayProgress -= 1;
             }
             GL.ClearColor(0, 0, DayStrength(), 1);
+            sunShadowMapper.UpdateShadows(this);
         }
 
         /// <summary>

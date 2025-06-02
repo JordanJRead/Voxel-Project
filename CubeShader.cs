@@ -29,7 +29,7 @@ namespace Voxel_Project
         /// <param name="vertexArray">The vertices of the object to draw</param>
         /// <param name="cubeBuffers">The location, texture, and count information about the object(s)</param>
         /// <param name="drawCursor">Whether to draw transparent and ignoring depth</param>
-        public void Render(Camera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, bool drawCursor = false)
+        public void Render(Camera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, float dayProgress, bool drawCursor = false)
         {
             // Bind SSBOs
             cubeBuffers.positions.Use(BufferTarget.ShaderStorageBuffer);
@@ -44,6 +44,7 @@ namespace Voxel_Project
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
+            SetFloat("dayProgress", dayProgress);
 
             if (drawCursor)
             {
@@ -61,6 +62,7 @@ namespace Voxel_Project
             const int triangleCount = 12;
             const int verticesPerTriangle = 3;
             GL.DrawArraysInstanced(PrimitiveType.Triangles, 0, triangleCount * verticesPerTriangle, cubeBuffers.GetObjectCount());
+            GL.Enable(EnableCap.DepthTest);
         }
     }
 }

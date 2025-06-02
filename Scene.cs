@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +30,9 @@ namespace Voxel_Project
 
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
         PlantShader plantShader = new PlantShader("Shaders/plant.vert", "Shaders/plant.frag");
+        CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
+        float dayProgress = 0;
+        const float secondsPerDayCycle = 120;
 
         CubeShaderBufferSet voxelsBuffers = new CubeShaderBufferSet();
         CubeShaderBufferSet fenceBuffers = new CubeShaderBufferSet();
@@ -185,9 +189,10 @@ namespace Voxel_Project
 
         public void Render(Camera camera, Cursor? cursor = null)
         {
-            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers);
-            cubeShader.Render(camera, cubeVertexArray, fenceBuffers);
-            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet());
+            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress);
+            cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress);
+            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress);
+            celestialShader.Render(camera, cubeVertexArray, dayProgress);
 
             GL.Disable(EnableCap.CullFace);
             plantShader.Render(camera, plantVertexArray, plantManager.GetBuffers());
@@ -195,19 +200,25 @@ namespace Voxel_Project
 
             if (cursor != null)
             {
-                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), true);
+                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), dayProgress, true);
             }
         }
 
         public void RenderCubeBufferSet(Camera camera, CubeShaderBufferSet bufferSet)
         {
-            cubeShader.Render(camera, cubeVertexArray, bufferSet);
+            cubeShader.Render(camera, cubeVertexArray, bufferSet, dayProgress);
         }
 
         public void FrameUpdate(float deltaTime)
         {
             plantManager.UpdateGrowths(deltaTime);
             cloudManager.MoveClouds(deltaTime);
+            dayProgress += deltaTime / secondsPerDayCycle;
+            if (dayProgress > 1)
+            {
+                dayProgress -= 1;
+            }
+            GL.ClearColor(0, 0, DayStrength(), 1);
         }
 
         /// <summary>
@@ -385,6 +396,63 @@ namespace Voxel_Project
             fenceBuffers.SetPositions(GPUFencePositions);
             fenceBuffers.SetScales(GPUFenceScales);
             fenceBuffers.SetTextureHandles(GPUFenceTextureHandles);
+        }
+
+        /// <summary>
+        /// https://www.desmos.com/calculator/pj2o231y4i
+        /// Gives the 'strenght' of day based on the dayProgress. It is 1 during noon, 0 during midnight, and stays at 1/0 for a good amount of time around those times.
+        /// Another way to think of it is the blueness of the sky color, where it is blue during the day, black at night, and smoothly transitions during certain times
+        /// 
+        /// Looks like:
+        /// 
+        /// 
+        /// 
+        /// -------------                              ---------------
+        ///              \                            /
+        ///               \                          /
+        ///                \                        /
+        ///                 ------------------------
+        /// 
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public float DayStrength()
+        {
+            float transitionTime = 0.3f;
+            
+            // Smoothing function
+            float Smooth(float x)
+            {
+                if (x < 0.5)
+                {
+                    return 4 * x * x * x;
+                }
+                else
+                {
+                    return 1 - (-2 * x + 2) * (-2 * x + 2) * (-2 * x + 2) / 2.0f;
+                }
+            }
+
+            if (0 < dayProgress && dayProgress < transitionTime / 2)
+            {
+                return Smooth((dayProgress + transitionTime / 2) / transitionTime);
+            }
+            else if (dayProgress < 0.5 - transitionTime / 2)
+            {
+                return 1;
+            }
+            else if (dayProgress < 0.5 + transitionTime / 2)
+            {
+                return Smooth(1 - (dayProgress - (0.5f - transitionTime / 2)) / transitionTime);
+            }
+            else if (dayProgress < 1 - transitionTime / 2)
+            {
+                return 0;
+            }
+            else
+            {
+                return Smooth((dayProgress - (1 - transitionTime / 2)) / transitionTime);
+            }
         }
     }
 }

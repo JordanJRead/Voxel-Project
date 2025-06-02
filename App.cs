@@ -64,7 +64,6 @@ namespace Voxel_Project
             currentController = editorController;
             //currentCamera = editorCamera;
             CursorState = CursorState.Grabbed;
-            GL.ClearColor(0f, 0f, 0.8f, 1);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)

@@ -32,7 +32,7 @@ namespace Voxel_Project
         PlantShader plantShader = new PlantShader("Shaders/plant.vert", "Shaders/plant.frag");
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
         float dayProgress = 0;
-        const float secondsPerDayCycle = 120;
+        const float secondsPerDayCycle = 20;
 
         CubeShaderBufferSet voxelsBuffers = new CubeShaderBufferSet();
         CubeShaderBufferSet fenceBuffers = new CubeShaderBufferSet();
@@ -191,7 +191,7 @@ namespace Voxel_Project
         {
             cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress);
             cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress);
-            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress);
+            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress, false, true);
             celestialShader.Render(camera, cubeVertexArray, dayProgress);
 
             GL.Disable(EnableCap.CullFace);
@@ -399,7 +399,11 @@ namespace Voxel_Project
         }
 
         /// <summary>
+        /// Old version of function:
         /// https://www.desmos.com/calculator/pj2o231y4i
+        /// New version is just a sine wave
+        /// 
+        /// ...
         /// Gives the 'strenght' of day based on the dayProgress. It is 1 during noon, 0 during midnight, and stays at 1/0 for a good amount of time around those times.
         /// Another way to think of it is the blueness of the sky color, where it is blue during the day, black at night, and smoothly transitions during certain times
         /// 
@@ -418,7 +422,8 @@ namespace Voxel_Project
         /// <returns></returns>
         public float DayStrength()
         {
-            float transitionTime = 0.3f;
+            return MathF.Sin(dayProgress * 2 * MathF.PI) / 2.0f + 0.5f;
+            float transitionTime = 0.5f;
             
             // Smoothing function
             float Smooth(float x)

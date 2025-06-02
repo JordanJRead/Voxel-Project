@@ -29,7 +29,7 @@ namespace Voxel_Project
         /// <param name="vertexArray">The vertices of the object to draw</param>
         /// <param name="cubeBuffers">The location, texture, and count information about the object(s)</param>
         /// <param name="drawCursor">Whether to draw transparent and ignoring depth</param>
-        public void Render(Camera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, float dayProgress, bool drawCursor = false)
+        public void Render(Camera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, float dayProgress, bool drawCursor = false, bool isCloud = false)
         {
             // Bind SSBOs
             cubeBuffers.positions.Use(BufferTarget.ShaderStorageBuffer);
@@ -46,6 +46,7 @@ namespace Voxel_Project
             SetMat4("projection", camera.GetProjectionMatrix());
             SetFloat("dayProgress", dayProgress);
 
+            SetBool("isCloud", isCloud);
             if (drawCursor)
             {
                 GL.Disable(EnableCap.DepthTest);

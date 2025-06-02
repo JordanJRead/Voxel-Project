@@ -11,24 +11,39 @@ in vec3 fragNormal;
 
 uniform float dayProgress;
 uniform bool isCursor;
+uniform bool isCloud;
 
 layout(std430, binding = 2) readonly buffer textureSSBO {
 	samplerCube cubeMaps[];
 };
 
 void main() {
-	vec3 celestialPosition = vec3(cos(2 * PI * dayProgress), sin(2 * PI * dayProgress), 0);
-	celestialPosition *= 10;
-	if (dayProgress > 0.5) {
-		celestialPosition = -celestialPosition;
+	if (isCloud) {
+        float dayStrength = sin(dayProgress * 2 * PI) / 2.0 + 0.5;
+		vec4 brightColor = vec4(0.8, 0.8, 0.8, 1);
+		vec4 darkColor = vec4(brightColor.xyz * 0.3, 1);
+		FragColor = darkColor + dayStrength * (brightColor - darkColor);
 	}
-	celestialPosition = normalize(celestialPosition);
+	else {
+		vec3 sunPosition = vec3(cos(2 * PI * dayProgress), sin(2 * PI * dayProgress), 0);
+		sunPosition *= 10;
 
-	vec3 objectColor = texture(cubeMaps[instanceID], cubeMapCoord).xyz;
-	float diffuseFactor = (dot(celestialPosition, fragNormal) + 1) * 0.5;
-	diffuseFactor = clamp(diffuseFactor, 0.3, 1.0);
+		sunPosition = normalize(sunPosition);
+		vec3 moonPosition = -sunPosition;
 
-	float alpha = isCursor ? 0.5f : 1;
-	vec3 emission = isCursor ? vec3(0.2) : vec3(0);
-	FragColor = vec4(objectColor * diffuseFactor + emission, alpha);
+		vec3 objectColor = texture(cubeMaps[instanceID], cubeMapCoord).xyz;
+
+		float sunDiffuseFactor = (dot(sunPosition, fragNormal));
+		float moonDiffuseFactor = (dot(moonPosition, fragNormal));
+
+		sunDiffuseFactor = clamp(sunDiffuseFactor, 0.3, 1.0);
+		moonDiffuseFactor = clamp(moonDiffuseFactor, 0.3, 1.0);
+
+		vec3 colorFromSun = objectColor * sunDiffuseFactor;
+		vec3 colorFromMoon = objectColor * moonDiffuseFactor * vec3(0.1, 0.1, 0.4);
+
+		float alpha = isCursor ? 0.5f : 1;
+		vec3 emission = isCursor ? vec3(0.2) : vec3(0);
+		FragColor = vec4(colorFromSun + colorFromMoon + emission, alpha);
+	}
 }

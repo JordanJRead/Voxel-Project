@@ -9,6 +9,7 @@ in flat int instanceID;
 in vec3 sunNDCCoord;
 
 in vec3 fragNormal;
+in vec3 plantNormal;
 out vec4 FragColor;
 
 layout(std430, binding = 5) readonly buffer textureSSBO {
@@ -35,11 +36,18 @@ void main() {
 		discard;
 	}
 
-	float sunDiffuseFactor = dot(sunPosition, fragNormal);
-	float moonDiffuseFactor = dot(moonPosition, fragNormal);
+	float sunDiffuseFactor = dot(sunPosition, plantNormal);
+	float moonDiffuseFactor = dot(moonPosition, plantNormal);
 
 	sunDiffuseFactor = clamp(sunDiffuseFactor, 0.0, 1.0);
 	moonDiffuseFactor = clamp(moonDiffuseFactor, 0.0, 1.0);
+	
+
+	float harshSunDiffuseFactor = dot(sunPosition, fragNormal);
+	float harshMoonDiffuseFactor = dot(moonPosition, fragNormal);
+
+	harshSunDiffuseFactor = clamp(harshSunDiffuseFactor, 0.0, 1.0);
+	harshMoonDiffuseFactor = clamp(harshMoonDiffuseFactor, 0.0, 1.0);
 
 	vec3 colorFromSun = objectColor.xyz * sunDiffuseFactor;
 	vec3 colorFromMoon = objectColor.xyz * moonDiffuseFactor * vec3(0.1, 0.1, 0.4);
@@ -48,7 +56,7 @@ void main() {
 	float lowestDepth = texture(sunDepthTexture, depthSamplingCoord).x;
 	float fragDepth = sunNDCCoord.z * 0.5 + 0.5;
 		
-	float bias = 0.005*tan(acos(sunDiffuseFactor));
+	float bias = 0.005*tan(acos(harshSunDiffuseFactor));
 	bias = clamp(bias, 0.0, 0.01);
 	bias *= 10;
 	if (abs(fragDepth - lowestDepth) > bias || dayProgress > 0.5) {

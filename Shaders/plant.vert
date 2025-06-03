@@ -7,6 +7,7 @@ layout(location = 2) in vec2 vTexCoord;
 out vec2 fragTexCoord;
 out flat int instanceID;
 out vec3 fragNormal;
+out vec3 plantNormal;
 out vec3 sunNDCCoord;
 
 layout(std430, binding = 3) readonly buffer positionSSBO {
@@ -37,4 +38,5 @@ void main() {
 	sunNDCCoord = sunTempPosition.xyz / sunTempPosition.w;
 
 	fragNormal = normalize(vNormal);
+	plantNormal = normalize(worldPos.xyz - (position - vec3(0, 1, 0)));
 }

@@ -8,11 +8,10 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Voxel_Project
 {
-    internal class OrthoCamera : ICamera
+    internal class CelestialCamera : ICamera
     {
         Vector3 position;
-
-        public OrthoCamera()
+        public CelestialCamera()
         {
         }
 
@@ -23,16 +22,12 @@ namespace Voxel_Project
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreateOrthographic(50, 50, 0.1f, 6);
+            return Matrix4.CreateOrthographic(100, 100, 0.1f, 20);
         }
 
         public void SetPosition(Vector3 position)
         {
             this.position = position;
-            Vector4 worldPos = new Vector4(0, 8, 0, 1);
-            Vector4 sunSpace = GetViewMatrix() * worldPos;
-            Vector4 clipSpace = GetProjectionMatrix() * sunSpace;
-            Vector3 normClipSpace = clipSpace.Xyz / clipSpace.W;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Voxel_Project
     {
         uint positionsBufferIndex = 3;
         uint growthsBufferIndex = 4;
+        uint textureHanglesBufferIndex = 5;
 
         public DepthPlantShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {
@@ -31,6 +32,9 @@ namespace Voxel_Project
 
             buffers.growths.Use(BufferTarget.ShaderStorageBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, growthsBufferIndex, buffers.growths);
+
+            buffers.textures.Use(BufferTarget.ShaderStorageBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, textureHanglesBufferIndex, buffers.textures);
 
             this.Use();
             SetMat4("view", camera.GetViewMatrix());

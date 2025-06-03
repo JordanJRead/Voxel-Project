@@ -13,13 +13,14 @@ namespace Voxel_Project
     {
         FBO fbo = new FBO();
         Texture2D depthTexture;
-        OrthoCamera camera = new OrthoCamera();
+        CelestialCamera camera = new CelestialCamera();
+        static int imageSize = 4096 * 4;
 
         public ShadowMapper(int screenWidth, int screenHeight)
         {
             fbo.Use();
 
-            depthTexture = new Texture2D(1024, 1024);
+            depthTexture = new Texture2D(imageSize, imageSize);
 
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthTexture, 0);
             GL.DrawBuffer(DrawBufferMode.None);
@@ -29,9 +30,9 @@ namespace Voxel_Project
 
         public void UpdateShadows(Scene scene)
         {
-            camera.SetPosition(new Vector3(MathF.Cos(2 * MathF.PI * 0.26f), MathF.Sin(2 * MathF.PI * 0.26f), 0) * 10);
+            camera.SetPosition(new Vector3(MathF.Cos(2 * MathF.PI * scene.GetDayProgress()), MathF.Sin(2 * MathF.PI * scene.GetDayProgress()), 0) * 10);
             fbo.Use();
-            GL.Viewport(0, 0, 1024, 1024);
+            GL.Viewport(0, 0, imageSize, imageSize);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             scene.RenderDepth(camera);
@@ -45,7 +46,7 @@ namespace Voxel_Project
             return depthTexture;
         }
 
-        public OrthoCamera GetCamera()
+        public CelestialCamera GetCamera()
         {
             return camera;
         }

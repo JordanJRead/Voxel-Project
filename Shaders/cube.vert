@@ -5,7 +5,7 @@ layout(location = 1) in vec3 vNormal;
 out vec3 cubeMapCoord;
 out flat int instanceID;
 out vec3 fragNormal;
-out vec3 sunClipPosition;
+out vec3 sunNDCCoord;
 
 layout(std430, binding = 0) readonly buffer positionSSBO {
 	float positions[];
@@ -32,5 +32,5 @@ void main() {
 
 	gl_Position = projection * view * worldPos;
 	vec4 sunTempPosition = sunProjection * sunView * worldPos;
-	sunClipPosition = sunTempPosition.xyz / sunTempPosition.w;
+	sunNDCCoord = sunTempPosition.xyz / sunTempPosition.w;
 }

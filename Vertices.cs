@@ -139,11 +139,15 @@ namespace Voxel_Project
                 left,  up,   0, 0, 0, near, 0,    1.0f
             };
 
-            float[] quadVertices2 = RotateQuad(quadVertices1, 120);
-            float[] quadVertices3 = RotateQuad(quadVertices1, 240);
+            float[] quadVertices2 = RotateQuad(quadVertices1, 72);
+            float[] quadVertices3 = RotateQuad(quadVertices1, 72 * 2);
+            float[] quadVertices4 = RotateQuad(quadVertices1, 72 * 3);
+            float[] quadVertices5 = RotateQuad(quadVertices1, 72 * 4);
 
             quadVertices1 = quadVertices1.Concat(quadVertices2).ToArray();
             quadVertices1 = quadVertices1.Concat(quadVertices3).ToArray();
+            quadVertices1 = quadVertices1.Concat(quadVertices4).ToArray();
+            quadVertices1 = quadVertices1.Concat(quadVertices5).ToArray();
 
             return quadVertices1;
         }

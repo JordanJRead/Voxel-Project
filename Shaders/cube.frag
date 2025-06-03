@@ -8,7 +8,7 @@ in vec3 cubeMapCoord;
 in flat int instanceID;
 out vec4 FragColor;
 in vec3 fragNormal;
-in vec3 sunClipPosition;
+in vec3 sunNDCCoord;
 
 uniform float dayProgress;
 uniform bool isCursor;
@@ -35,29 +35,33 @@ void main() {
 
 		vec3 objectColor = texture(cubeMaps[instanceID], cubeMapCoord).xyz;
 
-		float sunDiffuseFactor = (dot(sunPosition, fragNormal));
-		float moonDiffuseFactor = (dot(moonPosition, fragNormal));
+		float sunDiffuseFactor = dot(sunPosition, fragNormal);
+		float moonDiffuseFactor = dot(moonPosition, fragNormal);
 
-		sunDiffuseFactor = clamp(sunDiffuseFactor, 0.3, 1.0);
-		moonDiffuseFactor = clamp(moonDiffuseFactor, 0.3, 1.0);
+		sunDiffuseFactor = clamp(sunDiffuseFactor, 0.0, 1.0);
+		moonDiffuseFactor = clamp(moonDiffuseFactor, 0.0, 1.0);
 
 		vec3 colorFromSun = objectColor * sunDiffuseFactor;
-		vec3 colorFromMoon = objectColor * moonDiffuseFactor * vec3(0.1, 0.1, 0.4) * 0;
+		vec3 colorFromMoon = objectColor * moonDiffuseFactor * vec3(0.1, 0.1, 0.4);
 
-		vec2 depthSamplingCoord = sunClipPosition.xy / 2 + vec2(0.5, 0.5);
+		vec2 depthSamplingCoord = sunNDCCoord.xy / 2 + vec2(0.5, 0.5);
 		float lowestDepth = texture(sunDepthTexture, depthSamplingCoord).x;
+		float fragDepth = sunNDCCoord.z * 0.5 + 0.5;
+		
+		float bias = 0.005*tan(acos(sunDiffuseFactor));
+		bias = clamp(bias, 0.0000001, 0.01);
 
-		if (sunClipPosition.z > lowestDepth) {
+		if (abs(fragDepth - lowestDepth) > bias) {
 			colorFromSun *= 0;
 		}
 
 		float alpha = isCursor ? 0.5f : 1;
-		vec3 emission = isCursor ? vec3(0.2) : vec3(0);
-		FragColor = vec4(colorFromSun + colorFromMoon + emission, alpha);
-		FragColor = vec4(lowestDepth, lowestDepth, lowestDepth, 1);
+		vec3 addition = isCursor ? vec3(0.5) : vec3(0);
+		FragColor = vec4(colorFromSun + colorFromMoon + objectColor * 0.2 + addition, alpha);
 
-		vec4 depthColor = sunClipPosition.z > 1 ? vec4(0, 1, 1, 1) : (sunClipPosition.z < 0 ? vec4(1, 1, 0, 1) : vec4(sunClipPosition.z, sunClipPosition.z, sunClipPosition.z, 1));
-		FragColor = depthColor;
-		FragColor = vec4(sunClipPosition, 1);
+		//FragColor = vec4(sunClipPosition.z * 0.5 + 0.5, sunClipPosition.z * 0.5 + 0.5, sunClipPosition.z * 0.5 + 0.5, 1);
+		//vec4 depthColor = sunClipPosition.z > 1 ? vec4(0, 1, 1, 1) : (sunClipPosition.z < 0 ? vec4(1, 1, 0, 1) : vec4(sunClipPosition.z, sunClipPosition.z, sunClipPosition.z, 1));
+		//FragColor = depthColor;
+		//FragColor = vec4(sunClipPosition, 1);
 	}
 }

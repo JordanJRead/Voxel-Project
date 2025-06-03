@@ -32,7 +32,7 @@ namespace Voxel_Project
         /// </summary>
         /// <param name="vertexArray">The vertices of the object to draw</param>
         /// <param name="buffers">The location, texture, and count information about the object(s)</param>
-        public void Render(ICamera camera, VertexArray vertexArray, PlantShaderBufferSet buffers, float dayProgress, ShadowMapper sunShadowMapper)
+        public void Render(ICamera camera, VertexArray vertexArray, PlantShaderBufferSet buffers, float dayProgress, float time, ShadowMapper sunShadowMapper)
         {
             GL.Disable(EnableCap.CullFace);
 
@@ -52,6 +52,7 @@ namespace Voxel_Project
             SetMat4("sunView", sunShadowMapper.GetCamera().GetViewMatrix());
             SetMat4("sunProjection", sunShadowMapper.GetCamera().GetProjectionMatrix());
             SetFloat("dayProgress", dayProgress);
+            SetFloat("time", time);
             sunShadowMapper.GetDepthTexture().Use(sunDepthTextureUnit);
 
             vertexArray.Use();

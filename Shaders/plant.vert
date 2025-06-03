@@ -24,6 +24,8 @@ uniform mat4 projection;
 uniform mat4 sunView;
 uniform mat4 sunProjection;
 
+uniform float time;
+
 void main() {
 	fragTexCoord = vTexCoord;
 	instanceID = gl_InstanceID;
@@ -32,6 +34,10 @@ void main() {
 
 	vec3 position = vec3(positions[gl_InstanceID * 3 + 0], positions[gl_InstanceID * 3 + 1] - 0.5f * (1 - growths[gl_InstanceID]), positions[gl_InstanceID * 3 + 2]);
 	vec4 worldPos = vec4(vPos * scale + position, 1);
+	
+	if (vPos.y > 0.25) {
+		worldPos.x += 0.1 * sin(0.5 * time) * growths[gl_InstanceID];
+	}
 
 	gl_Position = projection * view * worldPos;
 	vec4 sunTempPosition = sunProjection * sunView * worldPos;

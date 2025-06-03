@@ -14,7 +14,6 @@ namespace Voxel_Project
 
         public OrthoCamera()
         {
-            position = new Vector3(1, 10, 0);
         }
 
         public Matrix4 GetViewMatrix()
@@ -24,12 +23,16 @@ namespace Voxel_Project
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreateOrthographic(50, 50, 0.1f, 12);
+            return Matrix4.CreateOrthographic(50, 50, 0.1f, 6);
         }
 
         public void SetPosition(Vector3 position)
         {
             this.position = position;
+            Vector4 worldPos = new Vector4(0, 8, 0, 1);
+            Vector4 sunSpace = GetViewMatrix() * worldPos;
+            Vector4 clipSpace = GetProjectionMatrix() * sunSpace;
+            Vector3 normClipSpace = clipSpace.Xyz / clipSpace.W;
         }
     }
 }

@@ -8,10 +8,12 @@ in vec3 cubeMapCoord;
 in flat int instanceID;
 out vec4 FragColor;
 in vec3 fragNormal;
+in vec3 sunClipPosition;
 
 uniform float dayProgress;
 uniform bool isCursor;
 uniform bool isCloud;
+uniform sampler2D sunDepthTexture;
 
 layout(std430, binding = 2) readonly buffer textureSSBO {
 	samplerCube cubeMaps[];
@@ -40,10 +42,22 @@ void main() {
 		moonDiffuseFactor = clamp(moonDiffuseFactor, 0.3, 1.0);
 
 		vec3 colorFromSun = objectColor * sunDiffuseFactor;
-		vec3 colorFromMoon = objectColor * moonDiffuseFactor * vec3(0.1, 0.1, 0.4);
+		vec3 colorFromMoon = objectColor * moonDiffuseFactor * vec3(0.1, 0.1, 0.4) * 0;
+
+		vec2 depthSamplingCoord = sunClipPosition.xy / 2 + vec2(0.5, 0.5);
+		float lowestDepth = texture(sunDepthTexture, depthSamplingCoord).x;
+
+		if (sunClipPosition.z > lowestDepth) {
+			colorFromSun *= 0;
+		}
 
 		float alpha = isCursor ? 0.5f : 1;
 		vec3 emission = isCursor ? vec3(0.2) : vec3(0);
 		FragColor = vec4(colorFromSun + colorFromMoon + emission, alpha);
+		FragColor = vec4(lowestDepth, lowestDepth, lowestDepth, 1);
+
+		vec4 depthColor = sunClipPosition.z > 1 ? vec4(0, 1, 1, 1) : (sunClipPosition.z < 0 ? vec4(1, 1, 0, 1) : vec4(sunClipPosition.z, sunClipPosition.z, sunClipPosition.z, 1));
+		FragColor = depthColor;
+		FragColor = vec4(sunClipPosition, 1);
 	}
 }

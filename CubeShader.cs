@@ -17,10 +17,11 @@ namespace Voxel_Project
         uint positionsBufferIndex = 0;
         uint scalesBufferIndex = 1;
         uint texturesBufferIndex = 2;
+        int sunDepthTextureUnit = 0;
 
         public CubeShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {
-            SetInt("white", 0);
+            SetInt("sunDepthTexture", sunDepthTextureUnit);
         }
 
         /// <summary>
@@ -29,7 +30,7 @@ namespace Voxel_Project
         /// <param name="vertexArray">The vertices of the object to draw</param>
         /// <param name="cubeBuffers">The location, texture, and count information about the object(s)</param>
         /// <param name="drawCursor">Whether to draw transparent and ignoring depth</param>
-        public void Render(ICamera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, float dayProgress, bool drawCursor = false, bool isCloud = false)
+        public void Render(ICamera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, float dayProgress, ShadowMapper sunShadowMapper, bool drawCursor = false, bool isCloud = false)
         {
             // Bind SSBOs
             cubeBuffers.positions.Use(BufferTarget.ShaderStorageBuffer);
@@ -44,7 +45,10 @@ namespace Voxel_Project
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
+            SetMat4("sunView", sunShadowMapper.GetCamera().GetViewMatrix());
+            SetMat4("sunProjection", sunShadowMapper.GetCamera().GetProjectionMatrix());
             SetFloat("dayProgress", dayProgress);
+            sunShadowMapper.GetDepthTexture().Use(sunDepthTextureUnit);
 
             SetBool("isCloud", isCloud);
             if (drawCursor)

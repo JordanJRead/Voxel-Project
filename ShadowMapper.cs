@@ -19,7 +19,7 @@ namespace Voxel_Project
         {
             fbo.Use();
 
-            depthTexture = new Texture2D(screenWidth, screenHeight);
+            depthTexture = new Texture2D(1024, 1024);
 
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthTexture, 0);
             GL.DrawBuffer(DrawBufferMode.None);
@@ -29,18 +29,25 @@ namespace Voxel_Project
 
         public void UpdateShadows(Scene scene)
         {
-            camera.SetPosition(new Vector3(MathF.Cos(2 * MathF.PI * scene.GetDayProgress()), MathF.Sin(2 * MathF.PI * scene.GetDayProgress()), 0) * 10);
+            camera.SetPosition(new Vector3(MathF.Cos(2 * MathF.PI * 0.26f), MathF.Sin(2 * MathF.PI * 0.26f), 0) * 10);
             fbo.Use();
+            GL.Viewport(0, 0, 1024, 1024);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             scene.RenderDepth(camera);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.Viewport(0, 0, 800, 600);
         }
 
         public Texture2D GetDepthTexture()
         {
             return depthTexture;
+        }
+
+        public OrthoCamera GetCamera()
+        {
+            return camera;
         }
     }
 }

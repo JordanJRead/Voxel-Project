@@ -204,19 +204,19 @@ namespace Voxel_Project
 
         public void Render(ICamera camera, Cursor? cursor = null)
         {
-            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress);
-            cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress);
-            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress, false, true);
+            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress, sunShadowMapper);
+            cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress, sunShadowMapper);
+            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress, sunShadowMapper, false, true);
             celestialShader.Render(camera, cubeVertexArray, dayProgress);
 
             plantShader.Render(camera, plantVertexArray, plantManager.GetBuffers());
 
             if (cursor != null)
             {
-                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), dayProgress, true);
+                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), dayProgress, sunShadowMapper, true);
             }
 
-            screenTextureShader.Render(sunShadowMapper.GetDepthTexture());
+            //screenTextureShader.Render(sunShadowMapper.GetDepthTexture());
         }
 
 
@@ -232,7 +232,7 @@ namespace Voxel_Project
 
         public void RenderCubeBufferSet(Camera camera, CubeShaderBufferSet bufferSet)
         {
-            cubeShader.Render(camera, cubeVertexArray, bufferSet, dayProgress);
+            cubeShader.Render(camera, cubeVertexArray, bufferSet, dayProgress, sunShadowMapper);
         }
 
         public void RenderTextureToScreen(Texture2D tex)

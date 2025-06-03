@@ -26,5 +26,10 @@ namespace Voxel_Project
         {
             return Matrix4.CreateOrthographic(50, 50, 0.1f, 12);
         }
+
+        public void SetPosition(Vector3 position)
+        {
+            this.position = position;
+        }
     }
 }

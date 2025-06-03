@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Voxel_Project.OpenGL_Objects;
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Voxel_Project
 {
@@ -28,6 +29,7 @@ namespace Voxel_Project
 
         public void UpdateShadows(Scene scene)
         {
+            camera.SetPosition(new Vector3(MathF.Cos(2 * MathF.PI * scene.GetDayProgress()), MathF.Sin(2 * MathF.PI * scene.GetDayProgress()), 0) * 10);
             fbo.Use();
             GL.Clear(ClearBufferMask.DepthBufferBit);
 

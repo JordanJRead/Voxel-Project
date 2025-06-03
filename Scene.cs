@@ -135,6 +135,11 @@ namespace Voxel_Project
             return cubeTextureManager;
         }
 
+        public float GetDayProgress()
+        {
+            return dayProgress;
+        }
+
         /// <summary>
         /// Writes scene data to the same file path that the scene was loaded from, overwriting that file
         /// </summary>
@@ -211,7 +216,7 @@ namespace Voxel_Project
                 cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), dayProgress, true);
             }
 
-            //screenTextureShader.Render(sunShadowMapper.GetDepthTexture());
+            screenTextureShader.Render(sunShadowMapper.GetDepthTexture());
         }
 
 

@@ -32,13 +32,8 @@ namespace Voxel_Project
 
         public void UpdateShadows(Scene scene)
         {
-            if (!isSun)
-            {
-                Console.WriteLine(camera.GetPosition());
-            }
             Vector3 sunPosition = new Vector3(MathF.Cos(2 * MathF.PI * scene.GetDayProgress()), MathF.Sin(2 * MathF.PI * scene.GetDayProgress()), 0) * 10;
             Vector3 moonPosition = new Vector3(MathF.Cos(2 * MathF.PI * (scene.GetDayProgress() + 0.5f)), MathF.Sin(2 * MathF.PI * (scene.GetDayProgress() + 0.5f)), 0) * 10;
-            //moonPosition = new Vector3(0.00001f, 10, 0);
             
             if (isSun)
                 camera.SetPosition(sunPosition);

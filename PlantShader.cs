@@ -18,6 +18,7 @@ namespace Voxel_Project
         uint growthsBufferIndex = 4;
         uint texturesBufferIndex = 5;
         int sunDepthTextureUnit = 0;
+        int moonDepthTextureUnit = 1;
 
         /// <summary>
         /// Renders plants
@@ -26,6 +27,7 @@ namespace Voxel_Project
         {
             this.Use();
             SetInt("sunDepthTexture", sunDepthTextureUnit);
+            SetInt("moonDepthTexture", moonDepthTextureUnit);
         }
 
         /// <summary>
@@ -33,7 +35,7 @@ namespace Voxel_Project
         /// </summary>
         /// <param name="vertexArray">The vertices of the object to draw</param>
         /// <param name="buffers">The location, texture, and count information about the object(s)</param>
-        public void Render(ICamera camera, VertexArray vertexArray, PlantShaderBufferSet buffers, float dayProgress, float time, ShadowMapper sunShadowMapper)
+        public void Render(ICamera camera, VertexArray vertexArray, PlantShaderBufferSet buffers, float dayProgress, float time, ShadowMapper sunShadowMapper, ShadowMapper moonShadowMapper)
         {
             GL.Disable(EnableCap.CullFace);
 
@@ -50,11 +52,17 @@ namespace Voxel_Project
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
+
             SetMat4("sunView", sunShadowMapper.GetCamera().GetViewMatrix());
             SetMat4("sunProjection", sunShadowMapper.GetCamera().GetProjectionMatrix());
+            SetMat4("moonView", moonShadowMapper.GetCamera().GetViewMatrix());
+            SetMat4("moonProjection", moonShadowMapper.GetCamera().GetProjectionMatrix());
+
             SetFloat("dayProgress", dayProgress);
             SetFloat("time", time);
+
             sunShadowMapper.GetDepthTexture().Use(sunDepthTextureUnit);
+            moonShadowMapper.GetDepthTexture().Use(moonDepthTextureUnit);
 
             vertexArray.Use();
 

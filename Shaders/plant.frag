@@ -7,6 +7,7 @@
 in vec2 fragTexCoord;
 in flat int instanceID;
 in vec3 sunNDCCoord;
+in vec3 moonNDCCoord;
 
 in vec3 fragNormal;
 in vec3 plantNormal;
@@ -17,6 +18,8 @@ layout(std430, binding = 5) readonly buffer textureSSBO {
 };
 
 uniform sampler2D sunDepthTexture;
+uniform sampler2D moonDepthTexture;
+
 uniform float dayProgress;
 
 void main() {
@@ -41,7 +44,6 @@ void main() {
 
 	sunDiffuseFactor = clamp(sunDiffuseFactor, 0.0, 1.0);
 	moonDiffuseFactor = clamp(moonDiffuseFactor, 0.0, 1.0);
-	
 
 	float harshSunDiffuseFactor = dot(sunPosition, fragNormal);
 	float harshMoonDiffuseFactor = dot(moonPosition, fragNormal);
@@ -52,16 +54,31 @@ void main() {
 	vec3 colorFromSun = objectColor.xyz * sunDiffuseFactor;
 	vec3 colorFromMoon = objectColor.xyz * moonDiffuseFactor * vec3(0.1, 0.1, 0.4);
 
-	vec2 depthSamplingCoord = sunNDCCoord.xy / 2 + vec2(0.5, 0.5);
-	float lowestDepth = texture(sunDepthTexture, depthSamplingCoord).x;
-	float fragDepth = sunNDCCoord.z * 0.5 + 0.5;
+	// Sun shadows
+	vec2 sunDepthSamplingCoord = sunNDCCoord.xy / 2 + vec2(0.5, 0.5);
+	float sunLowestDepth = texture(sunDepthTexture, sunDepthSamplingCoord).x;
+	float sunFragDepth = sunNDCCoord.z * 0.5 + 0.5;
 		
-	float bias = 0.005*tan(acos(harshSunDiffuseFactor));
-	bias = clamp(bias, 0.0, 0.01);
-	bias *= 10;
-	if (abs(fragDepth - lowestDepth) > bias || dayProgress > 0.5) {
+	float sunBias = 0.005*tan(acos(harshSunDiffuseFactor));
+	sunBias = clamp(sunBias, 0.0, 0.01);
+	sunBias *= 10;
+	if (abs(sunFragDepth - sunLowestDepth) > sunBias || dayProgress > 0.5) {
 		// In shadow
 		colorFromSun *= 0;
 	}
+
+	// Moon shadows
+	vec2 moonDepthSamplingCoord = moonNDCCoord.xy / 2 + vec2(0.5, 0.5);
+	float moonLowestDepth = texture(moonDepthTexture, moonDepthSamplingCoord).x;
+	float moonFragDepth = moonNDCCoord.z * 0.5 + 0.5;
+		
+	float moonBias = 0.005*tan(acos(harshSunDiffuseFactor));
+	moonBias = clamp(sunBias, 0.0, 0.01);
+	moonBias *= 10;
+	if (abs(moonFragDepth - moonLowestDepth) > moonBias || dayProgress < 0.5) {
+		// In shadow
+		colorFromMoon *= 0;
+	}
+
 	FragColor = vec4(colorFromSun + colorFromMoon + objectColor.xyz * 0.2, 1);
 }

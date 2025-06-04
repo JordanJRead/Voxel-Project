@@ -66,7 +66,7 @@ namespace Voxel_Project
         public void DrawUI(UIShader uiShader, float aspectRatio)
         {
             inventory.Draw(uiShader, aspectRatio);
-            uiShader.Draw(crosshair, new Vector2(0.5f, 0.5f), 0.05f, aspectRatio);
+            uiShader.Draw(crosshair, new Vector2(0.5f, 0.5f), 0.025f, aspectRatio);
             moneyManager.Draw(uiShader, aspectRatio);
             woodManager.Draw(uiShader, aspectRatio);
         }

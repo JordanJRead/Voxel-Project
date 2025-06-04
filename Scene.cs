@@ -18,6 +18,7 @@ namespace Voxel_Project
         FenceManager fenceManager = new FenceManager();
 
         CloudManager cloudManager = new CloudManager();
+        StarManager starManager = new StarManager();
 
         // Cube vertices
         VertexArray cubeVertexArray;
@@ -31,10 +32,11 @@ namespace Voxel_Project
 
         ScreenTextureShader screenTextureShader = new ScreenTextureShader("Shaders/screentexture.vert", "Shaders/screentexture.frag");
 
+        StarShader starShader = new StarShader("Shaders/star.vert", "Shaders/star.frag");
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
         PlantShader plantShader = new PlantShader("Shaders/plant.vert", "Shaders/plant.frag");
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
-        float dayProgress = 0;
+        float dayProgress = 0.75f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
         float time = 0;
         const float secondsPerDayCycle = 30;
 
@@ -207,6 +209,7 @@ namespace Voxel_Project
 
         public void Render(ICamera camera, Cursor? cursor = null)
         {
+            starShader.Render(camera, DayStrength(), cubeVertexArray, starManager.GetStarCount(), starManager.GetSSBO());
             cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress, sunShadowMapper, moonShadowMapper);
             cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress, sunShadowMapper, moonShadowMapper);
             cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress, sunShadowMapper, moonShadowMapper, false, true);

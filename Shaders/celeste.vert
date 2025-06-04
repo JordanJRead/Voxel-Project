@@ -13,14 +13,14 @@ void main() {
 	vec3 scale;
 
 	if (isSun) {
-		scale = vec3(1000, 1000, 1000);
+		scale = vec3(100, 100, 100);
 	}
 	else {
-		scale = vec3(500, 500, 500);
+		scale = vec3(50, 50, 50);
 	}
 
 	vec3 objectPosition = vec3(cos(2 * PI * dayProgress), sin(2 * PI * dayProgress), 0);
-	objectPosition *= 10000;
+	objectPosition *= 1000;
 	if (!isSun) {
 		objectPosition = -objectPosition;
 	}

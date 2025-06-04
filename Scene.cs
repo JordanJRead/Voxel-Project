@@ -48,6 +48,7 @@ namespace Voxel_Project
         string initialPath;
 
         ShadowMapper sunShadowMapper;
+        ShadowMapper moonShadowMapper;
 
         /// <summary>
         /// Loads scene data from a file path into program memory
@@ -55,6 +56,7 @@ namespace Voxel_Project
         public Scene(string filePath, int screenWidth, int screenHeight)
         {
             sunShadowMapper = new ShadowMapper(screenWidth, screenHeight);
+            moonShadowMapper = new ShadowMapper(screenWidth, screenHeight, false);
 
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
             this.initialPath = projectPath + '/' + filePath;
@@ -205,19 +207,19 @@ namespace Voxel_Project
 
         public void Render(ICamera camera, Cursor? cursor = null)
         {
-            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress, sunShadowMapper);
-            cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress, sunShadowMapper);
-            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress, sunShadowMapper, false, true);
+            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress, sunShadowMapper, moonShadowMapper);
+            cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress, sunShadowMapper, moonShadowMapper);
+            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress, sunShadowMapper, moonShadowMapper, false, true);
             celestialShader.Render(camera, cubeVertexArray, dayProgress);
 
             plantShader.Render(camera, plantVertexArray, plantManager.GetBuffers(), dayProgress, time, sunShadowMapper);
 
             if (cursor != null)
             {
-                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), dayProgress, sunShadowMapper, true);
+                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), dayProgress, sunShadowMapper, moonShadowMapper, true);
             }
 
-            //screenTextureShader.Render(sunShadowMapper.GetDepthTexture());
+            //screenTextureShader.Render(moonShadowMapper.GetDepthTexture());
         }
 
 
@@ -233,7 +235,7 @@ namespace Voxel_Project
 
         public void RenderCubeBufferSet(Camera camera, CubeShaderBufferSet bufferSet)
         {
-            cubeShader.Render(camera, cubeVertexArray, bufferSet, dayProgress, sunShadowMapper);
+            cubeShader.Render(camera, cubeVertexArray, bufferSet, dayProgress, sunShadowMapper, moonShadowMapper);
         }
 
         public void RenderTextureToScreen(Texture2D tex)
@@ -243,7 +245,6 @@ namespace Voxel_Project
 
         public void FrameUpdate(float deltaTime)
         {
-            Console.WriteLine(dayProgress);
             plantManager.UpdateGrowths(deltaTime);
             cloudManager.MoveClouds(deltaTime);
             time += deltaTime;
@@ -254,6 +255,7 @@ namespace Voxel_Project
             }
             GL.ClearColor(0, 0, DayStrength(), 1);
             sunShadowMapper.UpdateShadows(this);
+            moonShadowMapper.UpdateShadows(this);
         }
 
         /// <summary>

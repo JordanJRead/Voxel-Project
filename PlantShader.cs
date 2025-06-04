@@ -24,6 +24,7 @@ namespace Voxel_Project
         /// </summary>
         public PlantShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {
+            this.Use();
             SetInt("sunDepthTexture", sunDepthTextureUnit);
         }
 

@@ -5,7 +5,9 @@ layout(location = 1) in vec3 vNormal;
 out vec3 cubeMapCoord;
 out flat int instanceID;
 out vec3 fragNormal;
+
 out vec3 sunNDCCoord;
+out vec3 moonNDCCoord;
 
 layout(std430, binding = 0) readonly buffer positionSSBO {
 	float positions[];
@@ -21,6 +23,9 @@ uniform mat4 projection;
 uniform mat4 sunView;
 uniform mat4 sunProjection;
 
+uniform mat4 moonView;
+uniform mat4 moonProjection;
+
 void main() {
 	fragNormal = normalize(vNormal);
 	cubeMapCoord = vPos;
@@ -31,6 +36,10 @@ void main() {
 	vec4 worldPos = vec4(vPos * scale + position, 1);
 
 	gl_Position = projection * view * worldPos;
+
 	vec4 sunTempPosition = sunProjection * sunView * worldPos;
 	sunNDCCoord = sunTempPosition.xyz / sunTempPosition.w;
+	
+	vec4 moonTempPosition = moonProjection * moonView * worldPos;
+	moonNDCCoord = moonTempPosition.xyz / moonTempPosition.w;
 }

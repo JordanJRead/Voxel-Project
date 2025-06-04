@@ -39,6 +39,8 @@ namespace Voxel_Project
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.NearestMipmapNearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         /// <summary>
@@ -54,7 +56,9 @@ namespace Voxel_Project
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, [0.0f, 1.0f, 1.0f, 1.0f]);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, [1.0f, 1.0f, 1.0f, 1.0f]);
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public static implicit operator uint(Texture2D texture)

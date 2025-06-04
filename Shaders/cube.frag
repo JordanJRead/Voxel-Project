@@ -8,12 +8,16 @@ in vec3 cubeMapCoord;
 in flat int instanceID;
 out vec4 FragColor;
 in vec3 fragNormal;
+
 in vec3 sunNDCCoord;
+in vec3 moonNDCCoord;
 
 uniform float dayProgress;
 uniform bool isCursor;
 uniform bool isCloud;
+
 uniform sampler2D sunDepthTexture;
+uniform sampler2D moonDepthTexture;
 
 layout(std430, binding = 2) readonly buffer textureSSBO {
 	samplerCube cubeMaps[];
@@ -29,8 +33,8 @@ void main() {
 	else {
 		vec3 sunPosition = vec3(cos(2 * PI * dayProgress), sin(2 * PI * dayProgress), 0);
 		sunPosition *= 10;
-
 		sunPosition = normalize(sunPosition);
+
 		vec3 moonPosition = -sunPosition;
 
 		vec3 objectColor = texture(cubeMaps[instanceID], cubeMapCoord).xyz;
@@ -44,24 +48,34 @@ void main() {
 		vec3 colorFromSun = objectColor * sunDiffuseFactor;
 		vec3 colorFromMoon = objectColor * moonDiffuseFactor * vec3(0.1, 0.1, 0.4);
 
-		vec2 depthSamplingCoord = sunNDCCoord.xy / 2 + vec2(0.5, 0.5);
-		float lowestDepth = texture(sunDepthTexture, depthSamplingCoord).x;
-		float fragDepth = sunNDCCoord.z * 0.5 + 0.5;
+		// Sun shadows
+		vec2 sunDepthSamplingCoord = sunNDCCoord.xy / 2 + vec2(0.5, 0.5);
+		float lowestSunDepth = texture(sunDepthTexture, sunDepthSamplingCoord).x;
+		float sunFragDepth = sunNDCCoord.z * 0.5 + 0.5;
 		
-		float bias = 0.005*tan(acos(sunDiffuseFactor));
-		bias = clamp(bias, 0.0000001, 0.01);
+		float sunBias = 0.005*tan(acos(sunDiffuseFactor));
+		sunBias = clamp(sunBias, 0.0000001, 0.01);
 
-		if (abs(fragDepth - lowestDepth) > bias) {
+		if (abs(sunFragDepth - lowestSunDepth) > sunBias) {
 			colorFromSun *= 0;
 		}
+		
+		// Moon shadows
+		vec2 moonDepthSamplingCoord = moonNDCCoord.xy / 2 + vec2(0.5, 0.5);
+		float lowestMoonDepth = texture(moonDepthTexture, moonDepthSamplingCoord).x;
+		float moonFragDepth = moonNDCCoord.z * 0.5 + 0.5;
+		
+		float moonBias = 0.005*tan(acos(moonDiffuseFactor));
+		moonBias = clamp(moonBias, 0.0000001, 0.01);
+		moonBias = 0.001;
+		if (abs(moonFragDepth - lowestMoonDepth) > moonBias) {
+			colorFromMoon *= 0;
+		}
 
+		// Final color
 		float alpha = isCursor ? 0.5f : 1;
 		vec3 addition = isCursor ? vec3(0.5) : vec3(0);
 		FragColor = vec4(colorFromSun + colorFromMoon + objectColor * 0.2 + addition, alpha);
-
-		//FragColor = vec4(sunClipPosition.z * 0.5 + 0.5, sunClipPosition.z * 0.5 + 0.5, sunClipPosition.z * 0.5 + 0.5, 1);
-		//vec4 depthColor = sunClipPosition.z > 1 ? vec4(0, 1, 1, 1) : (sunClipPosition.z < 0 ? vec4(1, 1, 0, 1) : vec4(sunClipPosition.z, sunClipPosition.z, sunClipPosition.z, 1));
-		//FragColor = depthColor;
-		//FragColor = vec4(sunClipPosition, 1);
+		//FragColor = vec4(lowestMoonDepth, lowestMoonDepth, lowestMoonDepth, 1);
 	}
 }

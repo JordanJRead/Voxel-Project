@@ -14,6 +14,7 @@ namespace Voxel_Project
         VertexBuffer vertexBuffer;
         public UIShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {
+            this.Use();
             SetInt("image", 0);
 
             float[] vertices =

@@ -15,9 +15,11 @@ namespace Voxel_Project
         Texture2D depthTexture;
         CelestialCamera camera = new CelestialCamera();
         static int imageSize = 4096 * 4;
+        bool isSun;
 
-        public ShadowMapper(int screenWidth, int screenHeight)
+        public ShadowMapper(int screenWidth, int screenHeight, bool isSun = true)
         {
+            this.isSun = isSun;
             fbo.Use();
 
             depthTexture = new Texture2D(imageSize, imageSize);
@@ -30,12 +32,29 @@ namespace Voxel_Project
 
         public void UpdateShadows(Scene scene)
         {
-            camera.SetPosition(new Vector3(MathF.Cos(2 * MathF.PI * scene.GetDayProgress()), MathF.Sin(2 * MathF.PI * scene.GetDayProgress()), 0) * 10);
+            if (!isSun)
+            {
+                Console.WriteLine(camera.GetPosition());
+            }
+            Vector3 sunPosition = new Vector3(MathF.Cos(2 * MathF.PI * scene.GetDayProgress()), MathF.Sin(2 * MathF.PI * scene.GetDayProgress()), 0) * 10;
+            Vector3 moonPosition = new Vector3(MathF.Cos(2 * MathF.PI * (scene.GetDayProgress() + 0.5f)), MathF.Sin(2 * MathF.PI * (scene.GetDayProgress() + 0.5f)), 0) * 10;
+            //moonPosition = new Vector3(0.00001f, 10, 0);
+            
+            if (isSun)
+                camera.SetPosition(sunPosition);
+            else
+                camera.SetPosition(moonPosition);
+
             fbo.Use();
             GL.Viewport(0, 0, imageSize, imageSize);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            scene.RenderDepth(camera);
+            /*
+             README
+            Only the sun is rendering to the depth texture, yet the moon's 
+             */
+            //if (isSun)
+                scene.RenderDepth(camera);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.Viewport(0, 0, 800, 600);

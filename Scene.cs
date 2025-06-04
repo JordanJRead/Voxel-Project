@@ -38,7 +38,7 @@ namespace Voxel_Project
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
         float dayProgress = 0.75f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
         float time = 0;
-        const float secondsPerDayCycle = 30;
+        const float secondsPerDayCycle = 120;
 
         DepthCubeShader depthCubeShader = new DepthCubeShader("shaders/Depth/depthcube.vert", "shaders/Depth/depthcube.frag");
         DepthPlantShader depthPlantShader = new DepthPlantShader("shaders/Depth/depthplant.vert", "shaders/Depth/depthplant.frag");
@@ -209,7 +209,7 @@ namespace Voxel_Project
 
         public void Render(ICamera camera, Cursor? cursor = null)
         {
-            starShader.Render(camera, DayStrength(), cubeVertexArray, starManager.GetStarCount(), starManager.GetSSBO());
+            starShader.Render(camera, DayStrength(), dayProgress, cubeVertexArray, starManager.GetStarCount(), starManager.GetSSBO());
             cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress, sunShadowMapper, moonShadowMapper);
             cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress, sunShadowMapper, moonShadowMapper);
             cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress, sunShadowMapper, moonShadowMapper, false, true);

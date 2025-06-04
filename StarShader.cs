@@ -17,10 +17,11 @@ namespace Voxel_Project
         {
         }
 
-        public void Render(ICamera camera, float dayStrength, VertexArray vertexArray, int starCount, BUF ssbo)
+        public void Render(ICamera camera, float dayStrength, float dayProgress, VertexArray vertexArray, int starCount, BUF ssbo)
         {
             this.Use();
             SetFloat("nightStrength", 1 - dayStrength);
+            SetFloat("dayProgress", dayProgress);
 
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());

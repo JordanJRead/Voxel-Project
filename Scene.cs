@@ -36,7 +36,7 @@ namespace Voxel_Project
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
         PlantShader plantShader = new PlantShader("Shaders/plant.vert", "Shaders/plant.frag");
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
-        float dayProgress = 0.75f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
+        float dayProgress = 0f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
         float time = 0;
         const float secondsPerDayCycle = 120;
 

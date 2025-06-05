@@ -17,18 +17,18 @@ namespace Voxel_Project
 
         public PlantManager()
         {
-            plantGrowTimes = new float[(int)Plant.Type.none + 1]
+            plantGrowTimes = new float[(int)Plant.Type.none]
             {
                 2,
                 2,
                 2
             };
 
-            plantHarvestMoney = new int[(int)Plant.Type.none + 1]
+            plantHarvestMoney = new int[(int)Plant.Type.none]
             {
                 10,
                 15,
-                20
+                15
             };
         }
 

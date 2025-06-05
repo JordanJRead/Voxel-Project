@@ -11,8 +11,9 @@ namespace Voxel_Project
     {
         public enum Type
         {
-            grass,
             wheat,
+            strawberries,
+            blueberries,
 
             none
         }

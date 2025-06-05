@@ -22,6 +22,7 @@ namespace Voxel_Project
         int[] seedCosts = new int[(int)Plant.Type.none]
         {
             5,
+            5,
             5
         };
 

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using OpenTK.Mathematics;
+using OpenTK.Windowing.GraphicsLibraryFramework;
+using System;
 using System.Collections.Generic;
 using System.Formats.Tar;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using OpenTK.Mathematics;
-using OpenTK.Windowing.GraphicsLibraryFramework;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace Voxel_Project
 {
@@ -16,6 +17,9 @@ namespace Voxel_Project
         Voxel voxel;
         Fence fence;
         CubeShaderBufferSet bufferSet = new CubeShaderBufferSet();
+
+        Vector3 selectPos1;
+        Vector3 selectPos2;
 
         public Cursor(Vector3 position, Voxel.Type type, CubeTextureManager cubeTextureManager)
         {
@@ -208,12 +212,78 @@ namespace Voxel_Project
                         }
                     }
                 }
+
+                // Volume selection
+                if (keyboard.IsKeyPressed(Keys.Y))
+                {
+                    selectPos1 = voxel.GetPosition();
+                }
+                if (keyboard.IsKeyPressed(Keys.U))
+                {
+                    selectPos2 = voxel.GetPosition();
+                }
+
+                // Fill
+                if (keyboard.IsKeyPressed(Keys.F) && isVoxel)
+                {
+                    hasSceneChanged = true;
+                    DeleteSelectedVolume(scene);
+                    FillSelectedVolume(scene);
+                }
+
+                // Delete
+                if (keyboard.IsKeyPressed(Keys.G) && isVoxel)
+                {
+                    hasSceneChanged = true;
+                    DeleteSelectedVolume(scene);
+                }
             }
             if (hasCursorChanged)
             {
                 UpdateGPUBuffers(cubeTextureManager);
             }
             return hasSceneChanged;
+        }
+
+        /// <summary>
+        /// Deletes all the voxels in a volume
+        /// </summary>
+        private void DeleteSelectedVolume(Scene scene)
+        {
+            Vector3 minPos = new Vector3(MathF.Min(selectPos1.X, selectPos2.X), MathF.Min(selectPos1.Y, selectPos2.Y), MathF.Min(selectPos1.Z, selectPos2.Z));
+            Vector3 maxPos = new Vector3(MathF.Max(selectPos1.X, selectPos2.X), MathF.Max(selectPos1.Y, selectPos2.Y), MathF.Max(selectPos1.Z, selectPos2.Z));
+
+            for (float x = minPos.X; x <= maxPos.X; ++x)
+            {
+                for (float y = minPos.Y; y <= maxPos.Y; ++y)
+                {
+                    for (float z = minPos.Z; z <= maxPos.Z; ++z)
+                    {
+                        scene.RemoveVoxelAtPosition(new Vector3(x, y, z));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fills a volume with the selected voxel type
+        /// </summary>
+        /// <param name="scene"></param>
+        private void FillSelectedVolume(Scene scene)
+        {
+            Vector3 minPos = new Vector3(MathF.Min(selectPos1.X, selectPos2.X), MathF.Min(selectPos1.Y, selectPos2.Y), MathF.Min(selectPos1.Z, selectPos2.Z));
+            Vector3 maxPos = new Vector3(MathF.Max(selectPos1.X, selectPos2.X), MathF.Max(selectPos1.Y, selectPos2.Y), MathF.Max(selectPos1.Z, selectPos2.Z));
+
+            for (float x = minPos.X; x <= maxPos.X; ++x)
+            {
+                for (float y = minPos.Y; y <= maxPos.Y; ++y)
+                {
+                    for (float z = minPos.Z; z <= maxPos.Z; ++z)
+                    {
+                        scene.AddVoxel(new Voxel(new Vector3(x, y, z), this.voxel.GetVoxelType()));
+                    }
+                }
+            }
         }
 
         /// <summary>

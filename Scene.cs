@@ -370,6 +370,15 @@ namespace Voxel_Project
             }
             return true;
         }
+        public void RemoveVoxelAtPosition(Vector3 position)
+        {
+            Voxel? voxel = GetVoxelAtPosition(position);
+            if (voxel != null)
+            {
+                voxels.Remove(voxel);
+            }
+        }
+
 
         public List<Voxel> GetNeighbouringVoxels(Voxel startingVoxel, List<Voxel.Type>? typeMask)
         {

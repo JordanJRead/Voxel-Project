@@ -250,7 +250,7 @@ voxel,6,0,-5,grass
 voxel,6,0,-4,grass
 voxel,6,0,-3,grass
 voxel,6,0,-2,grass
-voxel,6,0,-1,grass
+voxel,6,0,-1,tilled
 voxel,6,0,0,grass
 voxel,6,0,1,grass
 voxel,6,0,2,grass
@@ -1646,3 +1646,5 @@ voxel,10,4,13,leaves
 voxel,10,4,11,leaves
 voxel,10,5,12,leaves
 plant,4,1,-1,wheat,1
+plant,5,1,-1,strawberries,1
+plant,6,1,-1,blueberries,1

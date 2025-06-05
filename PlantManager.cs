@@ -21,7 +21,7 @@ namespace Voxel_Project
             {
                 2,
                 2,
-                2
+                2,
             };
 
             plantHarvestMoney = new int[(int)Plant.Type.none]

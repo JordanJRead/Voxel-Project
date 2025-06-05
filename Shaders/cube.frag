@@ -37,7 +37,12 @@ void main() {
 
 		vec3 moonPosition = -sunPosition;
 
-		vec3 objectColor = texture(cubeMaps[instanceID], cubeMapCoord).xyz;
+		vec4 totalObjectColor = texture(cubeMaps[instanceID], cubeMapCoord);
+		vec3 objectColor = totalObjectColor.xyz;
+
+		if (totalObjectColor.w < 0.5) {
+			discard;
+		}
 
 		float sunDiffuseFactor = dot(sunPosition, fragNormal);
 		float moonDiffuseFactor = dot(moonPosition, fragNormal);
@@ -55,6 +60,7 @@ void main() {
 		
 		float sunBias = 0.005*tan(acos(sunDiffuseFactor));
 		sunBias = clamp(sunBias, 0.0000001, 0.01);
+		sunBias *= 0.1;
 
 		if (abs(sunFragDepth - lowestSunDepth) > sunBias) {
 			colorFromSun *= 0;
@@ -67,7 +73,7 @@ void main() {
 		
 		float moonBias = 0.005*tan(acos(moonDiffuseFactor));
 		moonBias = clamp(moonBias, 0.0000001, 0.01);
-		moonBias = 0.001;
+		moonBias *= 0.1;
 		if (abs(moonFragDepth - lowestMoonDepth) > moonBias) {
 			colorFromMoon *= 0;
 		}

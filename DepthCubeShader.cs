@@ -16,6 +16,7 @@ namespace Voxel_Project
     {
         uint positionsBufferIndex = 0;
         uint scalesBufferIndex = 1;
+        uint texturesBufferIndex = 2;
 
         public DepthCubeShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {
@@ -35,6 +36,9 @@ namespace Voxel_Project
 
             cubeBuffers.scales.Use(BufferTarget.ShaderStorageBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, scalesBufferIndex, cubeBuffers.scales);
+
+            cubeBuffers.textures.Use(BufferTarget.ShaderStorageBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, texturesBufferIndex, cubeBuffers.textures);
 
             this.Use();
             SetMat4("view", camera.GetViewMatrix());

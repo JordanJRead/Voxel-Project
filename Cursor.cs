@@ -246,7 +246,7 @@ namespace Voxel_Project
         }
 
         /// <summary>
-        /// Deletes all the voxels in a volume
+        /// Deletes all the voxels in the selected volume
         /// </summary>
         private void DeleteSelectedVolume(Scene scene)
         {
@@ -266,7 +266,7 @@ namespace Voxel_Project
         }
 
         /// <summary>
-        /// Fills a volume with the selected voxel type
+        /// Fills the selected volume with the selected voxel type
         /// </summary>
         /// <param name="scene"></param>
         private void FillSelectedVolume(Scene scene)
@@ -324,41 +324,43 @@ namespace Voxel_Project
 
             Vector3 rightAxis = Vector3.Cross(cursorForwardAxis, Vector3.UnitY);
 
+            float moveScale = keyboard.IsKeyDown(Keys.LeftAlt) ? 5 : 1;
+
             // Move cursor
             if (keyboard.IsKeyPressed(Keys.W))
             {
-                voxel.MoveBy(cursorForwardAxis);
-                fence.MoveBy(cursorForwardAxis);
+                voxel.MoveBy(cursorForwardAxis * moveScale);
+                fence.MoveBy(cursorForwardAxis * moveScale);
                 return true;
             }
             if (keyboard.IsKeyPressed(Keys.S))
             {
-                voxel.MoveBy(-cursorForwardAxis);
-                fence.MoveBy(-cursorForwardAxis);
+                voxel.MoveBy(-cursorForwardAxis * moveScale);
+                fence.MoveBy(-cursorForwardAxis * moveScale);
                 return true;
             }
             if (keyboard.IsKeyPressed(Keys.A))
             {
-                voxel.MoveBy(-rightAxis);
-                fence.MoveBy(-rightAxis);
+                voxel.MoveBy(-rightAxis * moveScale);
+                fence.MoveBy(-rightAxis * moveScale);
                 return true;
             }
             if (keyboard.IsKeyPressed(Keys.D))
             {
-                voxel.MoveBy(rightAxis);
-                fence.MoveBy(rightAxis);
+                voxel.MoveBy(rightAxis * moveScale);
+                fence.MoveBy(rightAxis * moveScale);
                 return true;
             }
             if (keyboard.IsKeyPressed(Keys.Space))
             {
-                voxel.MoveBy(Vector3.UnitY);
-                fence.MoveBy(Vector3.UnitY);
+                voxel.MoveBy(Vector3.UnitY * moveScale);
+                fence.MoveBy(Vector3.UnitY * moveScale);
                 return true;
             }
             if (keyboard.IsKeyPressed(Keys.LeftShift))
             {
-                voxel.MoveBy(-Vector3.UnitY);
-                fence.MoveBy(-Vector3.UnitY);
+                voxel.MoveBy(-Vector3.UnitY * moveScale);
+                fence.MoveBy(-Vector3.UnitY * moveScale);
                 return true;
             }
             return false;

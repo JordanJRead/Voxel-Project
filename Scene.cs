@@ -222,7 +222,7 @@ namespace Voxel_Project
                 cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), dayProgress, sunShadowMapper, moonShadowMapper, true);
             }
 
-            //screenTextureShader.Render(moonShadowMapper.GetDepthTexture());
+            //screenTextureShader.Render(sunShadowMapper.GetDepthTexture());
         }
 
 

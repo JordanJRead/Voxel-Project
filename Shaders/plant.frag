@@ -61,7 +61,7 @@ void main() {
 		
 	float sunBias = 0.005*tan(acos(harshSunDiffuseFactor));
 	sunBias = clamp(sunBias, 0.0, 0.01);
-	sunBias *= 10;
+	//sunBias *= 10;
 	if (abs(sunFragDepth - sunLowestDepth) > sunBias || dayProgress > 0.5) {
 		// In shadow
 		colorFromSun *= 0;
@@ -74,7 +74,7 @@ void main() {
 		
 	float moonBias = 0.005*tan(acos(harshSunDiffuseFactor));
 	moonBias = clamp(sunBias, 0.0, 0.01);
-	moonBias *= 10;
+	//moonBias *= 10;
 	if (abs(moonFragDepth - moonLowestDepth) > moonBias || dayProgress < 0.5) {
 		// In shadow
 		colorFromMoon *= 0;

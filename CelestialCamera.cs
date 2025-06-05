@@ -26,7 +26,7 @@ namespace Voxel_Project
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreateOrthographic(100, 100, 0.1f, 30);
+            return Matrix4.CreateOrthographic(100, 100, 0.1f, 150);
         }
 
         public void SetPosition(Vector3 position)

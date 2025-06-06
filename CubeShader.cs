@@ -54,6 +54,7 @@ namespace Voxel_Project
             SetMat4("projection", camera.GetProjectionMatrix());
             SetFloat("dayProgress", scene.GetDayProgress());
             SetFloat("dayStrength", scene.DayStrength());
+            SetVec3("normSunPosition", scene.GetSunShadowMapper().GetNormPosition());
 
             SetMat4("sunView", scene.GetSunShadowMapper().GetCamera().GetViewMatrix());
             SetMat4("sunProjection", scene.GetSunShadowMapper().GetCamera().GetProjectionMatrix());

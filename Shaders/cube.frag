@@ -19,6 +19,7 @@ uniform bool isCloud;
 
 uniform sampler2D sunDepthTexture;
 uniform sampler2D moonDepthTexture;
+uniform vec3 normSunPosition;
 
 layout(std430, binding = 2) readonly buffer textureSSBO {
 	samplerCube cubeMaps[];
@@ -32,8 +33,7 @@ void main() {
 		FragColor = darkColor + dayStrength * (brightColor - darkColor);
 	}
 	else {
-		vec3 sunPosition = vec3(cos(2 * PI * dayProgress), sin(2 * PI * dayProgress), 0);
-		sunPosition *= 10;
+		vec3 sunPosition = normSunPosition * 10;
 		sunPosition = normalize(sunPosition);
 
 		vec3 moonPosition = -sunPosition;
@@ -85,6 +85,9 @@ void main() {
 		float emissionScale = 0.2;// + dayStrength * 0.3;
 
 		FragColor = vec4(colorFromSun + colorFromMoon + objectColor * emissionScale + addition, alpha);
-		//FragColor = vec4(lowestMoonDepth, lowestMoonDepth, lowestMoonDepth, 1);
+
+		//if (alpha > 0.7) {
+		//	FragColor = vec4(cubeMapCoord, alpha);
+		//}
 	}
 }

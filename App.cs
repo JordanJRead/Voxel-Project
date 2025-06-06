@@ -95,7 +95,7 @@ namespace Voxel_Project
                 scene.UpdateGPU(KeyboardState, MouseState);
             }
             scene.FrameUpdate((float)e.Time);
-            //Console.WriteLine($"FPS: {1.0f / e.Time}");
+            Console.WriteLine($"FPS: {1.0f / e.Time}");
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)

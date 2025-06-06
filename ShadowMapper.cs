@@ -19,6 +19,7 @@ namespace Voxel_Project
         CelestialCamera camera = new CelestialCamera();
         static int imageSize = 4096 * 4;
         bool isSun;
+        Vector3 normPosition; // Position of sun at a distance of 1 away
 
         public ShadowMapper(int screenWidth, int screenHeight, bool isSun = true)
         {
@@ -33,10 +34,21 @@ namespace Voxel_Project
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
+        public Vector3 GetNormPosition()
+        {
+            return normPosition;
+        }
+
         public void UpdateShadows(Scene scene, int screenWidth, int screenHeight)
         {
-            Vector3 sunPosition = new Vector3(MathF.Cos(2 * MathF.PI * scene.GetDayProgress()), MathF.Sin(2 * MathF.PI * scene.GetDayProgress()), 0) * 100;
-            Vector3 moonPosition = new Vector3(MathF.Cos(2 * MathF.PI * (scene.GetDayProgress() + 0.5f)), MathF.Sin(2 * MathF.PI * (scene.GetDayProgress() + 0.5f)), 0) * 100;
+            normPosition = new Vector3(
+                MathF.Cos(2 * MathF.PI * scene.GetDayProgress()),
+                MathF.Sin(2 * MathF.PI * scene.GetDayProgress()),
+                MathF.Sin(2 * MathF.PI * scene.GetDayProgress()) * 0.2f
+                ).Normalized();
+
+            Vector3 sunPosition = normPosition * 100;
+            Vector3 moonPosition = -sunPosition;
             
             if (isSun)
                 camera.SetPosition(sunPosition);

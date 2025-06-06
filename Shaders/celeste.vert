@@ -8,6 +8,7 @@ uniform float dayProgress;
 uniform bool isSun;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 normSunPosition;
 
 void main() {
 	vec3 scale;
@@ -19,7 +20,7 @@ void main() {
 		scale = vec3(50, 50, 50);
 	}
 
-	vec3 objectPosition = vec3(cos(2 * PI * dayProgress), sin(2 * PI * dayProgress), 0);
+	vec3 objectPosition = normSunPosition;
 	objectPosition *= 1000;
 	if (!isSun) {
 		objectPosition = -objectPosition;

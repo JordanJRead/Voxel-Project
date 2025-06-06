@@ -59,6 +59,7 @@ namespace Voxel_Project
             SetFloat("dayProgress", scene.GetDayProgress());
             SetFloat("dayStrength", scene.DayStrength());
             SetFloat("time", scene.GetTime());
+            SetVec3("normSunPosition", scene.GetSunShadowMapper().GetNormPosition());
 
             scene.GetSunShadowMapper().GetDepthTexture().Use(sunDepthTextureUnit);
             scene.GetMoonShadowMapper().GetDepthTexture().Use(moonDepthTextureUnit);

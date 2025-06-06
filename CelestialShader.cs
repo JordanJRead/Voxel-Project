@@ -17,12 +17,13 @@ namespace Voxel_Project
 
         }
 
-        public void Render(ICamera camera, VertexArray vertexArray, float dayProgress)
+        public void Render(ICamera camera, VertexArray vertexArray, float dayProgress, ShadowMapper sunShadowMapper)
         {
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
             SetFloat("dayProgress", dayProgress);
+            SetVec3("normSunPosition", sunShadowMapper.GetNormPosition());
             vertexArray.Use();
             const int triangleCount = 12;
             const int verticesPerTriangle = 3;

@@ -22,6 +22,7 @@ uniform sampler2D moonDepthTexture;
 
 uniform float dayProgress;
 uniform float dayStrength;
+uniform vec3 normSunPosition;
 
 void main() {
 	vec3 normal = fragNormal;
@@ -29,8 +30,7 @@ void main() {
 		normal *= -1;
 	}
 	
-	vec3 sunPosition = vec3(cos(2 * PI * dayProgress), sin(2 * PI * dayProgress), 0);
-	sunPosition *= 10;
+	vec3 sunPosition = normSunPosition * 10;
 
 	sunPosition = normalize(sunPosition);
 	vec3 moonPosition = -sunPosition;

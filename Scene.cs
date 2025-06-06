@@ -39,7 +39,7 @@ namespace Voxel_Project
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
         PlantShader plantShader = new PlantShader("Shaders/plant.vert", "Shaders/plant.frag");
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
-        float dayProgress = 0.1f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
+        float dayProgress = 0.15f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
         float time = 0;
         const float secondsPerDayCycle = 360;
 
@@ -58,7 +58,7 @@ namespace Voxel_Project
         int screenWidth;
         int screenHeight;
 
-        Vector3 initialPlayerPosition = new Vector3(0, 1.51f, 0);
+        Vector3 initialPlayerPosition = new Vector3(3, 1.51f, 0);
         int initialPlayerMoney = 0;
         int initialPlayerWood = 0;
         int[] initialPlayerSeedCounts = new int[(int)Plant.Type.none]

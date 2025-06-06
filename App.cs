@@ -59,14 +59,14 @@ namespace Voxel_Project
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            scene = new Scene("startingscene.txt", screenWidth, screenHeight);
+            scene = new Scene("scene.txt", screenWidth, screenHeight);
 
             Vector3 playerPosition = scene.GetInitialPlayerPosition();
             int money = scene.GetInitialPlayerMoney();
             int wood = scene.GetInitialPlayerWood();
             int[] seedCounts = scene.GetInitialPlayerSeedCounts();
 
-            playerController = new PlayerController(playerPosition, new Camera(width, height), money, wood, seedCounts);
+            playerController = new PlayerController(playerPosition, new Camera(width, height, yaw: 180), money, wood, seedCounts);
             editorController = new EditorController(new Camera(width, height), scene.GetTextureManager());
             editorController.Activate(playerController, scene.GetTextureManager());
             currentController = playerController;
@@ -125,7 +125,7 @@ namespace Voxel_Project
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            scene.Save(playerController, "savingscene.txt");
+            scene.Save(playerController, "scene.txt");
         }
     }
 }

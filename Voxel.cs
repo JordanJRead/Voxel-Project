@@ -24,6 +24,9 @@ namespace Voxel_Project
             tilled,
             log,
             leaves,
+            plank,
+            window,
+            unbreakablelog,
 
             none
         }

@@ -60,7 +60,7 @@ void main() {
 		float sunFragDepth = sunNDCCoord.z * 0.5 + 0.5;
 		
 		float sunBias = 0.005*tan(acos(sunDiffuseFactor));
-		sunBias = clamp(sunBias, 0.0000001, 0.01);
+		sunBias = clamp(sunBias, 0.000001, 0.01);
 		sunBias *= 0.1;
 
 		if (abs(sunFragDepth - lowestSunDepth) > sunBias) {

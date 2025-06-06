@@ -6,7 +6,7 @@ namespace Voxel_Project
     {
         static void Main(string[] args)
         {
-            App app = new App(800, 600, "MyApp");
+            App app = new App(1200, 900, "MyApp");
             app.Run();
         }
     }

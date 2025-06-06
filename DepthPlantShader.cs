@@ -22,7 +22,7 @@ namespace Voxel_Project
         {
         }
 
-        public void Render(ICamera camera, VertexArray vertexArray, PlantShaderBufferSet buffers)
+        public void Render(ICamera camera, VertexArray vertexArray, PlantShaderBufferSet buffers, float time)
         {
             GL.Disable(EnableCap.CullFace);
             
@@ -39,6 +39,7 @@ namespace Voxel_Project
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
+            SetFloat("time", time);
 
             vertexArray.Use();
 

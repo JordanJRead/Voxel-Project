@@ -32,6 +32,18 @@ namespace Voxel_Project
         {
             return position;
         }
+        
+        public void SetPosition(Vector3 newPosition)
+        {
+            // Check that newPosition is an integer
+            for (int i = 0; i < 3; ++i)
+            {
+                if (newPosition[i] != Math.Floor(newPosition[i] + 0.00001))
+                    return;
+            }
+
+            position = newPosition;
+        }
 
         public void MoveBy(Vector3 moveBy)
         {

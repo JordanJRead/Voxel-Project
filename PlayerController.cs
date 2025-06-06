@@ -25,7 +25,7 @@ namespace Voxel_Project
         {
             this.moneyManager = new ResourceManager(money, ResourceManager.Color.yellow, false);
             this.woodManager = new ResourceManager(wood, ResourceManager.Color.brown, true);
-            this.speed = 2;
+            this.speed = 4;
             this.position = position;
             this.camera.SetPosition(position);
             inventory = new Inventory(seedCounts);

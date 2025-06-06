@@ -41,7 +41,7 @@ namespace Voxel_Project
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
         float dayProgress = 0.1f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
         float time = 0;
-        const float secondsPerDayCycle = 36;
+        const float secondsPerDayCycle = 360;
 
         DepthCubeShader depthCubeShader = new DepthCubeShader("shaders/Depth/depthcube.vert", "shaders/Depth/depthcube.frag");
         DepthPlantShader depthPlantShader = new DepthPlantShader("shaders/Depth/depthplant.vert", "shaders/Depth/depthplant.frag");
@@ -240,6 +240,9 @@ namespace Voxel_Project
         /// <param name="filePath"></param>
         public void Save(PlayerController player, string filePath)
         {
+            string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
+            filePath = projectPath + '/' + filePath;
+
             File.Delete(filePath);
             string fileSrc = "";
             foreach (Voxel voxel in voxels)

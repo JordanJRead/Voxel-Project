@@ -59,7 +59,7 @@ namespace Voxel_Project
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            scene = new Scene("scene.txt", screenWidth, screenHeight);
+            scene = new Scene("startingscene.txt", screenWidth, screenHeight);
 
             Vector3 playerPosition = scene.GetInitialPlayerPosition();
             int money = scene.GetInitialPlayerMoney();
@@ -95,7 +95,7 @@ namespace Voxel_Project
                 scene.UpdateGPU(KeyboardState, MouseState);
             }
             scene.FrameUpdate((float)e.Time);
-            Console.WriteLine($"FPS: {1.0f / e.Time}");
+            //Console.WriteLine($"FPS: {1.0f / e.Time}");
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -125,7 +125,7 @@ namespace Voxel_Project
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            scene.Save(playerController);
+            scene.Save(playerController, "savingscene.txt");
         }
     }
 }

@@ -8,6 +8,9 @@ using Voxel_Project.OpenGL_Objects;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Shader for rendering a texture to cover the entire screen, mostly for graphics debugging
+    /// </summary>
     internal class ScreenTextureShader : ShaderBase
     {
         VertexArray screenQuadVertexArray;
@@ -35,14 +38,13 @@ namespace Voxel_Project
         /// <summary>
         /// Renders a texture to cover the screen
         /// </summary>
-        /// <param name="tex"></param>
-        public void Render(Texture2D tex)
+        public void Render(Texture2D texture)
         {
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
             this.Use();
 
-            tex.Use(0);
+            texture.Use(0);
 
             screenQuadVertexArray.Use();
 

@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 namespace Voxel_Project
 {
     /// <summary>
-    /// Class for rendering several of a specific type of object
+    /// Same as plant shader, but only outputs depth information (used for creating shadow maps)
     /// </summary>
     internal class DepthPlantShader : ShaderBase
     {

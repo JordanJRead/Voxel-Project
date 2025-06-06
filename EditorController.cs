@@ -8,10 +8,13 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Controls how the user interacts with the world in editor mode
+    /// </summary>
     internal class EditorController : ControllerBase
     {
         Cursor cursor; // The transparent voxel / fence that can be moved around in editor mode
-        CubeShaderBufferSet playerCubeBufferSet = new CubeShaderBufferSet();
+        CubeShaderBufferSet playerCubeBufferSet = new CubeShaderBufferSet(); // For rendering the player controller
 
         public EditorController(Camera camera, CubeTextureManager cubeTextureManager) : base(camera)
         {
@@ -21,6 +24,9 @@ namespace Voxel_Project
 
         public Cursor GetCursor() { return cursor; }
 
+        /// <summary>
+        /// Sets the player controller's buffer set so they can start being rendered
+        /// </summary>
         public void Activate(PlayerController playerController, CubeTextureManager cubeTextureManager)
         {
             List<float> position = new List<float>(3);

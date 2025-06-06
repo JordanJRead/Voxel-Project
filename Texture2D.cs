@@ -10,11 +10,14 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Represents a two-dimensional texture
+    /// </summary>
     internal class Texture2D
     {
         TEX tex = new TEX();
 
-        /// <param name="path">'Images/NAME.EXT'</param>
+        /// <param name="path">In the format 'Images/GROUP/NAME.EXT'</param>
         public Texture2D(string path, string defaultPath = "Images/Cubes/none.png")
         {
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
@@ -44,7 +47,7 @@ namespace Voxel_Project
         }
 
         /// <summary>
-        ///  Generates an empty image
+        ///  Generates an empty image with parameters that allow for framebuffer attachment usage
         /// </summary>
         public Texture2D(int width, int height)
         {

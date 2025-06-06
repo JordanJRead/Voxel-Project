@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Contains information about plants in the scene
+    /// </summary>
     internal class PlantManager
     {
         List<Plant> plants = new List<Plant>();
@@ -65,7 +68,6 @@ namespace Voxel_Project
             foreach (Plant plant in plants)
             {
                 plant.GrowBy(deltaTime /  plantGrowTimes[(int)plant.GetPlantType()]);
-                //Console.WriteLine(plant.GetGrowth());
                 if (plant.GetGrowth() > 1)
                 {
                     plant.SetGrowth(1);

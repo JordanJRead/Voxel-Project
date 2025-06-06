@@ -8,6 +8,9 @@ using OpenTK.Mathematics;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Represents a pop-up for a change in a resource count. For example, harvesting a plant creates a popup showing how much money you got from that plant
+    /// </summary>
     internal class ResourceNotification
     {
         static float visibleDuration = 2; // seconds

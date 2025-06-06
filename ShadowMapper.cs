@@ -9,6 +9,9 @@ using OpenTK.Mathematics;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Manages a shadow (depth map) from a celestial object
+    /// </summary>
     internal class ShadowMapper
     {
         FBO fbo = new FBO();

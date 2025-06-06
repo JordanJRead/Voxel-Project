@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Holds onto preset vertex types
+    /// </summary>
     internal static class Vertices
     {
         public static float[] GetCubeVertices()
@@ -117,7 +120,7 @@ namespace Voxel_Project
             return newVertices;
         }
 
-        // Plants are three quads in a billboarded pattern
+        // Plants are five quads in a billboarded pattern
         public static float[] GetPlantVertices()
         {
             float right = 0.5f;

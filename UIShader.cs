@@ -8,6 +8,9 @@ using OpenTK.Mathematics;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Deals with rendering UI elements to the screen
+    /// </summary>
     internal class UIShader : ShaderBase
     {
         VertexArray vertexArray;
@@ -17,6 +20,7 @@ namespace Voxel_Project
             this.Use();
             SetInt("image", 0);
 
+            // Square
             float[] vertices =
             {
                 -0.5f, -0.5f, 0, 0,
@@ -35,8 +39,8 @@ namespace Voxel_Project
         /// <summary>
         /// Draws a texture onto the screen
         /// </summary>
-        /// <param name="pos">In terms of screen widith and screen height (0-1)</param>
-        /// <param name="size">The square's width and height in terms of the screen width (0-1)</param>
+        /// <param name="pos">The center position of the ui element, in terms of screen widith and screen height (0-1)</param>
+        /// <param name="size">The ui elemnt's width and height in terms of the screen width (0-1)</param>
         public void Draw(Texture2D texture, Vector2 pos, float size, float aspectRatio)
         {
             GL.Disable(EnableCap.CullFace);

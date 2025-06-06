@@ -11,7 +11,7 @@ using static System.Formats.Asn1.AsnWriter;
 namespace Voxel_Project
 {
     /// <summary>
-    /// Class for rendering several of a specific type of object
+    /// Class for rendering several plants
     /// </summary>
     internal class PlantShader : ShaderBase
     {
@@ -21,9 +21,6 @@ namespace Voxel_Project
         int sunDepthTextureUnit = 0;
         int moonDepthTextureUnit = 1;
 
-        /// <summary>
-        /// Renders plants
-        /// </summary>
         public PlantShader(string vertPath, string fragPath) : base(vertPath, fragPath)
         {
             this.Use();
@@ -32,10 +29,10 @@ namespace Voxel_Project
         }
 
         /// <summary>
-        /// Renders the scene
+        /// Renders plants to the scene
         /// </summary>
-        /// <param name="vertexArray">The vertices of the object to draw</param>
-        /// <param name="buffers">The location, texture, and count information about the object(s)</param>
+        /// <param name="vertexArray">Plant vertices</param>
+        /// <param name="buffers">The location, growth, texture, and count information about the plant(s)</param>
         public void Render(ICamera camera, VertexArray vertexArray, PlantShaderBufferSet buffers, Scene scene)
         {
             GL.Disable(EnableCap.CullFace);

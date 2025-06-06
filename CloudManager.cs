@@ -16,7 +16,7 @@ namespace Voxel_Project
         CubeShaderListSet listSet = new CubeShaderListSet();
 
         CubeMap white = new CubeMap("Images/Cubes/white.png");
-        ulong whiteHandle;
+        ulong whiteImageHandle;
         float maxDist = 500;
 
         float minyPos = 50;
@@ -57,7 +57,7 @@ namespace Voxel_Project
                 Cloud firstCloud = RandCloud(r);
                 clouds.Add(firstCloud);
 
-                if (r.Next(0, 2) == 0) // Double clouds
+                if (r.Next(0, 2) == 0) // Chance for clouds to be combined together
                 {
                     Cloud secondCloud = RandCloud(r);
                     Vector3 randOffset = new Vector3(RandRange(3, 9, r), RandRange(1, 4, r), RandRange(3, 9, r));
@@ -66,8 +66,8 @@ namespace Voxel_Project
                 }
             }
 
-            whiteHandle = (ulong)GL.Arb.GetTextureHandle(white);
-            GL.Arb.MakeTextureHandleResident(whiteHandle);
+            whiteImageHandle = (ulong)GL.Arb.GetTextureHandle(white);
+            GL.Arb.MakeTextureHandleResident(whiteImageHandle);
 
             // Set up list set
             foreach (Cloud cloud in clouds)
@@ -80,7 +80,7 @@ namespace Voxel_Project
                 listSet.scales.Add(cloud.GetScale().Y);
                 listSet.scales.Add(cloud.GetScale().Z);
 
-                listSet.textureHandles.Add(whiteHandle);
+                listSet.textureHandles.Add(whiteImageHandle);
             }
         }
 
@@ -98,7 +98,7 @@ namespace Voxel_Project
                 listSet.scales[i * 3 + 1] = cloud.GetScale().Y;
                 listSet.scales[i * 3 + 2] = cloud.GetScale().Z;
             }
-            bufferSet.SetFromListSet(listSet);
+            bufferSet.CreateFromListSet(listSet);
         }
 
         public CubeShaderBufferSet GetBufferSet()

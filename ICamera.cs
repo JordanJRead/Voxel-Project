@@ -7,6 +7,9 @@ using OpenTK.Mathematics;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Generic camera interface
+    /// </summary>
     internal interface ICamera
     {
         public Matrix4 GetViewMatrix();

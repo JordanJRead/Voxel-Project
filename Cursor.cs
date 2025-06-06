@@ -11,13 +11,17 @@ using static System.Formats.Asn1.AsnWriter;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// The edito's cursor that can be used to manipulate the scene
+    /// </summary>
     internal class Cursor
     {
         bool isVoxel = true;
         Voxel voxel;
         Fence fence;
-        CubeShaderBufferSet bufferSet = new CubeShaderBufferSet();
+        CubeShaderBufferSet bufferSet = new CubeShaderBufferSet(); // For rendering the cursor
 
+        // Selection volume
         Vector3 selectPos1;
         Vector3 selectPos2;
         List<Voxel> copiedVoxels = new List<Voxel>();
@@ -41,7 +45,7 @@ namespace Voxel_Project
         /// </summary>
         /// <param name="camera"></param>
         /// <param name="keyboard"></param>
-        /// <returns>Whether the scene voxel data should be updated on the GPU</returns>
+        /// <returns>Whether the scene data should be updated on the GPU</returns>
         public bool Update(Camera camera, KeyboardState keyboard, MouseState mouse, Scene scene)
         {
             bool hasSceneChanged = false;
@@ -71,6 +75,8 @@ namespace Voxel_Project
                 }
 
                 hasCursorChanged = UpdatePosition(camera, keyboard) || hasCursorChanged;
+
+                // Update fence preview information
                 if (hasCursorChanged && !isVoxel)
                 {
                     fenceManager.UnFakeFence(prevPosition);
@@ -80,7 +86,7 @@ namespace Voxel_Project
 
                 Voxel? selectedVoxel = scene.GetVoxelAtPosition(this.voxel.GetPosition());
 
-                // Tree
+                // Trees
                 if (keyboard.IsKeyPressed(Keys.T))
                 {
                     // Delete tree
@@ -162,7 +168,7 @@ namespace Voxel_Project
                             hasSceneChanged = true;
                         }
 
-                        // Place voxel
+                        // Placing voxel
                         else
                         {
                             scene.AddVoxel(new Voxel(voxel.GetPosition(), voxel.GetVoxelType()));
@@ -186,7 +192,7 @@ namespace Voxel_Project
                     {
                         Fence? selectedFence = fenceManager.GetFenceAtPosition(this.fence.GetPosition());
 
-                        // Replacing fence
+                        // Replacing fence (empty because there is only one fence type)
                         if (selectedFence != null)
                         {
                             //selectedVoxel.SetType(voxel.GetVoxelType());

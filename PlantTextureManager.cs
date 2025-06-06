@@ -9,6 +9,9 @@ using Voxel_Project.OpenGL_Objects;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Loads and manages the plant texxtures
+    /// </summary>
     internal class PlantTextxureManager
     {
         Texture2D[] textures = new Texture2D[Enum.GetNames<Plant.Type>().Length];

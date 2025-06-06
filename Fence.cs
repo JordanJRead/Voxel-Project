@@ -18,7 +18,8 @@ namespace Voxel_Project
             negZ
         }
         Vector3 position;
-        // Connectors to other fence posts in the world. -X is left, +X is right, -Z is forward, +Z is backwards
+
+        // Says which directions this fence is connected to other fences. Uses ConnectionType as indices
         bool[] connections =
         {
             false,
@@ -47,13 +48,13 @@ namespace Voxel_Project
             position += moveBy;
         }
 
-        static bool FloatEquals(float a, float b)
+        static bool FloatEquality(float a, float b)
         {
             return (MathF.Abs(a - b) < 0.0001);
         }
 
         /// <summary>
-        /// Updates the conenctors of this fence (and another fence) based on the position of another fence.
+        /// Updates the conenctors of this fence (and the fence being checked against) based on the position of the fence being checked against.
         /// </summary>
         /// <param name="otherFence">Should be a newly added fence, as only a new fence would cause other fences to update</param>
         public void UpdateConnectors(Fence otherFence)
@@ -61,13 +62,13 @@ namespace Voxel_Project
             float dist = (this.position - otherFence.position).Length;
 
             // Exit if distance is too far
-            if (!FloatEquals(dist, 1))
+            if (!FloatEquality(dist, 1))
                 return;
 
             Vector3 displacement = otherFence.position - this.position;
 
             // Positive X
-            if (FloatEquals(displacement.X, 1))
+            if (FloatEquality(displacement.X, 1))
             {
                 this.connections[(int)ConnectionType.posX] = true;
                 otherFence.connections[(int)ConnectionType.negX] = true;
@@ -75,7 +76,7 @@ namespace Voxel_Project
             }
 
             // Negative X
-            if (FloatEquals(displacement.X, -1))
+            if (FloatEquality(displacement.X, -1))
             {
                 this.connections[(int)ConnectionType.negX] = true;
                 otherFence.connections[(int)ConnectionType.posX] = true;
@@ -83,7 +84,7 @@ namespace Voxel_Project
             }
 
             // Postive Z
-            if (FloatEquals(displacement.Z, 1))
+            if (FloatEquality(displacement.Z, 1))
             {
                 this.connections[(int)ConnectionType.posZ] = true;
                 otherFence.connections[(int)ConnectionType.negZ] = true;
@@ -91,7 +92,7 @@ namespace Voxel_Project
             }
 
             // Negative Z
-            if (FloatEquals(displacement.Z, -1))
+            if (FloatEquality(displacement.Z, -1))
             {
                 this.connections[(int)ConnectionType.negZ] = true;
                 otherFence.connections[(int)ConnectionType.posZ] = true;
@@ -102,40 +103,40 @@ namespace Voxel_Project
         /// <summary>
         /// Removes the connectors of a fence when another fence is deleted
         /// </summary>
-        /// <param name="emptyPosition">Position of a newly-delted fence</param>
+        /// <param name="emptyPosition">Position of a newly-deleted fence</param>
         public void RemoveConnectors(Vector3 emptyPosition)
         {
             float dist = (this.position - emptyPosition).Length;
 
             // Exit if distance is too far
-            if (!FloatEquals(dist, 1))
+            if (!FloatEquality(dist, 1))
                 return;
 
             Vector3 displacement = emptyPosition - this.position;
 
             // Positive X
-            if (FloatEquals(displacement.X, 1))
+            if (FloatEquality(displacement.X, 1))
             {
                 this.connections[(int)ConnectionType.posX] = false;
                 return; // 2 fences should only be able to connect one way
             }
 
             // Negative X
-            if (FloatEquals(displacement.X, -1))
+            if (FloatEquality(displacement.X, -1))
             {
                 this.connections[(int)ConnectionType.negX] = false;
                 return;
             }
 
             // Postive Z
-            if (FloatEquals(displacement.Z, 1))
+            if (FloatEquality(displacement.Z, 1))
             {
                 this.connections[(int)ConnectionType.posZ] = false;
                 return;
             }
 
             // Negative Z
-            if (FloatEquals(displacement.Z, -1))
+            if (FloatEquality(displacement.Z, -1))
             {
                 this.connections[(int)ConnectionType.negZ] = false;
                 return;

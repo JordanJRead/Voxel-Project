@@ -23,6 +23,9 @@ namespace Voxel_Project
             return objectCount;
         }
 
+        /// <summary>
+        /// Positions should by in the format [x1, y1, z1, x2, y2, z2, ...]
+        /// </summary>
         public void SetPositions(List<float> newPositions)
         {
             positions.Use(BufferTarget.ShaderStorageBuffer);
@@ -30,6 +33,9 @@ namespace Voxel_Project
             objectCount = newPositions.Count / 3;
         }
 
+        /// <summary>
+        /// Scales should by in the format [x1, y1, z1, x2, y2, z2, ...]
+        /// </summary>
         public void SetScales(List<float> newScales)
         {
             scales.Use(BufferTarget.ShaderStorageBuffer);
@@ -44,7 +50,7 @@ namespace Voxel_Project
             objectCount = newTextures.Count;
         }
 
-        public void SetFromListSet(CubeShaderListSet listSet)
+        public void CreateFromListSet(CubeShaderListSet listSet)
         {
             SetPositions(listSet.positions);
             SetScales(listSet.scales);

@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL4;
 namespace Voxel_Project
 {
     /// <summary>
-    /// Contains all the information the shader needs for drawing several plants
+    /// Contains all the information the plant shader needs for drawing several plants
     /// </summary>
     internal class PlantShaderBufferSet
     {

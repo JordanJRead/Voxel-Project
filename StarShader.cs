@@ -9,6 +9,9 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Deals with rendering stars
+    /// </summary>
     internal class StarShader : ShaderBase
     {
         uint matricesBufferIndex = 0;

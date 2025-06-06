@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Voxel_Project
 {
     /// <summary>
-    /// Baisically the player in the world
+    /// The user's way of being in the world
     /// </summary>
     internal abstract class ControllerBase
     {

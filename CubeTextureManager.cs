@@ -9,6 +9,9 @@ using Voxel_Project.OpenGL_Objects;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Deals with loading and managing all of the cube textures
+    /// </summary>
     internal class CubeTextureManager
     {
         CubeMap[] cubeMaps = new CubeMap[(int)Voxel.Type.none + 1];

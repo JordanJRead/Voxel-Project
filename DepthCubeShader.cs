@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 namespace Voxel_Project
 {
     /// <summary>
-    /// Class for rendering several of a specific type of object
+    /// Same as cube shader, but only outputs depth information (used for creating shadow maps)
     /// </summary>
     internal class DepthCubeShader : ShaderBase
     {
@@ -22,12 +22,6 @@ namespace Voxel_Project
         {
         }
 
-        /// <summary>
-        /// Renders the scene
-        /// </summary>
-        /// <param name="vertexArray">The vertices of the object to draw</param>
-        /// <param name="cubeBuffers">The location, texture, and count information about the object(s)</param>
-        /// <param name="drawCursor">Whether to draw transparent and ignoring depth</param>
         public void Render(ICamera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers)
         {
             // Bind SSBOs

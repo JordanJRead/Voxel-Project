@@ -9,6 +9,7 @@ using OpenTK.Mathematics;
 
 namespace Voxel_Project
 {
+    // Manages all of the stars in the sky
     internal class StarManager
     {
         List<Star> stars = new List<Star>();

@@ -12,6 +12,9 @@ using Voxel_Project.OpenGL_Objects;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Represents an enitre scene
+    /// </summary>
     internal class Scene
     {
         List<Voxel> voxels = new List<Voxel>();

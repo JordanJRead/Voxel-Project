@@ -10,13 +10,15 @@ using System.Linq.Expressions;
 namespace Voxel_Project
 {
     /// <summary>
-    /// Class for rendering several of a specific type of object
+    /// Class for rendering several cubes given a CubeShaderBufferSet
     /// </summary>
     internal class CubeShader : ShaderBase
     {
+        // Shader binding points
         uint positionsBufferIndex = 0;
         uint scalesBufferIndex = 1;
         uint texturesBufferIndex = 2;
+
         int sunDepthTextureUnit = 0;
         int moonDepthTextureUnit = 1;
 
@@ -31,9 +33,9 @@ namespace Voxel_Project
         /// Renders the scene
         /// </summary>
         /// <param name="vertexArray">The vertices of the object to draw</param>
-        /// <param name="cubeBuffers">The location, texture, and count information about the object(s)</param>
-        /// <param name="drawCursor">Whether to draw transparent and ignoring depth</param>
-        public void Render(ICamera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, Scene scene, bool drawCursor = false, bool isCloud = false)
+        /// <param name="cubeBuffers">The location, scale, texture, and count information about the object(s)</param>
+        /// <param name="isCursor">Whether to draw transparent and ignoring depth</param>
+        public void Render(ICamera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, Scene scene, bool isCursor = false, bool isCloud = false)
         {
             // Bind SSBOs
             cubeBuffers.positions.Use(BufferTarget.ShaderStorageBuffer);
@@ -45,6 +47,8 @@ namespace Voxel_Project
             cubeBuffers.textures.Use(BufferTarget.ShaderStorageBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, texturesBufferIndex, cubeBuffers.textures);
 
+
+            // Set shader uniforms
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
@@ -57,11 +61,8 @@ namespace Voxel_Project
             SetMat4("moonView", scene.GetMoonShadowMapper().GetCamera().GetViewMatrix());
             SetMat4("moonProjection", scene.GetMoonShadowMapper().GetCamera().GetProjectionMatrix());
 
-            scene.GetSunShadowMapper().GetDepthTexture().Use(sunDepthTextureUnit);
-            scene.GetMoonShadowMapper().GetDepthTexture().Use(moonDepthTextureUnit);
-
             SetBool("isCloud", isCloud);
-            if (drawCursor)
+            if (isCursor)
             {
                 GL.Disable(EnableCap.DepthTest);
                 SetBool("isCursor", true);
@@ -71,6 +72,10 @@ namespace Voxel_Project
                 GL.Enable(EnableCap.DepthTest);
                 SetBool("isCursor", false);
             }
+
+            scene.GetSunShadowMapper().GetDepthTexture().Use(sunDepthTextureUnit);
+            scene.GetMoonShadowMapper().GetDepthTexture().Use(moonDepthTextureUnit);
+
 
             vertexArray.Use();
 

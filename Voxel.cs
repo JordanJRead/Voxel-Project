@@ -12,6 +12,9 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// A 1x1x1 cube in the scene
+    /// </summary>
     internal class Voxel
     {
         public enum Type

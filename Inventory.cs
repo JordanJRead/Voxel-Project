@@ -3,16 +3,20 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Voxel_Project
 {
+    /// <summary>
+    /// Represents the player controller's inventory (hotbar at the bottom of the screen)
+    /// </summary>
     internal class Inventory
     {
+        // Visual information, floats are in terms of eight the screen width or height
         private static float slotWidth = 1.0f / 20;
         private static float margin = 1.0f / 40;
         private static float stride = slotWidth + margin;
-        private static float height = 1.0f / 40;
-        private static int fenceValue = 5;
+        private static float heightOfBottomOfScreen = 1.0f / 40;
+        private static int fenceValue = 1; // In terms of money
 
         private static float seedIconWidth = slotWidth * 0.5f;
-        private static float seedIconCenterOffset = -(slotWidth - seedIconWidth) * 0.5f;
+        private static float seedIconCenterOffset = -(slotWidth - seedIconWidth) * 0.5f; // Bottom left corner of a slot
 
         private Item selectedItem = Item.hoe;
         private SeedManager seedManager = new SeedManager();
@@ -69,11 +73,14 @@ namespace Voxel_Project
                 case Item.hoe:
                     if (mouse.IsButtonPressed(MouseButton.Left) && lookingAtVoxel != null)
                     {
+                        // Till
                         if (lookingAtVoxel.GetVoxelType() == Voxel.Type.grass)
                         {
                             lookingAtVoxel.SetType(Voxel.Type.tilled);
                             hasSceneChanged = true;
                         }
+
+                        // Untill
                         else if (lookingAtVoxel.GetVoxelType() == Voxel.Type.tilled && scene.GetPlantOnVoxel(lookingAtVoxel) == null)
                         {
                             lookingAtVoxel.SetType(Voxel.Type.grass);
@@ -148,7 +155,7 @@ namespace Voxel_Project
 
         public void Draw(UIShader uiShader, float aspectRatio)
         {
-            float startingPos;
+            float startingPos; // Center of leftmost icon
             if (itemIcons.Length % 2 == 1)
             {
                 startingPos = 0.5f - itemIcons.Length / 2 * stride;
@@ -160,13 +167,13 @@ namespace Voxel_Project
 
             for (int i = 0; i < itemIcons.Length; i++)
             {
-                Vector2 slotPosition = new Vector2(startingPos + i * stride, height + slotWidth / 2);
+                Vector2 slotPosition = new Vector2(startingPos + i * stride, heightOfBottomOfScreen + slotWidth / 2);
                 float scale = i == (int)selectedItem ?  1.3f : 1;
 
                 uiShader.Draw(background, slotPosition, slotWidth * scale, aspectRatio);
                 uiShader.Draw(itemIcons[i], slotPosition, slotWidth * scale, aspectRatio);
 
-                // Seeds
+                // Seed icons
                 if (i == (int)Item.seedManager)
                 {
                     uiShader.Draw(seedManager.GetCurrentIcon(), slotPosition + new Vector2(seedIconCenterOffset * scale, seedIconCenterOffset * scale * aspectRatio), seedIconWidth * scale, aspectRatio);

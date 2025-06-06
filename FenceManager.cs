@@ -31,8 +31,8 @@ namespace Voxel_Project
         /// <summary>
         /// Makes fences in the scene think that there is fence at a given position. Used with the editor cursor to preview fence connections
         /// </summary>
-        /// <param name="position"></param>
-        /// <returns>The fence that would exist at the given position, with connections</returns>
+        /// <param name="position">The position of the 'fake' fence</param>
+        /// <returns>A fence that has the connections that an actual fence would have at the given position</returns>
         public Fence FakeFence(Vector3 position)
         {
             Fence fakeFence = new Fence(position);
@@ -47,7 +47,6 @@ namespace Voxel_Project
         /// Makes sure that if there is no fence at the given position, the other fences aren't connected to the empty position
         /// Should be called to cancel out FakeFence()
         /// </summary>
-        /// <param name="position"></param>
         public void UnFakeFence(Vector3 position)
         {
             if (GetFenceAtPosition(position) == null)

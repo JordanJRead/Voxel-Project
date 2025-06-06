@@ -33,7 +33,7 @@ namespace Voxel_Project
         /// <param name="vertexArray">The vertices of the object to draw</param>
         /// <param name="cubeBuffers">The location, texture, and count information about the object(s)</param>
         /// <param name="drawCursor">Whether to draw transparent and ignoring depth</param>
-        public void Render(ICamera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, float dayProgress, ShadowMapper sunShadowMapper, ShadowMapper moonShadowMapper, bool drawCursor = false, bool isCloud = false)
+        public void Render(ICamera camera, VertexArray vertexArray, CubeShaderBufferSet cubeBuffers, Scene scene, bool drawCursor = false, bool isCloud = false)
         {
             // Bind SSBOs
             cubeBuffers.positions.Use(BufferTarget.ShaderStorageBuffer);
@@ -48,16 +48,17 @@ namespace Voxel_Project
             this.Use();
             SetMat4("view", camera.GetViewMatrix());
             SetMat4("projection", camera.GetProjectionMatrix());
-            SetFloat("dayProgress", dayProgress);
+            SetFloat("dayProgress", scene.GetDayProgress());
+            SetFloat("dayStrength", scene.DayStrength());
 
-            SetMat4("sunView", sunShadowMapper.GetCamera().GetViewMatrix());
-            SetMat4("sunProjection", sunShadowMapper.GetCamera().GetProjectionMatrix());
+            SetMat4("sunView", scene.GetSunShadowMapper().GetCamera().GetViewMatrix());
+            SetMat4("sunProjection", scene.GetSunShadowMapper().GetCamera().GetProjectionMatrix());
 
-            SetMat4("moonView", moonShadowMapper.GetCamera().GetViewMatrix());
-            SetMat4("moonProjection", moonShadowMapper.GetCamera().GetProjectionMatrix());
+            SetMat4("moonView", scene.GetMoonShadowMapper().GetCamera().GetViewMatrix());
+            SetMat4("moonProjection", scene.GetMoonShadowMapper().GetCamera().GetProjectionMatrix());
 
-            sunShadowMapper.GetDepthTexture().Use(sunDepthTextureUnit);
-            moonShadowMapper.GetDepthTexture().Use(moonDepthTextureUnit);
+            scene.GetSunShadowMapper().GetDepthTexture().Use(sunDepthTextureUnit);
+            scene.GetMoonShadowMapper().GetDepthTexture().Use(moonDepthTextureUnit);
 
             SetBool("isCloud", isCloud);
             if (drawCursor)

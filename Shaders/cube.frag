@@ -13,6 +13,7 @@ in vec3 sunNDCCoord;
 in vec3 moonNDCCoord;
 
 uniform float dayProgress;
+uniform float dayStrength;
 uniform bool isCursor;
 uniform bool isCloud;
 
@@ -81,7 +82,9 @@ void main() {
 		// Final color
 		float alpha = isCursor ? 0.5f : 1;
 		vec3 addition = isCursor ? vec3(0.5) : vec3(0);
-		FragColor = vec4(colorFromSun + colorFromMoon + objectColor * 0.2 + addition, alpha);
+		float emissionScale = 0.2;// + dayStrength * 0.3;
+
+		FragColor = vec4(colorFromSun + colorFromMoon + objectColor * emissionScale + addition, alpha);
 		//FragColor = vec4(lowestMoonDepth, lowestMoonDepth, lowestMoonDepth, 1);
 	}
 }

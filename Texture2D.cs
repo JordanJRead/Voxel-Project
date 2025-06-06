@@ -36,8 +36,8 @@ namespace Voxel_Project
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, image.Width, image.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, image.Data);
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.NearestMipmapNearest);
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);// MipmapNearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);

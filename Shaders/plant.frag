@@ -21,6 +21,7 @@ uniform sampler2D sunDepthTexture;
 uniform sampler2D moonDepthTexture;
 
 uniform float dayProgress;
+uniform float dayStrength;
 
 void main() {
 	vec3 normal = fragNormal;
@@ -79,6 +80,7 @@ void main() {
 		// In shadow
 		colorFromMoon *= 0;
 	}
-
-	FragColor = vec4(colorFromSun + colorFromMoon + objectColor.xyz * 0.2, 1);
+	
+	float emissionScale = 0.2;// + dayStrength * 0.3;
+	FragColor = vec4(colorFromSun + colorFromMoon + objectColor.xyz * emissionScale, 1);
 }

@@ -36,9 +36,9 @@ namespace Voxel_Project
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
         PlantShader plantShader = new PlantShader("Shaders/plant.vert", "Shaders/plant.frag");
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
-        float dayProgress = 0f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
+        float dayProgress = 0.3f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
         float time = 0;
-        const float secondsPerDayCycle = 120;
+        const float secondsPerDayCycle = 120000;
 
         DepthCubeShader depthCubeShader = new DepthCubeShader("shaders/Depth/depthcube.vert", "shaders/Depth/depthcube.frag");
         DepthPlantShader depthPlantShader = new DepthPlantShader("shaders/Depth/depthplant.vert", "shaders/Depth/depthplant.frag");
@@ -145,6 +145,22 @@ namespace Voxel_Project
             return dayProgress;
         }
 
+        public ShadowMapper GetSunShadowMapper()
+        {
+            return sunShadowMapper;
+        }
+
+
+        public ShadowMapper GetMoonShadowMapper()
+        {
+            return moonShadowMapper;
+        }
+
+        public float GetTime()
+        {
+            return time;
+        }
+
         /// <summary>
         /// Writes scene data to the same file path that the scene was loaded from, overwriting that file
         /// </summary>
@@ -210,16 +226,16 @@ namespace Voxel_Project
         public void Render(ICamera camera, Cursor? cursor = null)
         {
             starShader.Render(camera, DayStrength(), dayProgress, cubeVertexArray, starManager.GetStarCount(), starManager.GetSSBO());
-            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, dayProgress, sunShadowMapper, moonShadowMapper);
-            cubeShader.Render(camera, cubeVertexArray, fenceBuffers, dayProgress, sunShadowMapper, moonShadowMapper);
-            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), dayProgress, sunShadowMapper, moonShadowMapper, false, true);
+            cubeShader.Render(camera, cubeVertexArray, voxelsBuffers, this);
+            cubeShader.Render(camera, cubeVertexArray, fenceBuffers, this);
+            cubeShader.Render(camera, cubeVertexArray, cloudManager.GetBufferSet(), this, false, true);
             celestialShader.Render(camera, cubeVertexArray, dayProgress);
 
-            plantShader.Render(camera, plantVertexArray, plantManager.GetBuffers(), dayProgress, time, sunShadowMapper, moonShadowMapper);
+            plantShader.Render(camera, plantVertexArray, plantManager.GetBuffers(), this);
 
             if (cursor != null)
             {
-                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), dayProgress, sunShadowMapper, moonShadowMapper, true);
+                cubeShader.Render(camera, cubeVertexArray, cursor.GetShaderBuffers(), this, true);
             }
 
             //screenTextureShader.Render(sunShadowMapper.GetDepthTexture());
@@ -238,7 +254,7 @@ namespace Voxel_Project
 
         public void RenderCubeBufferSet(Camera camera, CubeShaderBufferSet bufferSet)
         {
-            cubeShader.Render(camera, cubeVertexArray, bufferSet, dayProgress, sunShadowMapper, moonShadowMapper);
+            cubeShader.Render(camera, cubeVertexArray, bufferSet, this);
         }
 
         public void RenderTextureToScreen(Texture2D tex)

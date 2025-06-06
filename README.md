@@ -27,6 +27,8 @@ Right click on a block to break the fence on it
 
 Hold down left control to use editor controls  
 
+Left click: Place voxel / fence  
+Right click: Remove voxel / fence  
 P: Switch between editor and player mode  
 R: Switch between voxel and fence mode  
 T: Place / remove tree  

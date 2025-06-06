@@ -22,12 +22,18 @@ namespace Voxel_Project
         int[] seedCosts = new int[(int)Plant.Type.none]
         {
             5,
-            5,
-            5
+            10,
+            15
         };
 
-        public SeedManager()
+        public SeedManager(int[] seedCounts)
         {
+            if (seedCounts.Length != this.seedCounts.Length)
+            {
+                throw new ArgumentException("INCORREST NUMBER OF SEEDS");
+            }
+
+            this.seedCounts = seedCounts;
             for (int i = 0; i < seedIcons.Length; i++)
             {
                 seedIcons[i] = new Texture2D($"Images/Seeds/{(Plant.Type)i}.png");
@@ -66,6 +72,11 @@ namespace Voxel_Project
                     scene.PlantSeed(lookingAtVoxel.GetPosition() + Vector3.UnitY, GetCurrentSeedType());
                 }
             }
+        }
+
+        public int[] GetSeedCounts()
+        {
+            return seedCounts;
         }
 
         /// <summary>

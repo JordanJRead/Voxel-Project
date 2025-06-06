@@ -14,12 +14,13 @@ namespace Voxel_Project
         private static float stride = slotWidth + margin;
         private static float heightOfBottomOfScreen = 1.0f / 40;
         private static int fenceValue = 1; // In terms of money
+        private static int treeWoodValue = 15;
 
         private static float seedIconWidth = slotWidth * 0.5f;
         private static float seedIconCenterOffset = -(slotWidth - seedIconWidth) * 0.5f; // Bottom left corner of a slot
 
         private Item selectedItem = Item.hoe;
-        private SeedManager seedManager = new SeedManager();
+        private SeedManager seedManager;
 
         enum Item
         {
@@ -39,8 +40,9 @@ namespace Voxel_Project
 
         Texture2D background = new Texture2D("Images/Inventory/background.png");
 
-        public Inventory()
+        public Inventory(int[] seedCounts)
         {
+            seedManager = new SeedManager(seedCounts);
             for (int i = 0; i < itemIcons.Length; ++i)
             {
                 itemIcons[i] = new Texture2D($"Images/Inventory/{(Item)i}.png");
@@ -116,7 +118,7 @@ namespace Voxel_Project
                         {
                             hasSceneChanged = true;
                             scene.RemoveTree(lookingAtVoxel.GetPosition());
-                            woodManager.ChangeResource(10);
+                            woodManager.ChangeResource(treeWoodValue);
                         }
                     }
                     break;
@@ -151,6 +153,11 @@ namespace Voxel_Project
             }
 
             return hasSceneChanged;
+        }
+
+        public int[] GetSeedCounts()
+        {
+            return seedManager.GetSeedCounts();
         }
 
         public void Draw(UIShader uiShader, float aspectRatio)

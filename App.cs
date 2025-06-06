@@ -60,10 +60,16 @@ namespace Voxel_Project
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             scene = new Scene("scene.txt", screenWidth, screenHeight);
-            playerController = new PlayerController(new Vector3(0, 1.51f, 0), new Camera(width, height));
+
+            Vector3 playerPosition = scene.GetInitialPlayerPosition();
+            int money = scene.GetInitialPlayerMoney();
+            int wood = scene.GetInitialPlayerWood();
+            int[] seedCounts = scene.GetInitialPlayerSeedCounts();
+
+            playerController = new PlayerController(playerPosition, new Camera(width, height), money, wood, seedCounts);
             editorController = new EditorController(new Camera(width, height), scene.GetTextureManager());
             editorController.Activate(playerController, scene.GetTextureManager());
-            currentController = editorController;
+            currentController = playerController;
             //currentCamera = editorCamera;
             CursorState = CursorState.Grabbed;
         }
@@ -89,7 +95,7 @@ namespace Voxel_Project
                 scene.UpdateGPU(KeyboardState, MouseState);
             }
             scene.FrameUpdate((float)e.Time);
-            Console.WriteLine($"FPS: {1.0f / e.Time}");
+            //Console.WriteLine($"FPS: {1.0f / e.Time}");
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -119,7 +125,7 @@ namespace Voxel_Project
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            scene.Save();
+            scene.Save(playerController);
         }
     }
 }

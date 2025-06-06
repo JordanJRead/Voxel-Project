@@ -39,7 +39,7 @@ namespace Voxel_Project
         CubeShader cubeShader = new CubeShader("Shaders/cube.vert", "Shaders/cube.frag");
         PlantShader plantShader = new PlantShader("Shaders/plant.vert", "Shaders/plant.frag");
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
-        float dayProgress = 0.3f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
+        float dayProgress = 0.1f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
         float time = 0;
         const float secondsPerDayCycle = 360;
 
@@ -57,6 +57,14 @@ namespace Voxel_Project
 
         int screenWidth;
         int screenHeight;
+
+        Vector3 initialPlayerPosition = new Vector3(0, 1.51f, 0);
+        int initialPlayerMoney = 0;
+        int initialPlayerWood = 0;
+        int[] initialPlayerSeedCounts = new int[(int)Plant.Type.none]
+        {
+            0, 0, 0
+        };
 
         /// <summary>
         /// Loads scene data from a file path into program memory
@@ -106,6 +114,28 @@ namespace Voxel_Project
                     float growth = float.Parse(objectInfo[5]);
                     plantManager.AddPlant(new Plant(pos, objectInfo[4], growth));
                 }
+                else if (objectInfo[0] == "playerdata")
+                {
+                    if (objectInfo[1] == "position")
+                    {
+                        initialPlayerPosition.X = float.Parse(objectInfo[2]);
+                        initialPlayerPosition.Y = float.Parse(objectInfo[3]);
+                        initialPlayerPosition.Z = float.Parse(objectInfo[4]);
+                    }
+                    else if (objectInfo[1] == "money")
+                    {
+                        initialPlayerMoney = int.Parse(objectInfo[2]);
+                    }
+                    else if (objectInfo[1] == "wood")
+                    {
+                        initialPlayerWood = int.Parse(objectInfo[2]);
+                    }
+                    else if (objectInfo[1] == "seed")
+                    {
+                        Plant.Type plantType = Enum.Parse<Plant.Type>(objectInfo[2]);
+                        initialPlayerSeedCounts[(int)plantType] = int.Parse(objectInfo[3]);
+                    }
+                }
             }
             UpdateGPUVoxelData();
             UpdateGPUFenceData();
@@ -117,6 +147,26 @@ namespace Voxel_Project
 
             plantVertexBuffer = new VertexBuffer(Vertices.GetPlantVertices(), 8);
             plantVertexArray = new VertexArray([3, 3, 2], plantVertexBuffer);
+        }
+
+        public Vector3 GetInitialPlayerPosition()
+        {
+            return initialPlayerPosition;
+        }
+
+        public int GetInitialPlayerMoney()
+        {
+            return initialPlayerMoney;
+        }
+
+        public int GetInitialPlayerWood()
+        {
+            return initialPlayerWood;
+        }
+
+        public int[] GetInitialPlayerSeedCounts()
+        {
+            return initialPlayerSeedCounts;
         }
 
         public void Resize(int newWidth, int newHeight)
@@ -179,16 +229,16 @@ namespace Voxel_Project
         /// <summary>
         /// Writes scene data to the same file path that the scene was loaded from, overwriting that file
         /// </summary>
-        public void Save()
+        public void Save(PlayerController player)
         {
-            Save(initialPath);
+            Save(player, initialPath);
         }
 
         /// <summary>
         /// Writes scene data to a file. If the file exists, it gets overwriten. If the file does not exist, it get created
         /// </summary>
         /// <param name="filePath"></param>
-        public void Save(string filePath)
+        public void Save(PlayerController player, string filePath)
         {
             File.Delete(filePath);
             string fileSrc = "";
@@ -230,6 +280,18 @@ namespace Voxel_Project
                 fileSrc += ",";
                 fileSrc += plant.GetGrowth();
                 fileSrc += "\n";
+            }
+
+            fileSrc += $"playerdata,position,{player.GetPosition().X},{player.GetPosition().Y},{player.GetPosition().Z}\n";
+            fileSrc += $"playerdata,money,{player.GetMoney()}\n";
+            fileSrc += $"playerdata,wood,{player.GetWood()}\n";
+
+            int[] seedCounts = player.GetSeedCounts();
+
+            for (int i = 0; i < seedCounts.Length; ++i)
+            {
+                string seedName = Enum.GetName<Plant.Type>((Plant.Type)i);
+                fileSrc += $"playerdata,seed,{seedName},{seedCounts[i]}\n";
             }
 
             using (StreamWriter sw = new StreamWriter(filePath))

@@ -18,15 +18,17 @@ namespace Voxel_Project
         Vector3 cameraOffset = new Vector3(0, 0.5f, 0);
         Inventory inventory;
         Texture2D crosshair = new Texture2D("Images/inventory/crosshair.png");
-        ResourceManager moneyManager = new ResourceManager(15, ResourceManager.Color.yellow, false);
-        ResourceManager woodManager = new ResourceManager(0, ResourceManager.Color.brown, true);
+        ResourceManager moneyManager;
+        ResourceManager woodManager;
 
-        public PlayerController(Vector3 position, Camera camera) : base(camera)
+        public PlayerController(Vector3 position, Camera camera, int money, int wood, int[] seedCounts) : base(camera)
         {
+            this.moneyManager = new ResourceManager(money, ResourceManager.Color.yellow, false);
+            this.woodManager = new ResourceManager(wood, ResourceManager.Color.brown, true);
             this.speed = 2;
             this.position = position;
             this.camera.SetPosition(position);
-            inventory = new Inventory();
+            inventory = new Inventory(seedCounts);
         }
 
         public override bool Update(MouseState mouse, KeyboardState keyboard, float deltaTime, Scene scene)
@@ -69,6 +71,21 @@ namespace Voxel_Project
             uiShader.Draw(crosshair, new Vector2(0.5f, 0.5f), 0.025f, aspectRatio);
             moneyManager.Draw(uiShader, aspectRatio);
             woodManager.Draw(uiShader, aspectRatio);
+        }
+
+        public int GetMoney()
+        {
+            return moneyManager.GetResourceCount();
+        }
+
+        public int GetWood()
+        {
+            return woodManager.GetResourceCount();
+        }
+
+        public int[] GetSeedCounts()
+        {
+            return inventory.GetSeedCounts();
         }
 
         public Vector3 GetPosition()

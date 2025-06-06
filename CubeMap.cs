@@ -12,6 +12,12 @@ namespace Voxel_Project
     internal class CubeMap
     {
         TEX tex = new TEX();
+
+        /// <summary>
+        /// Stores a cube texture
+        /// </summary>
+        /// <param name="path">The image path to load (must be a square image)</param>
+        /// <param name="defaultPath">The fallback image to load</param>
         public CubeMap(string path, string defaultPath = "Images/Cubes/none.png")
         {
             string projectPath = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName;
@@ -37,8 +43,7 @@ namespace Voxel_Project
                 GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgba, image.Width, image.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, image.Data);
             }
 
-            GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMap);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.NearestMipmapNearest);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Nearest);
         }
 

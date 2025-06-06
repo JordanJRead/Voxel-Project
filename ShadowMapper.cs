@@ -30,7 +30,7 @@ namespace Voxel_Project
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
-        public void UpdateShadows(Scene scene)
+        public void UpdateShadows(Scene scene, int screenWidth, int screenHeight)
         {
             Vector3 sunPosition = new Vector3(MathF.Cos(2 * MathF.PI * scene.GetDayProgress()), MathF.Sin(2 * MathF.PI * scene.GetDayProgress()), 0) * 100;
             Vector3 moonPosition = new Vector3(MathF.Cos(2 * MathF.PI * (scene.GetDayProgress() + 0.5f)), MathF.Sin(2 * MathF.PI * (scene.GetDayProgress() + 0.5f)), 0) * 100;
@@ -52,7 +52,7 @@ namespace Voxel_Project
                 scene.RenderDepth(camera);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(0, 0, 800, 600);
+            GL.Viewport(0, 0, screenWidth, screenHeight);
         }
 
         public Texture2D GetDepthTexture()

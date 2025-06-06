@@ -70,7 +70,7 @@ namespace Voxel_Project
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            if (KeyboardState.IsKeyPressed(Keys.C))
+            if (KeyboardState.IsKeyPressed(Keys.P))
             {
                 if (currentController == editorController)
                     currentController = playerController;
@@ -114,6 +114,7 @@ namespace Voxel_Project
             GL.Viewport(0, 0, e.Width, e.Height);
             playerController.GetCamera().Resize(e.Width, e.Height);
             editorController.GetCamera().Resize(e.Width, e.Height);
+            scene.Resize(e.Width, e.Height);
         }
 
         protected override void OnClosing(CancelEventArgs e)

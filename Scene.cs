@@ -38,7 +38,7 @@ namespace Voxel_Project
         CelestialShader celestialShader = new CelestialShader("Shaders/celeste.vert", "Shaders/celeste.frag");
         float dayProgress = 0.3f; // 0 == 100 == sunrise, 0.25 == noon, 0.5 == sunset, 0.75 == midnight
         float time = 0;
-        const float secondsPerDayCycle = 120000;
+        const float secondsPerDayCycle = 360;
 
         DepthCubeShader depthCubeShader = new DepthCubeShader("shaders/Depth/depthcube.vert", "shaders/Depth/depthcube.frag");
         DepthPlantShader depthPlantShader = new DepthPlantShader("shaders/Depth/depthplant.vert", "shaders/Depth/depthplant.frag");
@@ -52,11 +52,17 @@ namespace Voxel_Project
         ShadowMapper sunShadowMapper;
         ShadowMapper moonShadowMapper;
 
+        int screenWidth;
+        int screenHeight;
+
         /// <summary>
         /// Loads scene data from a file path into program memory
         /// </summary>
         public Scene(string filePath, int screenWidth, int screenHeight)
         {
+            this.screenWidth = screenWidth;
+            this.screenHeight = screenHeight;
+
             sunShadowMapper = new ShadowMapper(screenWidth, screenHeight);
             moonShadowMapper = new ShadowMapper(screenWidth, screenHeight, false);
 
@@ -108,6 +114,12 @@ namespace Voxel_Project
 
             plantVertexBuffer = new VertexBuffer(Vertices.GetPlantVertices(), 8);
             plantVertexArray = new VertexArray([3, 3, 2], plantVertexBuffer);
+        }
+
+        public void Resize(int newWidth, int newHeight)
+        {
+            screenWidth = newWidth;
+            screenHeight = newHeight;
         }
 
         public List<Voxel> GetVoxels()
@@ -249,7 +261,7 @@ namespace Voxel_Project
         {
             depthCubeShader.Render(camera, cubeVertexArray, voxelsBuffers);
             depthCubeShader.Render(camera, cubeVertexArray, fenceBuffers);
-            depthPlantShader.Render(camera, plantVertexArray, plantManager.GetBuffers());
+            depthPlantShader.Render(camera, plantVertexArray, plantManager.GetBuffers(), time);
         }
 
         public void RenderCubeBufferSet(Camera camera, CubeShaderBufferSet bufferSet)
@@ -272,9 +284,9 @@ namespace Voxel_Project
             {
                 dayProgress -= 1;
             }
-            GL.ClearColor(0, 0, DayStrength(), 1);
-            sunShadowMapper.UpdateShadows(this);
-            moonShadowMapper.UpdateShadows(this);
+            GL.ClearColor(DayStrength() * 0.3f, DayStrength() * 0.3f, DayStrength(), 1);
+            sunShadowMapper.UpdateShadows(this, screenWidth, screenHeight);
+            moonShadowMapper.UpdateShadows(this, screenWidth, screenHeight);
         }
 
         /// <summary>

@@ -20,6 +20,7 @@ namespace Voxel_Project
 
         Vector3 selectPos1;
         Vector3 selectPos2;
+        List<Voxel> copiedVoxels = new List<Voxel>();
 
         public Cursor(Vector3 position, Voxel.Type type, CubeTextureManager cubeTextureManager)
         {
@@ -49,26 +50,26 @@ namespace Voxel_Project
             CubeTextureManager cubeTextureManager = scene.GetTextureManager();
             FenceManager fenceManager = scene.GetFenceManager();
 
-            // Switch voxel/fence mode
-            if (keyboard.IsKeyPressed(Keys.R))
-            {
-                isVoxel = !isVoxel;
-                UpdateGPUBuffers(cubeTextureManager);
-                if (isVoxel)
-                {
-                    fenceManager.UnFakeFence(voxel.GetPosition());
-                }
-                else
-                {
-                    fence = fenceManager.FakeFence(fence.GetPosition()); // fence.position and voxel.position are the same, I could use either one
-                }
-                hasSceneChanged = true;
-                hasCursorChanged = true;
-            }
-
             Vector3 prevPosition = voxel.GetPosition();
             if (keyboard.IsKeyDown(Keys.LeftControl))
             {
+                // Switch voxel/fence mode
+                if (keyboard.IsKeyPressed(Keys.R))
+                {
+                    isVoxel = !isVoxel;
+                    UpdateGPUBuffers(cubeTextureManager);
+                    if (isVoxel)
+                    {
+                        fenceManager.UnFakeFence(voxel.GetPosition());
+                    }
+                    else
+                    {
+                        fence = fenceManager.FakeFence(fence.GetPosition()); // fence.position and voxel.position are the same, I could use either one
+                    }
+                    hasSceneChanged = true;
+                    hasCursorChanged = true;
+                }
+
                 hasCursorChanged = UpdatePosition(camera, keyboard) || hasCursorChanged;
                 if (hasCursorChanged && !isVoxel)
                 {
@@ -237,6 +238,26 @@ namespace Voxel_Project
                     hasSceneChanged = true;
                     DeleteSelectedVolume(scene);
                 }
+
+                // Copy
+                if (keyboard.IsKeyPressed(Keys.C))
+                {
+                    CopySelectedVolume(scene);
+                }
+
+                // Paste
+                if (keyboard.IsKeyPressed(Keys.V))
+                {
+                    PasteCopiedVoxels(scene);
+                    hasSceneChanged = true;
+                }
+
+                // Rotate
+                if (keyboard.IsKeyPressed(Keys.B))
+                {
+                    RotateCopiedVoxels();
+                    hasSceneChanged = true;
+                }
             }
             if (hasCursorChanged)
             {
@@ -283,6 +304,48 @@ namespace Voxel_Project
                         scene.AddVoxel(new Voxel(new Vector3(x, y, z), this.voxel.GetVoxelType()));
                     }
                 }
+            }
+        }
+
+        private void CopySelectedVolume(Scene scene)
+        {
+            copiedVoxels.Clear();
+            Vector3 minPos = new Vector3(MathF.Min(selectPos1.X, selectPos2.X), MathF.Min(selectPos1.Y, selectPos2.Y), MathF.Min(selectPos1.Z, selectPos2.Z));
+            Vector3 maxPos = new Vector3(MathF.Max(selectPos1.X, selectPos2.X), MathF.Max(selectPos1.Y, selectPos2.Y), MathF.Max(selectPos1.Z, selectPos2.Z));
+
+            for (float x = minPos.X; x <= maxPos.X; ++x)
+            {
+                for (float y = minPos.Y; y <= maxPos.Y; ++y)
+                {
+                    for (float z = minPos.Z; z <= maxPos.Z; ++z)
+                    {
+                        Voxel? voxel = scene.GetVoxelAtPosition(new Vector3(x, y, z));
+                        if (voxel != null)
+                        {
+                            copiedVoxels.Add(new Voxel(voxel.GetPosition() - selectPos1, voxel.GetVoxelType()));
+                        }
+                    }
+                }
+            }
+        }
+
+        private void RotateCopiedVoxels()
+        {
+            foreach (Voxel voxel in copiedVoxels)
+            {
+                Vector3 oldPosition = voxel.GetPosition();
+                Vector3 newPosition = new Vector3(oldPosition.Z, oldPosition.Y, -oldPosition.X);
+                voxel.SetPosition(newPosition);
+            }
+        }
+
+        private void PasteCopiedVoxels(Scene scene)
+        {
+            foreach (Voxel voxel in copiedVoxels)
+            {
+                Vector3 worldPos = voxel.GetPosition() + this.voxel.GetPosition();
+                scene.RemoveVoxelAtPosition(worldPos);
+                scene.AddVoxel(new Voxel(worldPos, voxel.GetVoxelType()));
             }
         }
 

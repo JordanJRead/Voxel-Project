@@ -40,7 +40,7 @@ void main() {
 	vec4 worldPos = vec4(vPos * scale + position, 1);
 	
 	if (vPos.y > 0.25) {
-		worldPos.x += 0.1 * sin(0.5 * time) * growths[gl_InstanceID];
+		worldPos.z += 0.1 * sin(0.5 * time) * growths[gl_InstanceID];
 	}
 
 	gl_Position = projection * view * worldPos;
